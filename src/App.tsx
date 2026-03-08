@@ -14,6 +14,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
+import DriverDeliveries from "./pages/DriverDeliveries";
+import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
 
 const queryClient = new QueryClient();
 
