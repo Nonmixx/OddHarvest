@@ -37,14 +37,16 @@ const Navbar = () => {
               Dashboard
             </Link>
           )}
-          <Link to="/cart" className="relative">
-            <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </Link>
+          {(!user || user.role === "buyer") && (
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
+          )}
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground flex items-center gap-1">
@@ -75,9 +77,11 @@ const Navbar = () => {
           {isAuthenticated && (
             <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>Dashboard</Link>
           )}
-          <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
-            Cart ({itemCount})
-          </Link>
+          {(!user || user.role === "buyer") && (
+            <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+              Cart ({itemCount})
+            </Link>
+          )}
           {isAuthenticated ? (
             <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
               Logout
