@@ -12,6 +12,7 @@ import MarketplacePage from "./pages/MarketplacePage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import FarmerDashboard from "./pages/FarmerDashboard";
+import FarmerSoldCrops from "./pages/FarmerSoldCrops";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
