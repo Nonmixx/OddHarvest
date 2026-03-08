@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
 
-const STATES = ["All", "Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor"];
+const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 const DISTANCE_OPTIONS = [
   { label: "Any distance", value: 999 },
   { label: "< 5 km", value: 5 },
