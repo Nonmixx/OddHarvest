@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Navigation, DollarSign, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
-const deliveryRequests = [
+export const deliveryRequests = [
 { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12 },
 { id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8 },
 { id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25 }];
