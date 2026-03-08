@@ -14,6 +14,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
+import DriverDeliveries from "./pages/DriverDeliveries";
+import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
               <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
               <Route path="/driver-dashboard" element={<DriverDashboard />} />
+              <Route path="/driver-deliveries" element={<DriverDeliveries />} />
+              <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
