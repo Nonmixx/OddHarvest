@@ -37,14 +37,16 @@ const Navbar = () => {
               Dashboard
             </Link>
           )}
-          <Link to="/cart" className="relative">
-            <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-            {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {itemCount}
-              </span>
-            )}
-          </Link>
+          {(!user || user.role === "buyer") && (
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
+          )}
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground flex items-center gap-1">
