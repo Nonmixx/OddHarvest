@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, SlidersHorizontal } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 const DISTANCE_OPTIONS = [
@@ -28,7 +28,6 @@ const MarketplacePage = () => {
     return matchSearch && matchState && matchDistance;
   });
 
-  // Sort
   if (sortBy === "price") {
     filtered = [...filtered].sort((a, b) => a.discountPrice - b.discountPrice);
   } else if (sortBy === "freshness") {
@@ -37,7 +36,6 @@ const MarketplacePage = () => {
     filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
   }
 
-  // Nearby farms
   const nearbyFarms = mockCrops
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
@@ -58,7 +56,6 @@ const MarketplacePage = () => {
           <p className="text-muted-foreground">Fresh, imperfect produce at amazing prices</p>
         </div>
 
-        {/* Nearby Farms */}
         {nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
@@ -76,7 +73,6 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="space-y-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1 max-w-md">
@@ -88,8 +84,6 @@ const MarketplacePage = () => {
                 className="pl-10"
               />
             </div>
-
-            {/* Distance filter */}
             <select
               value={maxDistance}
               onChange={(e) => setMaxDistance(Number(e.target.value))}
@@ -99,8 +93,6 @@ const MarketplacePage = () => {
                 <option key={d.value} value={d.value}>{d.label}</option>
               ))}
             </select>
-
-            {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
@@ -113,7 +105,6 @@ const MarketplacePage = () => {
             </select>
           </div>
 
-          {/* State filter pills */}
           <div className="flex flex-wrap gap-2">
             {STATES.map((s) => (
               <button
@@ -131,10 +122,8 @@ const MarketplacePage = () => {
           </div>
         </div>
 
-        {/* Results count */}
         <p className="text-sm text-muted-foreground mb-4">{filtered.length} crop{filtered.length !== 1 ? "s" : ""} found</p>
 
-        {/* Grid */}
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filtered.map((crop) => (
@@ -142,9 +131,26 @@ const MarketplacePage = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 text-muted-foreground">
-            <p className="text-lg">No crops found 🥲</p>
-            <p className="text-sm">Try adjusting your search or filters</p>
+          <div className="text-center py-20">
+            <div className="farm-card max-w-md mx-auto p-10 space-y-4">
+              <span className="text-5xl block">🌱</span>
+              <h2 className="font-heading font-bold text-foreground text-xl">
+                {stateFilter !== "All" ? `No crops in ${stateFilter} yet` : "No crops found"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {stateFilter !== "All"
+                  ? `There are no farmers listing crops in ${stateFilter} at the moment. Check back soon or browse other states!`
+                  : "Try adjusting your search or filters to find fresh produce."}
+              </p>
+              {stateFilter !== "All" && (
+                <button
+                  onClick={() => setStateFilter("All")}
+                  className="text-sm text-primary font-medium hover:underline"
+                >
+                  ← Browse all states
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
