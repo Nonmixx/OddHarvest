@@ -35,6 +35,7 @@ const App = () => (
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
+              <Route path="/farmer-sold-crops" element={<FarmerSoldCrops />} />
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
               <Route path="/driver-dashboard" element={<DriverDashboard />} />
               <Route path="/driver-deliveries" element={<DriverDeliveries />} />
