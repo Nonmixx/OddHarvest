@@ -11,6 +11,12 @@ const deliveryRequests = [
 { id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8 },
 { id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25 }];
 
+export const completedDeliveries = [
+  { id: "DEL-050", crop: "Spinach (4kg)", pickup: "Ladang Hijau, Ipoh", dropoff: "Subang Jaya, Selangor", distance: 15, fee: 15, date: "2 Mar 2026", farmer: "Pak Hassan", buyer: "Siti Aminah" },
+  { id: "DEL-051", crop: "Tomatoes (8kg)", pickup: "Kebun Tomat, Cameron Highlands", dropoff: "Petaling Jaya, Selangor", distance: 20, fee: 20, date: "28 Feb 2026", farmer: "Mak Jah", buyer: "Ahmad Rizal" },
+  { id: "DEL-052", crop: "Chillies (2kg)", pickup: "Ladang Cili, Kota Bharu", dropoff: "Kuala Terengganu", distance: 10, fee: 10, date: "25 Feb 2026", farmer: "Encik Razak", buyer: "Noraini Bt Yusof" },
+];
+
 
 const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
