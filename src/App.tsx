@@ -12,6 +12,7 @@ import MarketplacePage from "./pages/MarketplacePage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import FarmerDashboard from "./pages/FarmerDashboard";
+import FarmerSoldCrops from "./pages/FarmerSoldCrops";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
+              <Route path="/farmer-sold-crops" element={<FarmerSoldCrops />} />
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
               <Route path="/driver-dashboard" element={<DriverDashboard />} />
               <Route path="/driver-deliveries" element={<DriverDeliveries />} />
