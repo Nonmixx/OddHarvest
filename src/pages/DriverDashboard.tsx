@@ -6,10 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Navigation, DollarSign, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
-const deliveryRequests = [
-{ id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12 },
-{ id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8 },
-{ id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25 }];
+export const deliveryRequests = [
+{ id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
+{ id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8, date: "4 Mar 2026", farmer: "Mak Intan", buyer: "Farah Nadia" },
+{ id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", farmer: "Encik Zul", buyer: "Ravi Kumar" }];
+
+export const completedDeliveries = [
+  { id: "DEL-050", crop: "Spinach (4kg)", pickup: "Ladang Hijau, Ipoh", dropoff: "Subang Jaya, Selangor", distance: 15, fee: 15, date: "2 Mar 2026", farmer: "Pak Hassan", buyer: "Siti Aminah" },
+  { id: "DEL-051", crop: "Tomatoes (8kg)", pickup: "Kebun Tomat, Cameron Highlands", dropoff: "Petaling Jaya, Selangor", distance: 20, fee: 20, date: "28 Feb 2026", farmer: "Mak Jah", buyer: "Ahmad Rizal" },
+  { id: "DEL-052", crop: "Chillies (2kg)", pickup: "Ladang Cili, Kota Bharu", dropoff: "Kuala Terengganu", distance: 10, fee: 10, date: "25 Feb 2026", farmer: "Encik Razak", buyer: "Noraini Bt Yusof" },
+];
 
 
 const DriverDashboard = () => {
