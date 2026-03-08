@@ -12,6 +12,8 @@ export const mockCrops: CropListing[] = [
     state: "Pahang",
     farmerName: "Pak Ali",
     description: "Slightly oddly shaped but perfectly ripe and delicious tomatoes.",
+    harvestDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 15,
   },
   {
     id: "2",
@@ -24,6 +26,8 @@ export const mockCrops: CropListing[] = [
     state: "Pahang",
     farmerName: "Mak Intan",
     description: "Curvy carrots that taste just as sweet. Perfect for soups and salads.",
+    harvestDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 12,
   },
   {
     id: "3",
@@ -36,6 +40,8 @@ export const mockCrops: CropListing[] = [
     state: "Perak",
     farmerName: "Encik Hassan",
     description: "Bigger than usual but still crispy and refreshing.",
+    harvestDate: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 4,
   },
   {
     id: "4",
@@ -48,6 +54,8 @@ export const mockCrops: CropListing[] = [
     state: "Pahang",
     farmerName: "Puan Siti",
     description: "Small surface marks but incredibly sweet and juicy.",
+    harvestDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 18,
   },
   {
     id: "5",
@@ -60,6 +68,8 @@ export const mockCrops: CropListing[] = [
     state: "Kelantan",
     farmerName: "Pak Murad",
     description: "Some gaps in kernels but still sweet and perfect for grilling.",
+    harvestDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 45,
   },
   {
     id: "6",
@@ -72,6 +82,8 @@ export const mockCrops: CropListing[] = [
     state: "Sabah",
     farmerName: "Encik Raju",
     description: "Slight color variations but bursting with flavor.",
+    harvestDate: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 52,
   },
   {
     id: "7",
@@ -84,6 +96,8 @@ export const mockCrops: CropListing[] = [
     state: "Johor",
     farmerName: "Puan Aminah",
     description: "Shorter than average but extra sweet Malaysian bananas.",
+    harvestDate: new Date(Date.now() - 0.3 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 7,
   },
   {
     id: "8",
@@ -92,9 +106,11 @@ export const mockCrops: CropListing[] = [
     quantity: 35,
     usualPrice: 4,
     discountPrice: 2,
-    farmLocation: "Kebun Sayur, Shah Alam",
+    farmLocation: "Kebun Sayur, Serdang",
     state: "Selangor",
     farmerName: "Encik Lim",
     description: "Leaves grew a bit large but extra nutritious and fresh.",
+    harvestDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    distanceKm: 3,
   },
 ];

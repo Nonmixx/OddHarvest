@@ -11,6 +11,8 @@ export interface CropListing {
   state: string;
   farmerName: string;
   description?: string;
+  harvestDate: string;
+  distanceKm: number;
 }
 
 export interface CartItem {
