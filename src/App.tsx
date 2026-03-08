@@ -36,6 +36,8 @@ const App = () => (
               <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
               <Route path="/driver-dashboard" element={<DriverDashboard />} />
+              <Route path="/driver-deliveries" element={<DriverDeliveries />} />
+              <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
