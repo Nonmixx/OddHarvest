@@ -77,9 +77,11 @@ const Navbar = () => {
           {isAuthenticated && (
             <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>Dashboard</Link>
           )}
-          <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
-            Cart ({itemCount})
-          </Link>
+          {(!user || user.role === "buyer") && (
+            <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+              Cart ({itemCount})
+            </Link>
+          )}
           {isAuthenticated ? (
             <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
               Logout
