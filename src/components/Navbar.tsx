@@ -2,12 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Menu, X, Leaf, LogOut, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
+import LanguageSelector from "@/components/LanguageSelector";
 import { useState } from "react";
 
 const Navbar = () => {
   const { itemCount } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -19,6 +22,9 @@ const Navbar = () => {
       : "/buyer-dashboard"
     : "/auth";
 
+  const showMarketplace = !user || user.role === "buyer";
+  const showCart = !user || user.role === "buyer";
+
   return (
     <nav className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -29,15 +35,18 @@ const Navbar = () => {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Marketplace
-          </Link>
-          {isAuthenticated && (
-            <Link to={dashboardPath} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Dashboard
+          <LanguageSelector />
+          {showMarketplace && (
+            <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              {t("nav.marketplace")}
             </Link>
           )}
-          {(!user || user.role === "buyer") && (
+          {isAuthenticated && (
+            <Link to={dashboardPath} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              {t("nav.dashboard")}
+            </Link>
+          )}
+          {showCart && (
             <Link to="/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
               {itemCount > 0 && (
@@ -59,7 +68,7 @@ const Navbar = () => {
             </div>
           ) : (
             <Link to="/auth">
-              <Button size="sm">Login</Button>
+              <Button size="sm">{t("nav.login")}</Button>
             </Link>
           )}
         </div>
@@ -73,22 +82,25 @@ const Navbar = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-card border-b border-border px-4 pb-4 space-y-3">
-          <Link to="/marketplace" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>Marketplace</Link>
-          {isAuthenticated && (
-            <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+          <LanguageSelector />
+          {showMarketplace && (
+            <Link to="/marketplace" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.marketplace")}</Link>
           )}
-          {(!user || user.role === "buyer") && (
+          {isAuthenticated && (
+            <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
+          )}
+          {showCart && (
             <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
-              Cart ({itemCount})
+              {t("nav.cart")} ({itemCount})
             </Link>
           )}
           {isAuthenticated ? (
             <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
-              Logout
+              {t("nav.logout")}
             </Button>
           ) : (
             <Link to="/auth" onClick={() => setMobileOpen(false)}>
-              <Button size="sm" className="w-full">Login</Button>
+              <Button size="sm" className="w-full">{t("nav.login")}</Button>
             </Link>
           )}
         </div>
