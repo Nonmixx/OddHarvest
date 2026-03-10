@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { mockCrops } from "@/data/mockCrops";
+import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin } from "lucide-react";
+import VoiceInput from "@/components/VoiceInput";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
-const DISTANCE_OPTIONS = [
-  { label: "Any distance", value: 999 },
+const DISTANCE_OPTIONS_KEYS = [
+  { labelKey: "market.any_dist", value: 999 },
   { label: "< 5 km", value: 5 },
   { label: "< 10 km", value: 10 },
   { label: "< 20 km", value: 20 },
@@ -16,12 +18,14 @@ const DISTANCE_OPTIONS = [
 ];
 
 const MarketplacePage = () => {
+  const { crops } = useCropInventory();
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [maxDistance, setMaxDistance] = useState(999);
   const [sortBy, setSortBy] = useState<"default" | "price" | "freshness" | "distance">("default");
 
-  let filtered = mockCrops.filter((c) => {
+  let filtered = crops.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchState = stateFilter === "All" || c.state === stateFilter;
     const matchDistance = c.distanceKm <= maxDistance;
@@ -36,7 +40,7 @@ const MarketplacePage = () => {
     filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
   }
 
-  const nearbyFarms = mockCrops
+  const nearbyFarms = crops
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
       const key = c.farmLocation;
@@ -52,15 +56,15 @@ const MarketplacePage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Marketplace 🛒</h1>
-          <p className="text-muted-foreground">Fresh, imperfect produce at amazing prices</p>
+          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("market.title")}</h1>
+          <p className="text-muted-foreground">{t("market.subtitle")}</p>
         </div>
 
         {nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
               <MapPin className="h-5 w-5 text-primary" />
-              Nearby Farms
+              {t("market.nearby")}
             </h2>
             <div className="flex flex-wrap gap-3">
               {nearbyFarms.map((f, i) => (
@@ -75,22 +79,25 @@ const MarketplacePage = () => {
 
         <div className="space-y-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search crops..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
+            <div className="relative flex-1 max-w-md flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={t("market.search")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <VoiceInput onResult={(text) => setSearch(text)} />
             </div>
             <select
               value={maxDistance}
               onChange={(e) => setMaxDistance(Number(e.target.value))}
               className="h-10 rounded-lg border border-input bg-background px-3 text-sm"
             >
-              {DISTANCE_OPTIONS.map((d) => (
-                <option key={d.value} value={d.value}>{d.label}</option>
+              {DISTANCE_OPTIONS_KEYS.map((d) => (
+                <option key={d.value} value={d.value}>{d.labelKey ? t(d.labelKey) : d.label}</option>
               ))}
             </select>
             <select
@@ -98,10 +105,10 @@ const MarketplacePage = () => {
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               className="h-10 rounded-lg border border-input bg-background px-3 text-sm"
             >
-              <option value="default">Sort by</option>
-              <option value="price">Lowest Price</option>
-              <option value="freshness">Most Fresh</option>
-              <option value="distance">Nearest</option>
+              <option value="default">{t("market.sort")}</option>
+              <option value="price">{t("market.sort.price")}</option>
+              <option value="freshness">{t("market.sort.fresh")}</option>
+              <option value="distance">{t("market.sort.near")}</option>
             </select>
           </div>
 
@@ -122,7 +129,7 @@ const MarketplacePage = () => {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4">{filtered.length} crop{filtered.length !== 1 ? "s" : ""} found</p>
+        <p className="text-sm text-muted-foreground mb-4">{filtered.length} crop{filtered.length !== 1 ? "s" : ""} {t("market.found")}</p>
 
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -135,11 +142,11 @@ const MarketplacePage = () => {
             <div className="farm-card max-w-md mx-auto p-10 space-y-4">
               <span className="text-5xl block">🌱</span>
               <h2 className="font-heading font-bold text-foreground text-xl">
-                {stateFilter !== "All" ? `No crops in ${stateFilter} yet` : "No crops found"}
+                {stateFilter !== "All" ? `No crops in ${stateFilter} yet` : t("market.no_crops")}
               </h2>
               <p className="text-sm text-muted-foreground">
                 {stateFilter !== "All"
-                  ? `There are no farmers listing crops in ${stateFilter} at the moment. Check back soon or browse other states!`
+                  ? `There are no farmers listing crops in ${stateFilter} at the moment.`
                   : "Try adjusting your search or filters to find fresh produce."}
               </p>
               {stateFilter !== "All" && (
@@ -147,7 +154,7 @@ const MarketplacePage = () => {
                   onClick={() => setStateFilter("All")}
                   className="text-sm text-primary font-medium hover:underline"
                 >
-                  ← Browse all states
+                  {t("market.browse_all")}
                 </button>
               )}
             </div>

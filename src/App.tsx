@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CropInventoryProvider } from "@/contexts/CropInventoryContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
@@ -22,30 +24,34 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/marketplace" element={<MarketplacePage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
-              <Route path="/farmer-sold-crops" element={<FarmerSoldCrops />} />
-              <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-              <Route path="/driver-dashboard" element={<DriverDashboard />} />
-              <Route path="/driver-deliveries" element={<DriverDeliveries />} />
-              <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <CropInventoryProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/marketplace" element={<MarketplacePage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
+                  <Route path="/farmer-sold-crops" element={<FarmerSoldCrops />} />
+                  <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+                  <Route path="/driver-dashboard" element={<DriverDashboard />} />
+                  <Route path="/driver-deliveries" element={<DriverDeliveries />} />
+                  <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </CropInventoryProvider>
+      </AuthProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
