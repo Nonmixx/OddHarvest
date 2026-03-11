@@ -7,6 +7,7 @@ interface CropInventoryContextType {
   updateStock: (cropId: string, quantityBought: number) => void;
   updateCrop: (cropId: string, updates: Partial<CropListing>) => void;
   addCrop: (crop: CropListing) => void;
+  removeCrop: (cropId: string) => void;
 }
 
 const CropInventoryContext = createContext<CropInventoryContextType | undefined>(undefined);
