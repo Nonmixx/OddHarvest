@@ -7,6 +7,7 @@ interface CropInventoryContextType {
   updateStock: (cropId: string, quantityBought: number) => void;
   updateCrop: (cropId: string, updates: Partial<CropListing>) => void;
   addCrop: (crop: CropListing) => void;
+  removeCrop: (cropId: string) => void;
 }
 
 const CropInventoryContext = createContext<CropInventoryContextType | undefined>(undefined);
@@ -32,8 +33,12 @@ export const CropInventoryProvider = ({ children }: { children: ReactNode }) => 
     setCrops((prev) => [...prev, crop]);
   }, []);
 
+  const removeCrop = useCallback((cropId: string) => {
+    setCrops((prev) => prev.filter((c) => c.id !== cropId));
+  }, []);
+
   return (
-    <CropInventoryContext.Provider value={{ crops, updateStock, updateCrop, addCrop }}>
+    <CropInventoryContext.Provider value={{ crops, updateStock, updateCrop, addCrop, removeCrop }}>
       {children}
     </CropInventoryContext.Provider>
   );

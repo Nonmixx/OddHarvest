@@ -7,21 +7,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Sprout, Package, Recycle, Plus, ImageIcon, TrendingDown, CalendarDays, Pencil, ChevronRight } from "lucide-react";
+import { Sprout, Package, Recycle, Plus, ImageIcon, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import VoiceInput from "@/components/VoiceInput";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka"];
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
-  const { crops, updateCrop, addCrop } = useCropInventory();
+  const { crops, updateCrop, addCrop, removeCrop } = useCropInventory();
   const { t } = useLanguage();
   const [showForm, setShowForm] = useState(false);
   const [editCropId, setEditCropId] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>(null);
+  const [showBundleForm, setShowBundleForm] = useState(false);
 
   // New crop form state
   const [newName, setNewName] = useState("");
@@ -32,6 +34,17 @@ const FarmerDashboard = () => {
   const [newHarvest, setNewHarvest] = useState("");
   const [newLocation, setNewLocation] = useState("");
   const [newState, setNewState] = useState("");
+  const [newReason, setNewReason] = useState<ImperfectReason>("irregular_shape");
+  const [newDesc, setNewDesc] = useState("");
+
+  // Bundle form state
+  const [bundleName, setBundleName] = useState("");
+  const [bundleContents, setBundleContents] = useState("");
+  const [bundleWeight, setBundleWeight] = useState("");
+  const [bundleUsual, setBundleUsual] = useState("");
+  const [bundleDisc, setBundleDisc] = useState("");
+  const [bundleQty, setBundleQty] = useState("");
+  const [bundleImage, setBundleImage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +58,43 @@ const FarmerDashboard = () => {
       farmLocation: newLocation,
       state: newState,
       farmerName: "You",
+      sellerId: "seller-self",
+      sellerType: "farm",
+      description: newDesc,
       harvestDate: new Date(newHarvest).toISOString(),
       distanceKm: Math.floor(Math.random() * 50) + 1,
+      imperfectReason: newReason,
     });
-    toast.success("Crop listing added! 🌽");
+    toast.success(t("farmer.crop_added") + " 🌽");
     setShowForm(false);
-    setNewName(""); setNewImage(""); setNewQty(""); setNewUsual(""); setNewDisc(""); setNewHarvest(""); setNewLocation(""); setNewState("");
+    setNewName(""); setNewImage(""); setNewQty(""); setNewUsual(""); setNewDisc(""); setNewHarvest(""); setNewLocation(""); setNewState(""); setNewDesc("");
+  };
+
+  const handleBundleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const contents = bundleContents.split(",").map((s) => s.trim()).filter(Boolean);
+    addCrop({
+      id: crypto.randomUUID(),
+      name: bundleName,
+      image: bundleImage || "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop",
+      quantity: Number(bundleQty),
+      usualPrice: Number(bundleUsual),
+      discountPrice: Number(bundleDisc),
+      farmLocation: "Your Farm",
+      state: "Selangor",
+      farmerName: "You",
+      sellerId: "seller-self",
+      sellerType: "farm",
+      harvestDate: new Date().toISOString(),
+      distanceKm: 0,
+      imperfectReason: "irregular_shape",
+      isBundle: true,
+      bundleContents: contents,
+      bundleWeight: Number(bundleWeight),
+    });
+    toast.success(t("farmer.bundle_added") + " 📦");
+    setShowBundleForm(false);
+    setBundleName(""); setBundleContents(""); setBundleWeight(""); setBundleUsual(""); setBundleDisc(""); setBundleQty(""); setBundleImage("");
   };
 
   const openEdit = (crop: any) => {
@@ -62,22 +106,21 @@ const FarmerDashboard = () => {
       discountPrice: crop.discountPrice,
       farmLocation: crop.farmLocation,
       state: crop.state,
+      imperfectReason: crop.imperfectReason,
     });
   };
 
   const handleSaveEdit = () => {
     if (!editCropId || !editData) return;
-    updateCrop(editCropId, {
-      name: editData.name,
-      quantity: editData.quantity,
-      usualPrice: editData.usualPrice,
-      discountPrice: editData.discountPrice,
-      farmLocation: editData.farmLocation,
-      state: editData.state,
-    });
+    updateCrop(editCropId, editData);
     setEditCropId(null);
     setEditData(null);
-    toast.success("Listing updated! ✅");
+    toast.success(t("farmer.listing_updated") + " ✅");
+  };
+
+  const handleDelete = (cropId: string) => {
+    removeCrop(cropId);
+    toast.success(t("farmer.listing_removed") + " 🗑️");
   };
 
   const getFreshness = (harvestDate: string) => {
@@ -102,10 +145,16 @@ const FarmerDashboard = () => {
             <h1 className="text-3xl font-heading font-bold text-foreground">{t("farmer.title")}</h1>
             <p className="text-muted-foreground text-sm mt-1">{t("farmer.subtitle")}</p>
           </div>
-          <Button className="rounded-full" onClick={() => setShowForm(!showForm)}>
-            <Plus className="h-4 w-4 mr-1" />
-            {t("farmer.add_crop")}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" className="rounded-full" onClick={() => setShowBundleForm(!showBundleForm)}>
+              <Package className="h-4 w-4 mr-1" />
+              {t("farmer.add_bundle")}
+            </Button>
+            <Button className="rounded-full" onClick={() => setShowForm(!showForm)}>
+              <Plus className="h-4 w-4 mr-1" />
+              {t("farmer.add_crop")}
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -151,6 +200,48 @@ const FarmerDashboard = () => {
           </div>
         </div>
 
+        {/* Bundle form */}
+        {showBundleForm && (
+          <div className="farm-card p-6 mb-8 animate-fade-in-up">
+            <h2 className="font-heading font-bold text-foreground text-lg mb-4">📦 {t("farmer.create_bundle")}</h2>
+            <form onSubmit={handleBundleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>{t("farmer.bundle_name")}</Label>
+                <div className="flex gap-2">
+                  <Input placeholder="e.g. Rescue Veggie Box" value={bundleName} onChange={(e) => setBundleName(e.target.value)} required />
+                  <VoiceInput onResult={(text) => setBundleName(text)} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.bundle_contents")}</Label>
+                <div className="flex gap-2">
+                  <Input placeholder="Carrots, Cucumbers, Tomatoes" value={bundleContents} onChange={(e) => setBundleContents(e.target.value)} required />
+                  <VoiceInput onResult={(text) => setBundleContents(text)} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.bundle_weight")}</Label>
+                <Input type="number" step="0.1" min={0.1} placeholder="5" value={bundleWeight} onChange={(e) => setBundleWeight(e.target.value)} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.qty")}</Label>
+                <Input type="number" min={1} placeholder="10" value={bundleQty} onChange={(e) => setBundleQty(e.target.value)} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.usual_price")} (RM/box)</Label>
+                <Input type="number" step="0.01" min={0} placeholder="20.00" value={bundleUsual} onChange={(e) => setBundleUsual(e.target.value)} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.disc_price")} (RM/box)</Label>
+                <Input type="number" step="0.01" min={0} placeholder="12.00" value={bundleDisc} onChange={(e) => setBundleDisc(e.target.value)} required />
+              </div>
+              <div className="md:col-span-2">
+                <Button type="submit" className="rounded-full w-full">📦 {t("farmer.add_bundle")}</Button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* Add crop form */}
         {showForm && (
           <div className="farm-card p-6 mb-8 animate-fade-in-up">
@@ -164,10 +255,25 @@ const FarmerDashboard = () => {
                 </div>
               </div>
               <div className="space-y-1.5">
+                <Label>{t("farmer.imperfect_reason")}</Label>
+                <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={newReason} onChange={(e) => setNewReason(e.target.value as ImperfectReason)} required>
+                  {IMPERFECT_REASONS.map((r) => (
+                    <option key={r.value} value={r.value}>{r.emoji} {t(`imperfect.${r.value}`)}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5">
                 <Label>{t("farmer.image_url")}</Label>
                 <div className="flex gap-2">
                   <Input placeholder="https://..." value={newImage} onChange={(e) => setNewImage(e.target.value)} />
                   <Button type="button" variant="outline" size="icon"><ImageIcon className="h-4 w-4" /></Button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.description")}</Label>
+                <div className="flex gap-2">
+                  <Input placeholder="Describe the crop..." value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
+                  <VoiceInput onResult={(text) => setNewDesc(text)} />
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -207,33 +313,42 @@ const FarmerDashboard = () => {
           </div>
         )}
 
-        {/* Crop listings from shared inventory */}
+        {/* Crop listings */}
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("farmer.listings")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {crops.map((c) => (
             <div key={c.id} className="farm-card p-4 space-y-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-heading font-bold text-foreground text-sm">{c.name}</h3>
-                  <p className="text-xs text-muted-foreground">{c.quantity} kg · {c.state}</p>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-heading font-bold text-foreground text-sm">{c.name}</h3>
+                    {c.isBundle && <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 Bundle</span>}
+                  </div>
+                  <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? "boxes" : "kg"} · {c.state}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => openEdit(c)}
-                  >
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
                     <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(c.id)}>
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                   <span className={`text-xs ${c.quantity > 0 ? "farm-badge-green" : "farm-badge-orange"}`}>
                     {c.quantity > 0 ? "Active" : "Sold Out"}
                   </span>
                 </div>
               </div>
+              {c.imperfectReason && (
+                <span className="farm-badge-orange text-[11px]">
+                  {IMPERFECT_REASONS.find((r) => r.value === c.imperfectReason)?.emoji} {t(`imperfect.${c.imperfectReason}`)}
+                </span>
+              )}
+              {c.isBundle && c.bundleContents && (
+                <p className="text-xs text-muted-foreground">📦 {c.bundleContents.join(", ")} ({c.bundleWeight} kg)</p>
+              )}
               <div className="flex gap-2 items-center">
                 <span className="price-original text-xs">RM{c.usualPrice.toFixed(2)}</span>
-                <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/kg</span>
+                <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/{c.isBundle ? "box" : "kg"}</span>
                 <span className="text-xs text-muted-foreground">· {t("product.save")} {Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100)}%</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -261,6 +376,14 @@ const FarmerDashboard = () => {
                   <Input value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
                   <VoiceInput onResult={(text) => setEditData({ ...editData, name: text })} />
                 </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("farmer.imperfect_reason")}</Label>
+                <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={editData.imperfectReason} onChange={(e) => setEditData({ ...editData, imperfectReason: e.target.value })}>
+                  {IMPERFECT_REASONS.map((r) => (
+                    <option key={r.value} value={r.value}>{r.emoji} {t(`imperfect.${r.value}`)}</option>
+                  ))}
+                </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
