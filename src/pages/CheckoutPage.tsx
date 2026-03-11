@@ -35,7 +35,9 @@ const CheckoutPage = () => {
           <h1 className="text-3xl font-heading font-bold text-foreground mb-3">Order Confirmed! 🎉</h1>
           <p className="text-muted-foreground mb-2">Thank you for rescuing imperfect crops!</p>
           <p className="text-sm text-muted-foreground mb-8">
-            {delivery === "pickup" ? "Please head to the farm for pickup." : `A driver will deliver your order (${distance} km).`}
+            {delivery === "pickup"
+              ? `Please head to the farm for pickup. Slot: ${pickupSlot}`
+              : `A driver will deliver your order (${distance} km).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-1">
             <p className="text-sm text-muted-foreground">Payment: <span className="font-medium text-foreground capitalize">{payment === "ewallet" ? "E-Wallet" : payment === "bank" ? "Bank Transfer" : "Cash"}</span></p>
