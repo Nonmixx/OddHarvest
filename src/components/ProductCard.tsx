@@ -85,7 +85,20 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                 >
                   <Minus className="h-3 w-3" />
                 </button>
-                <span className="text-sm font-bold w-8 text-center">{qty} kg</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={crop.quantity}
+                  value={qty}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    if (v >= 1 && v <= crop.quantity) setQty(v);
+                    else if (v < 1) setQty(1);
+                    else setQty(crop.quantity);
+                  }}
+                  className="w-12 text-center text-sm font-bold bg-background border border-input rounded-md py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <span className="text-xs text-muted-foreground">kg</span>
                 <button
                   onClick={() => setQty(Math.min(crop.quantity, qty + 1))}
                   className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"

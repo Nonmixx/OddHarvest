@@ -7,12 +7,20 @@ import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote } 
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
+const PICKUP_SLOTS = [
+  "9:00 AM – 11:00 AM",
+  "11:00 AM – 1:00 PM",
+  "2:00 PM – 4:00 PM",
+  "4:00 PM – 6:00 PM",
+];
+
 const CheckoutPage = () => {
   const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
   const [distance, setDistance] = useState(5);
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
+  const [pickupSlot, setPickupSlot] = useState(PICKUP_SLOTS[0]);
   const [confirmed, setConfirmed] = useState(false);
 
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
@@ -27,7 +35,9 @@ const CheckoutPage = () => {
           <h1 className="text-3xl font-heading font-bold text-foreground mb-3">Order Confirmed! 🎉</h1>
           <p className="text-muted-foreground mb-2">Thank you for rescuing imperfect crops!</p>
           <p className="text-sm text-muted-foreground mb-8">
-            {delivery === "pickup" ? "Please head to the farm for pickup." : `A driver will deliver your order (${distance} km).`}
+            {delivery === "pickup"
+              ? `Please head to the farm for pickup. Slot: ${pickupSlot}`
+              : `A driver will deliver your order (${distance} km).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-1">
             <p className="text-sm text-muted-foreground">Payment: <span className="font-medium text-foreground capitalize">{payment === "ewallet" ? "E-Wallet" : payment === "bank" ? "Bank Transfer" : "Cash"}</span></p>
@@ -85,6 +95,27 @@ const CheckoutPage = () => {
               <p className="text-xs text-muted-foreground">RM1/km</p>
             </button>
           </div>
+
+          {delivery === "pickup" && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Pickup Time Slot</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {PICKUP_SLOTS.map((slot) => (
+                  <button
+                    key={slot}
+                    onClick={() => setPickupSlot(slot)}
+                    className={`p-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
+                      pickupSlot === slot
+                        ? "border-primary bg-farm-green-light text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {delivery === "delivery" && (
             <div className="space-y-2">
