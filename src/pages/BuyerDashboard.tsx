@@ -8,7 +8,7 @@ const BuyerDashboard = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Buyer Dashboard 🛍️</h1>
+        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Buyer Dashboard</h1>
         <p className="text-muted-foreground text-sm mb-8">Your orders & environmental impact</p>
 
         {/* Stats */}
@@ -50,14 +50,14 @@ const BuyerDashboard = () => {
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">Recent Orders</h2>
         <div className="space-y-3">
           {[
-            { id: "ORD-001", items: "Tomatoes, Carrots", total: 15.5, date: "2026-03-05", status: "Delivered", kg: 5 },
-            { id: "ORD-002", items: "Corn, Cucumbers", total: 8.4, date: "2026-03-03", status: "Delivered", kg: 6 },
-            { id: "ORD-003", items: "Apples, Bell Peppers", total: 22, date: "2026-02-28", status: "Picked Up", kg: 4 },
-            { id: "ORD-004", items: "Bananas, Spinach", total: 10.5, date: "2026-02-25", status: "Delivered", kg: 5 },
-            { id: "ORD-005", items: "Tomatoes, Corn", total: 12, date: "2026-02-20", status: "Picked Up", kg: 3 },
-            { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 },
-          ].map((o) => (
-            <div key={o.id} className="farm-card p-4 flex justify-between items-center">
+          { id: "ORD-001", items: "Tomatoes, Carrots", total: 15.5, date: "2026-03-05", status: "Delivered", kg: 5 },
+          { id: "ORD-002", items: "Corn, Cucumbers", total: 8.4, date: "2026-03-03", status: "Delivered", kg: 6 },
+          { id: "ORD-003", items: "Apples, Bell Peppers", total: 22, date: "2026-02-28", status: "Picked Up", kg: 4 },
+          { id: "ORD-004", items: "Bananas, Spinach", total: 10.5, date: "2026-02-25", status: "Delivered", kg: 5 },
+          { id: "ORD-005", items: "Tomatoes, Corn", total: 12, date: "2026-02-20", status: "Picked Up", kg: 3 },
+          { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 }].
+          map((o) =>
+          <div key={o.id} className="farm-card p-4 flex justify-between items-center">
               <div>
                 <p className="font-heading font-bold text-foreground text-sm">{o.id}</p>
                 <p className="text-xs text-muted-foreground">{o.items}</p>
@@ -68,12 +68,12 @@ const BuyerDashboard = () => {
                 <span className="farm-badge-green text-xs">{o.status}</span>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
       <Footer />
-    </div>
-  );
+    </div>);
+
 };
 
 export default BuyerDashboard;
