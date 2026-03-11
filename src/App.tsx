@@ -19,6 +19,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
 import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
+import SellerProfilePage from "./pages/SellerProfilePage";
 
 const queryClient = new QueryClient();
 
