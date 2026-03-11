@@ -96,6 +96,27 @@ const CheckoutPage = () => {
             </button>
           </div>
 
+          {delivery === "pickup" && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Pickup Time Slot</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {PICKUP_SLOTS.map((slot) => (
+                  <button
+                    key={slot}
+                    onClick={() => setPickupSlot(slot)}
+                    className={`p-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
+                      pickupSlot === slot
+                        ? "border-primary bg-farm-green-light text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {delivery === "delivery" && (
             <div className="space-y-2">
               <Label className="text-sm">Distance (km)</Label>
