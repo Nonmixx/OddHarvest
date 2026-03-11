@@ -33,8 +33,12 @@ export const CropInventoryProvider = ({ children }: { children: ReactNode }) => 
     setCrops((prev) => [...prev, crop]);
   }, []);
 
+  const removeCrop = useCallback((cropId: string) => {
+    setCrops((prev) => prev.filter((c) => c.id !== cropId));
+  }, []);
+
   return (
-    <CropInventoryContext.Provider value={{ crops, updateStock, updateCrop, addCrop }}>
+    <CropInventoryContext.Provider value={{ crops, updateStock, updateCrop, addCrop, removeCrop }}>
       {children}
     </CropInventoryContext.Provider>
   );
