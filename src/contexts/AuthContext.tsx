@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { SellerType } from "@/contexts/CartContext";
 
 export type UserRole = "farmer" | "buyer" | "driver";
 
@@ -7,12 +8,16 @@ interface User {
   name: string;
   email: string;
   role: UserRole;
+  sellerType?: SellerType;
+  farmName?: string;
+  location?: string;
+  state?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, role: UserRole) => void;
-  signup: (name: string, email: string, password: string, role: UserRole) => void;
+  signup: (name: string, email: string, password: string, role: UserRole, sellerType?: SellerType, farmName?: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -26,8 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser({ id: crypto.randomUUID(), name: email.split("@")[0], email, role });
   };
 
-  const signup = (name: string, email: string, _password: string, role: UserRole) => {
-    setUser({ id: crypto.randomUUID(), name, email, role });
+  const signup = (name: string, email: string, _password: string, role: UserRole, sellerType?: SellerType, farmName?: string) => {
+    setUser({ id: crypto.randomUUID(), name, email, role, sellerType, farmName });
   };
 
   const logout = () => setUser(null);

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Filter } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
@@ -24,12 +25,18 @@ const MarketplacePage = () => {
   const [stateFilter, setStateFilter] = useState("All");
   const [maxDistance, setMaxDistance] = useState(999);
   const [sortBy, setSortBy] = useState<"default" | "price" | "freshness" | "distance">("default");
+  const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
+  const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
+  const [showBundlesOnly, setShowBundlesOnly] = useState(false);
 
   let filtered = crops.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchState = stateFilter === "All" || c.state === stateFilter;
     const matchDistance = c.distanceKm <= maxDistance;
-    return matchSearch && matchState && matchDistance;
+    const matchSellerType = sellerTypeFilter === "all" || c.sellerType === sellerTypeFilter;
+    const matchImperfect = imperfectFilter === "all" || c.imperfectReason === imperfectFilter;
+    const matchBundle = !showBundlesOnly || c.isBundle;
+    return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle;
   });
 
   if (sortBy === "price") {
@@ -112,6 +119,40 @@ const MarketplacePage = () => {
             </select>
           </div>
 
+          {/* Seller type & imperfect reason filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={sellerTypeFilter}
+              onChange={(e) => setSellerTypeFilter(e.target.value as typeof sellerTypeFilter)}
+              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">{t("market.all_sellers")}</option>
+              <option value="farm">🌾 {t("seller.farm")}</option>
+              <option value="community">🌱 {t("seller.community")}</option>
+            </select>
+            <select
+              value={imperfectFilter}
+              onChange={(e) => setImperfectFilter(e.target.value as typeof imperfectFilter)}
+              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
+            >
+              <option value="all">{t("market.all_reasons")}</option>
+              {IMPERFECT_REASONS.map((r) => (
+                <option key={r.value} value={r.value}>{r.emoji} {t(`imperfect.${r.value}`)}</option>
+              ))}
+            </select>
+            <button
+              onClick={() => setShowBundlesOnly(!showBundlesOnly)}
+              className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${
+                showBundlesOnly
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background border-input text-foreground hover:bg-secondary"
+              }`}
+            >
+              📦 {t("market.bundles")}
+            </button>
+          </div>
+
           <div className="flex flex-wrap gap-2">
             {STATES.map((s) => (
               <button
@@ -130,6 +171,15 @@ const MarketplacePage = () => {
         </div>
 
         <p className="text-sm text-muted-foreground mb-4">{filtered.length} crop{filtered.length !== 1 ? "s" : ""} {t("market.found")}</p>
+
+        {/* Imperfect reason education banner */}
+        {imperfectFilter !== "all" && (
+          <div className="farm-card p-4 mb-6 bg-farm-green-light border-primary/20">
+            <p className="text-sm text-foreground">
+              💡 {t("imperfect.education")}
+            </p>
+          </div>
+        )}
 
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

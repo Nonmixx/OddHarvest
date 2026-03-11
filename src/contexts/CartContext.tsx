@@ -1,5 +1,41 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+export type SellerType = "farm" | "community";
+
+export type ImperfectReason = "irregular_shape" | "too_small" | "too_large" | "cosmetic_blemish" | "slight_discoloration";
+
+export const IMPERFECT_REASONS: { value: ImperfectReason; label: string; emoji: string }[] = [
+  { value: "irregular_shape", label: "Irregular Shape", emoji: "🥕" },
+  { value: "too_small", label: "Too Small", emoji: "🤏" },
+  { value: "too_large", label: "Too Large", emoji: "📏" },
+  { value: "cosmetic_blemish", label: "Cosmetic Blemish", emoji: "🍎" },
+  { value: "slight_discoloration", label: "Slight Discoloration", emoji: "🎨" },
+];
+
+export interface SellerProfile {
+  id: string;
+  name: string;
+  sellerType: SellerType;
+  farmName?: string;
+  location: string;
+  state: string;
+  yearsExperience?: number;
+  cropsGrown: string[];
+  totalCropsSold: number;
+  cropsRescuedKg: number;
+  ordersCompleted: number;
+  averageRating: number;
+  reviews: SellerReview[];
+}
+
+export interface SellerReview {
+  id: string;
+  buyerName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
 export interface CropListing {
   id: string;
   name: string;
@@ -10,9 +46,15 @@ export interface CropListing {
   farmLocation: string;
   state: string;
   farmerName: string;
+  sellerId: string;
+  sellerType: SellerType;
   description?: string;
   harvestDate: string;
   distanceKm: number;
+  imperfectReason: ImperfectReason;
+  isBundle?: boolean;
+  bundleContents?: string[];
+  bundleWeight?: number;
 }
 
 export interface CartItem {
