@@ -7,12 +7,20 @@ import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote } 
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
+const PICKUP_SLOTS = [
+  "9:00 AM – 11:00 AM",
+  "11:00 AM – 1:00 PM",
+  "2:00 PM – 4:00 PM",
+  "4:00 PM – 6:00 PM",
+];
+
 const CheckoutPage = () => {
   const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
   const [distance, setDistance] = useState(5);
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
+  const [pickupSlot, setPickupSlot] = useState(PICKUP_SLOTS[0]);
   const [confirmed, setConfirmed] = useState(false);
 
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;

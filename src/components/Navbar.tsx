@@ -37,12 +37,12 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-6">
           <LanguageSelector />
           {showMarketplace && (
-            <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-w-[80px] text-center">
               {t("nav.marketplace")}
             </Link>
           )}
           {isAuthenticated && (
-            <Link to={dashboardPath} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to={dashboardPath} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-w-[80px] text-center">
               {t("nav.dashboard")}
             </Link>
           )}
