@@ -32,6 +32,7 @@ const FarmerSoldCrops = () => {
         </Button>
 
         <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Crops Sold 📦</h1>
+
         <p className="text-muted-foreground text-sm mb-6">
           {soldCrops.length} orders · {totalQty} kg sold · RM{totalRevenue.toFixed(2)} earned
         </p>

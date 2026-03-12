@@ -16,7 +16,7 @@ const translations: Record<string, Record<Language, string>> = {
   "auth.login_desc": { en: "Login to your account", zh: "登录您的账户", ms: "Log masuk ke akaun anda" },
   "auth.signup_desc": { en: "Create your account and start rescuing crops", zh: "创建账户并开始拯救农产品", ms: "Cipta akaun anda dan mula menyelamatkan tanaman" },
   "auth.iam": { en: "I am a...", zh: "我是...", ms: "Saya adalah..." },
-  "auth.farmer": { en: "Farmer", zh: "农民", ms: "Petani" },
+  "auth.farmer": { en: "Seller", zh: "卖家", ms: "Penjual" },
   "auth.buyer": { en: "Buyer", zh: "买家", ms: "Pembeli" },
   "auth.driver": { en: "Driver", zh: "司机", ms: "Pemandu" },
   "auth.farmer_desc": { en: "Sell your imperfect crops", zh: "出售不完美的农产品", ms: "Jual tanaman tidak sempurna" },
@@ -50,8 +50,8 @@ const translations: Record<string, Record<Language, string>> = {
   "feat.price.desc": { en: "Buy fresh produce at lower prices. Good for your wallet and the planet.", zh: "以更低的价格购买新鲜农产品。对你的钱包和地球都好。", ms: "Beli hasil segar pada harga lebih rendah." },
   "feat.delivery.title": { en: "Easy Delivery", zh: "轻松配送", ms: "Penghantaran Mudah" },
   "feat.delivery.desc": { en: "Get crops delivered to your door with our driver network.", zh: "通过我们的司机网络将农产品送到您家门口。", ms: "Dapatkan tanaman dihantar ke pintu anda." },
-  "feat.support.title": { en: "Support Local Farmers", zh: "支持本地农民", ms: "Sokong Petani Tempatan" },
-  "feat.support.desc": { en: "Help Malaysian farmers earn income from every harvest.", zh: "帮助马来西亚农民从每次收获中获得收入。", ms: "Bantu petani Malaysia memperoleh pendapatan." },
+  "feat.support.title": { en: "Support Local Sellers", zh: "支持本地卖家", ms: "Sokong Penjual Tempatan" },
+  "feat.support.desc": { en: "Help Malaysian sellers earn income from every harvest.", zh: "帮助马来西亚卖家从每次收获中获得收入。", ms: "Bantu penjual Malaysia memperoleh pendapatan." },
 
   // Section headers
   "section.why": { en: "Why OddHarvest? 🌱", zh: "为什么选择 OddHarvest？🌱", ms: "Kenapa OddHarvest? 🌱" },
@@ -62,7 +62,7 @@ const translations: Record<string, Record<Language, string>> = {
   "section.cta.btn": { en: "Get Started", zh: "开始", ms: "Mula" },
 
   // How it works
-  "how.1.title": { en: "Farmers List Crops", zh: "农民列出农产品", ms: "Petani Senarai Tanaman" },
+  "how.1.title": { en: "Sellers List Crops", zh: "卖家列出农产品", ms: "Penjual Senarai Tanaman" },
   "how.1.desc": { en: "Upload imperfect but edible crops with discounted prices.", zh: "上传不完美但可食用的农产品，附带折扣价格。", ms: "Muat naik tanaman tidak sempurna dengan harga diskaun." },
   "how.2.title": { en: "Buyers Shop & Save", zh: "买家购物省钱", ms: "Pembeli Beli & Jimat" },
   "how.2.desc": { en: "Browse, compare prices, and add to cart at great discounts.", zh: "浏览、比较价格，并以优惠价格加入购物车。", ms: "Layari, bandingkan harga, dan tambah ke troli." },
@@ -117,7 +117,7 @@ const translations: Record<string, Record<Language, string>> = {
   "cart.items": { en: "Items", zh: "件商品", ms: "Item" },
 
   // Farmer dashboard
-  "farmer.title": { en: "Farmer Dashboard 🌾", zh: "农民仪表板 🌾", ms: "Papan Pemuka Petani 🌾" },
+  "farmer.title": { en: "Seller Dashboard 🌾", zh: "卖家仪表板 🌾", ms: "Papan Pemuka Penjual 🌾" },
   "farmer.subtitle": { en: "Manage your crop listings & impact", zh: "管理您的农产品列表和影响", ms: "Urus senarai tanaman & impak anda" },
   "farmer.add_crop": { en: "Add Crop", zh: "添加农产品", ms: "Tambah Tanaman" },
   "farmer.add_bundle": { en: "Add Bundle", zh: "添加套装", ms: "Tambah Bundle" },
