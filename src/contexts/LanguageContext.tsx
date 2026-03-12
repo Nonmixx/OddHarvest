@@ -117,7 +117,7 @@ const translations: Record<string, Record<Language, string>> = {
   "cart.items": { en: "Items", zh: "件商品", ms: "Item" },
 
   // Farmer dashboard
-  "farmer.title": { en: "Farmer Dashboard 🌾", zh: "农民仪表板 🌾", ms: "Papan Pemuka Petani 🌾" },
+  "farmer.title": { en: "Seller Dashboard 🌾", zh: "卖家仪表板 🌾", ms: "Papan Pemuka Penjual 🌾" },
   "farmer.subtitle": { en: "Manage your crop listings & impact", zh: "管理您的农产品列表和影响", ms: "Urus senarai tanaman & impak anda" },
   "farmer.add_crop": { en: "Add Crop", zh: "添加农产品", ms: "Tambah Tanaman" },
   "farmer.add_bundle": { en: "Add Bundle", zh: "添加套装", ms: "Tambah Bundle" },
