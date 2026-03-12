@@ -62,7 +62,7 @@ const translations: Record<string, Record<Language, string>> = {
   "section.cta.btn": { en: "Get Started", zh: "开始", ms: "Mula" },
 
   // How it works
-  "how.1.title": { en: "Farmers List Crops", zh: "农民列出农产品", ms: "Petani Senarai Tanaman" },
+  "how.1.title": { en: "Sellers List Crops", zh: "卖家列出农产品", ms: "Penjual Senarai Tanaman" },
   "how.1.desc": { en: "Upload imperfect but edible crops with discounted prices.", zh: "上传不完美但可食用的农产品，附带折扣价格。", ms: "Muat naik tanaman tidak sempurna dengan harga diskaun." },
   "how.2.title": { en: "Buyers Shop & Save", zh: "买家购物省钱", ms: "Pembeli Beli & Jimat" },
   "how.2.desc": { en: "Browse, compare prices, and add to cart at great discounts.", zh: "浏览、比较价格，并以优惠价格加入购物车。", ms: "Layari, bandingkan harga, dan tambah ke troli." },
