@@ -1,16 +1,26 @@
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
-import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
 
 const BuyerDashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
-</h1>
-        <p className="text-muted-foreground text-sm mb-8">Your orders & environmental impact</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Buyer Dashboard 🛒</h1>
+            <p className="text-muted-foreground text-sm">Your orders & environmental impact</p>
+          </div>
+          <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
+            <User className="h-4 w-4 mr-1" /> Profile
+          </Button>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -55,9 +65,8 @@ const BuyerDashboard = () => {
           { id: "ORD-003", items: "Apples, Bell Peppers", total: 22, date: "2026-02-28", status: "Picked Up", kg: 4 },
           { id: "ORD-004", items: "Bananas, Spinach", total: 10.5, date: "2026-02-25", status: "Delivered", kg: 5 },
           { id: "ORD-005", items: "Tomatoes, Corn", total: 12, date: "2026-02-20", status: "Picked Up", kg: 3 },
-          { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 }].
-          map((o) =>
-          <div key={o.id} className="farm-card p-4 flex justify-between items-center">
+          { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 }].map((o) =>
+            <div key={o.id} className="farm-card p-4 flex justify-between items-center">
               <div>
                 <p className="font-heading font-bold text-foreground text-sm">{o.id}</p>
                 <p className="text-xs text-muted-foreground">{o.items}</p>
@@ -72,8 +81,8 @@ const BuyerDashboard = () => {
         </div>
       </div>
       <Footer />
-    </div>);
-
+    </div>
+  );
 };
 
 export default BuyerDashboard;

@@ -25,6 +25,8 @@ const CartPage = () => {
     );
   }
 
+  const step = 0.1;
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -32,42 +34,60 @@ const CartPage = () => {
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("cart.title")}</h1>
 
         <div className="space-y-4 mb-8">
-          {items.map((item) => (
-            <div key={item.crop.id} className="farm-card p-4 flex gap-4">
-              <img src={item.crop.image} alt={item.crop.name} className="w-20 h-20 rounded-xl object-cover" />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-heading font-bold text-foreground text-sm truncate">{item.crop.name}</h3>
-                <p className="text-xs text-muted-foreground">{item.crop.farmLocation}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}</span>
-                  <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}/kg</span>
+          {items.map((item) => {
+            const isBundle = item.crop.isBundle;
+            const unit = isBundle ? "box" : "kg";
+            const minQty = isBundle ? 1 : 0.1;
+            const qtyStep = isBundle ? 1 : step;
+            return (
+              <div key={item.crop.id} className="farm-card p-4 flex gap-4">
+                <img src={item.crop.image} alt={item.crop.name} className="w-20 h-20 rounded-xl object-cover" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-heading font-bold text-foreground text-sm truncate">{item.crop.name}</h3>
+                  <p className="text-xs text-muted-foreground">{item.crop.farmLocation}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}</span>}
+                    <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}/{unit}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end justify-between">
+                  <button onClick={() => removeFromCart(item.crop.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateQuantity(item.crop.id, Math.round((item.quantity - qtyStep) * 10) / 10)}
+                      className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
+                      disabled={item.quantity <= minQty}
+                    >
+                      <Minus className="h-3 w-3" />
+                    </button>
+                    <input
+                      type="number"
+                      min={minQty}
+                      step={qtyStep}
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (v >= minQty) updateQuantity(item.crop.id, Math.round(v * 10) / 10);
+                      }}
+                      className="w-16 text-center font-bold text-sm bg-background border border-input rounded-md py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <span className="text-xs text-muted-foreground">{unit}</span>
+                    <button
+                      onClick={() => updateQuantity(item.crop.id, Math.round((item.quantity + qtyStep) * 10) / 10)}
+                      className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <span className="font-bold text-sm text-foreground">
+                    RM{(item.crop.discountPrice * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               </div>
-              <div className="flex flex-col items-end justify-between">
-                <button onClick={() => removeFromCart(item.crop.id)} className="text-muted-foreground hover:text-destructive transition-colors">
-                  <Trash2 className="h-4 w-4" />
-                </button>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => updateQuantity(item.crop.id, item.quantity - 1)}
-                    className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </button>
-                  <span className="font-bold text-sm w-8 text-center">{item.quantity} kg</span>
-                  <button
-                    onClick={() => updateQuantity(item.crop.id, item.quantity + 1)}
-                    className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </button>
-                </div>
-                <span className="font-bold text-sm text-foreground">
-                  RM{(item.crop.discountPrice * item.quantity).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Summary */}

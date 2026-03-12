@@ -20,6 +20,9 @@ import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
 import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
 import SellerProfilePage from "./pages/SellerProfilePage";
+import AddCropPage from "./pages/AddCropPage";
+import AddBundlePage from "./pages/AddBundlePage";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +49,9 @@ const App = () => (
                   <Route path="/driver-deliveries" element={<DriverDeliveries />} />
                   <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
                   <Route path="/seller/:id" element={<SellerProfilePage />} />
+                  <Route path="/add-crop" element={<AddCropPage />} />
+                  <Route path="/add-bundle" element={<AddBundlePage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

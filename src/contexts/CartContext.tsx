@@ -40,6 +40,7 @@ export interface CropListing {
   id: string;
   name: string;
   image: string;
+  images?: string[]; // multiple images support
   quantity: number;
   usualPrice: number;
   discountPrice: number;
@@ -50,6 +51,7 @@ export interface CropListing {
   sellerType: SellerType;
   description?: string;
   harvestDate: string;
+  expiryDate?: string; // estimated expiry date
   distanceKm: number;
   imperfectReason: ImperfectReason;
   isBundle?: boolean;
@@ -82,7 +84,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const existing = prev.find((i) => i.crop.id === crop.id);
       if (existing) {
         return prev.map((i) =>
-          i.crop.id === crop.id ? { ...i, quantity: i.quantity + qty } : i
+          i.crop.id === crop.id ? { ...i, quantity: Math.round((i.quantity + qty) * 10) / 10 } : i
         );
       }
       return [...prev, { crop, quantity: qty }];
@@ -96,14 +98,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateQuantity = (cropId: string, qty: number) => {
     if (qty <= 0) return removeFromCart(cropId);
     setItems((prev) =>
-      prev.map((i) => (i.crop.id === cropId ? { ...i, quantity: qty } : i))
+      prev.map((i) => (i.crop.id === cropId ? { ...i, quantity: Math.round(qty * 10) / 10 } : i))
     );
   };
 
   const clearCart = () => setItems([]);
 
   const total = items.reduce((sum, i) => sum + i.crop.discountPrice * i.quantity, 0);
-  const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  const itemCount = Math.round(items.reduce((sum, i) => sum + i.quantity, 0) * 10) / 10;
 
   return (
     <CartContext.Provider value={{ items, addToCart, removeFromCart, updateQuantity, clearCart, total, itemCount }}>

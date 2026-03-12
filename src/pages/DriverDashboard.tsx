@@ -1,15 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Navigation, DollarSign, CheckCircle } from "lucide-react";
+import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User } from "lucide-react";
 import { toast } from "sonner";
 
 export const deliveryRequests = [
-{ id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
-{ id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8, date: "4 Mar 2026", farmer: "Mak Intan", buyer: "Farah Nadia" },
-{ id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", farmer: "Encik Zul", buyer: "Ravi Kumar" }];
+  { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
+  { id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8, date: "4 Mar 2026", farmer: "Mak Intan", buyer: "Farah Nadia" },
+  { id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", farmer: "Encik Zul", buyer: "Ravi Kumar" },
+];
 
 export const completedDeliveries = [
   { id: "DEL-050", crop: "Spinach (4kg)", pickup: "Ladang Hijau, Ipoh", dropoff: "Subang Jaya, Selangor", distance: 15, fee: 15, date: "2 Mar 2026", farmer: "Pak Hassan", buyer: "Siti Aminah" },
@@ -17,9 +19,9 @@ export const completedDeliveries = [
   { id: "DEL-052", crop: "Chillies (2kg)", pickup: "Ladang Cili, Kota Bharu", dropoff: "Kuala Terengganu", distance: 10, fee: 10, date: "25 Feb 2026", farmer: "Encik Razak", buyer: "Noraini Bt Yusof" },
 ];
 
-
 const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
@@ -30,8 +32,15 @@ const DriverDashboard = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Driver Dashboard 🚗</h1>
-        <p className="text-muted-foreground text-sm mb-8">Accept delivery jobs and earn</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Driver Dashboard 🚗</h1>
+            <p className="text-muted-foreground text-sm">Accept delivery jobs and earn</p>
+          </div>
+          <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
+            <User className="h-4 w-4 mr-1" /> Profile
+          </Button>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -72,22 +81,22 @@ const DriverDashboard = () => {
                   <p className="text-xs text-muted-foreground">Distance: {d.distance} km</p>
                 </div>
                 <div className="mt-4">
-                  {isAccepted ?
-                  <span className="farm-badge-green">✓ Accepted</span> :
-
-                  <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">Quick Summary 
-                    <Truck className="h-4 w-4 mr-1" /> Accept Delivery
+                  {isAccepted ? (
+                    <span className="farm-badge-green">✓ Accepted</span>
+                  ) : (
+                    <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
+                      <Truck className="h-4 w-4 mr-1" /> Accept Delivery
                     </Button>
-                  }
+                  )}
                 </div>
-              </div>);
-
+              </div>
+            );
           })}
         </div>
       </div>
       <Footer />
-    </div>);
-
+    </div>
+  );
 };
 
 export default DriverDashboard;
