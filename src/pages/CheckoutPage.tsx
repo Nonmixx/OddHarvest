@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote } from "lucide-react";
+import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
-const PICKUP_SLOTS = [
-  "9:00 AM – 11:00 AM",
-  "11:00 AM – 1:00 PM",
-  "2:00 PM – 4:00 PM",
-  "4:00 PM – 6:00 PM",
+const DEFAULT_PICKUP_SLOTS = [
+  "7:00 AM – 8:00 AM",
+  "8:00 AM – 9:00 AM",
+  "9:00 AM – 10:00 AM",
+  "10:00 AM – 11:00 AM",
+  "11:00 AM – 12:00 PM",
+  "12:00 PM – 1:00 PM",
+  "1:00 PM – 2:00 PM",
+  "2:00 PM – 3:00 PM",
+  "3:00 PM – 4:00 PM",
+  "4:00 PM – 5:00 PM",
+  "5:00 PM – 6:00 PM",
+  "6:00 PM – 7:00 PM",
 ];
 
 const CheckoutPage = () => {
@@ -20,13 +28,33 @@ const CheckoutPage = () => {
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
   const [distance, setDistance] = useState(5);
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
-  const [pickupSlot, setPickupSlot] = useState(PICKUP_SLOTS[0]);
+  const [pickupSlot, setPickupSlot] = useState(DEFAULT_PICKUP_SLOTS[2]);
   const [confirmed, setConfirmed] = useState(false);
+  const [customSlot, setCustomSlot] = useState("");
+  const [pickupSlots, setPickupSlots] = useState(DEFAULT_PICKUP_SLOTS);
+
+  // Save order totals before clearing
+  const savedRef = useRef({ total: 0, deliveryFee: 0, grandTotal: 0, items: [] as typeof items });
 
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
   const grandTotal = total + deliveryFee;
 
+  const handleConfirm = () => {
+    savedRef.current = { total, deliveryFee, grandTotal, items: [...items] };
+    setConfirmed(true);
+    clearCart();
+  };
+
+  const addCustomSlot = () => {
+    if (customSlot.trim() && !pickupSlots.includes(customSlot.trim())) {
+      setPickupSlots((prev) => [...prev, customSlot.trim()]);
+      setPickupSlot(customSlot.trim());
+      setCustomSlot("");
+    }
+  };
+
   if (confirmed) {
+    const saved = savedRef.current;
     return (
       <div className="min-h-screen">
         <Navbar />
@@ -39,9 +67,27 @@ const CheckoutPage = () => {
               ? `Please head to the farm for pickup. Slot: ${pickupSlot}`
               : `A driver will deliver your order (${distance} km).`}
           </p>
-          <div className="farm-card p-4 mb-6 text-left space-y-1">
-            <p className="text-sm text-muted-foreground">Payment: <span className="font-medium text-foreground capitalize">{payment === "ewallet" ? "E-Wallet" : payment === "bank" ? "Bank Transfer" : "Cash"}</span></p>
-            <p className="text-sm text-muted-foreground">Total: <span className="font-bold text-primary">RM{grandTotal.toFixed(2)}</span></p>
+          <div className="farm-card p-4 mb-6 text-left space-y-2">
+            {saved.items.map((item) => (
+              <div key={item.crop.id} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? "box" : "kg"}</span>
+                <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="border-t border-border pt-2 space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span>RM{saved.total.toFixed(2)}</span>
+              </div>
+              {delivery === "delivery" && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Delivery Fee</span>
+                  <span>RM{saved.deliveryFee.toFixed(2)}</span>
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground">Payment: <span className="font-medium text-foreground capitalize">{payment === "ewallet" ? "E-Wallet" : payment === "bank" ? "Bank Transfer" : "Cash"}</span></p>
+              <p className="text-sm font-bold">Total: <span className="text-primary">RM{saved.grandTotal.toFixed(2)}</span></p>
+            </div>
           </div>
           <Button className="rounded-full" onClick={() => navigate("/marketplace")}>Continue Shopping</Button>
         </div>
@@ -60,7 +106,7 @@ const CheckoutPage = () => {
           <h2 className="font-heading font-bold text-foreground mb-3">Order Summary</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{item.crop.name} × {item.quantity} kg</span>
+              <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? "box" : "kg"}</span>
               <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
             </div>
           ))}
@@ -97,14 +143,14 @@ const CheckoutPage = () => {
           </div>
 
           {delivery === "pickup" && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label className="text-sm font-medium">Pickup Time Slot</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {PICKUP_SLOTS.map((slot) => (
+              <div className="grid grid-cols-3 gap-2">
+                {pickupSlots.map((slot) => (
                   <button
                     key={slot}
                     onClick={() => setPickupSlot(slot)}
-                    className={`p-2.5 rounded-lg border-2 text-xs font-medium transition-all ${
+                    className={`p-2 rounded-lg border-2 text-xs font-medium transition-all ${
                       pickupSlot === slot
                         ? "border-primary bg-farm-green-light text-primary"
                         : "border-border text-muted-foreground hover:border-primary/50"
@@ -113,6 +159,17 @@ const CheckoutPage = () => {
                     {slot}
                   </button>
                 ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add custom slot e.g. 7:30 PM – 8:30 PM"
+                  value={customSlot}
+                  onChange={(e) => setCustomSlot(e.target.value)}
+                  className="text-sm"
+                />
+                <Button type="button" variant="outline" size="sm" onClick={addCustomSlot}>
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           )}
@@ -177,7 +234,7 @@ const CheckoutPage = () => {
           <Button
             className="w-full rounded-full mt-2"
             size="lg"
-            onClick={() => { setConfirmed(true); clearCart(); }}
+            onClick={handleConfirm}
           >
             Confirm Order
           </Button>

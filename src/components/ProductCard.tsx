@@ -6,7 +6,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Minus, Plus, Package, Star } from "lucide-react";
+import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer } from "lucide-react";
 import { toast } from "sonner";
 import { getFreshnessInfo } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
@@ -15,23 +15,40 @@ interface ProductCardProps {
   crop: CropListing;
 }
 
+const getExpiryInfo = (expiryDate?: string) => {
+  if (!expiryDate) return null;
+  const now = new Date();
+  const expiry = new Date(expiryDate);
+  const diffMs = expiry.getTime() - now.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMs <= 0) return { label: "Expired", color: "text-destructive", urgent: true };
+  if (diffDays === 0) return { label: `${diffHours}h left`, color: "text-destructive", urgent: true };
+  if (diffDays <= 2) return { label: `${diffDays}d ${diffHours % 24}h left`, color: "text-destructive", urgent: true };
+  if (diffDays <= 5) return { label: `${diffDays} days left`, color: "text-farm-orange", urgent: false };
+  return { label: `${diffDays} days left`, color: "text-primary", urgent: false };
+};
+
 const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
   const { t } = useLanguage();
-  const [qty, setQty] = useState(1);
-  const discount = Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
+  const [qty, setQty] = useState(0.5);
+  const isBundle = crop.isBundle;
+  const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
   const freshness = getFreshnessInfo(crop.harvestDate);
   const outOfStock = crop.quantity <= 0;
   const reasonInfo = IMPERFECT_REASONS.find((r) => r.value === crop.imperfectReason);
   const seller = mockSellers.find((s) => s.id === crop.sellerId);
+  const expiryInfo = getExpiryInfo(crop.expiryDate);
 
   const handleAdd = () => {
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);
-    toast.success(`${qty} kg ${crop.name} ${t("product.added")} 🥕`);
-    setQty(1);
+    toast.success(`${qty} ${isBundle ? "box" : "kg"} ${crop.name} ${t("product.added")} 🥕`);
+    setQty(0.5);
   };
 
   return (
@@ -42,13 +59,15 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           alt={crop.name}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <span className="absolute top-3 left-3 farm-badge-green text-xs font-bold">
-          {t("product.save")} {discount}%
-        </span>
+        {!isBundle && discount > 0 && (
+          <span className="absolute top-3 left-3 farm-badge-green text-xs font-bold">
+            {t("product.save")} {discount}%
+          </span>
+        )}
         <span className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
           {freshness.emoji} {freshness.label}
         </span>
-        {crop.isBundle && (
+        {isBundle && (
           <span className="absolute bottom-3 left-3 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Package className="h-3 w-3" /> {t("product.bundle")}
           </span>
@@ -57,7 +76,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
       <div className="p-4 space-y-2.5">
         <h3 className="font-heading font-bold text-foreground leading-tight">{crop.name}</h3>
 
-        {/* Seller info with link */}
+        {/* Seller info */}
         <div className="flex items-center gap-2">
           <Link
             to={`/seller/${crop.sellerId}`}
@@ -85,7 +104,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         )}
 
         {/* Bundle contents */}
-        {crop.isBundle && crop.bundleContents && (
+        {isBundle && crop.bundleContents && (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
             {crop.bundleContents.join(", ")} ({crop.bundleWeight} kg)
@@ -101,7 +120,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           <span className="farm-badge-green text-[11px]">{crop.state}</span>
           <span className={`flex items-center gap-1 ${outOfStock ? "text-destructive font-bold" : "text-muted-foreground"}`}>
             <Sprout className="h-3 w-3" />
-            {outOfStock ? t("product.out_of_stock") : `${crop.quantity} ${crop.isBundle ? t("product.boxes_left") : t("product.left")}`}
+            {outOfStock ? t("product.out_of_stock") : `${crop.quantity} ${isBundle ? t("product.boxes_left") : t("product.left")}`}
           </span>
         </div>
 
@@ -109,6 +128,14 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           <Clock className="h-3 w-3" />
           <span>{t("product.harvested")}: {freshness.daysAgo}</span>
         </div>
+
+        {/* Expiry rescue timer */}
+        {expiryInfo && (
+          <div className={`flex items-center gap-2 text-xs font-medium ${expiryInfo.color}`}>
+            <Timer className={`h-3 w-3 ${expiryInfo.urgent ? "animate-pulse" : ""}`} />
+            <span>⏰ {expiryInfo.urgent ? "🔥 " : ""}{expiryInfo.label}</span>
+          </div>
+        )}
 
         {crop.distanceKm && (
           <div className="text-xs text-muted-foreground">
@@ -118,38 +145,34 @@ const ProductCard = ({ crop }: ProductCardProps) => {
 
         <div className="flex items-end justify-between pt-1">
           <div>
-            <p className="price-original">RM{crop.usualPrice.toFixed(2)}{crop.isBundle ? "/box" : "/kg"}</p>
-            <p className="price-discount">RM{crop.discountPrice.toFixed(2)}{crop.isBundle ? "/box" : "/kg"}</p>
+            {isBundle ? (
+              <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/box</p>
+            ) : (
+              <>
+                <p className="price-original">RM{crop.usualPrice.toFixed(2)}/kg</p>
+                <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/kg</p>
+              </>
+            )}
           </div>
           <div className="flex flex-col items-end gap-2">
             {!outOfStock && (
               <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => setQty(Math.max(1, qty - 1))}
-                  className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
-                >
-                  <Minus className="h-3 w-3" />
-                </button>
                 <input
                   type="number"
-                  min={1}
+                  min={isBundle ? 1 : 0.1}
                   max={crop.quantity}
+                  step={isBundle ? 1 : 0.1}
                   value={qty}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    if (v >= 1 && v <= crop.quantity) setQty(v);
-                    else if (v < 1) setQty(1);
+                    const minVal = isBundle ? 1 : 0.1;
+                    if (v >= minVal && v <= crop.quantity) setQty(Math.round(v * 10) / 10);
+                    else if (v < minVal) setQty(minVal);
                     else setQty(crop.quantity);
                   }}
-                  className="w-12 text-center text-sm font-bold bg-background border border-input rounded-md py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-16 text-center text-sm font-bold bg-background border border-input rounded-md py-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <span className="text-xs text-muted-foreground">{crop.isBundle ? "box" : "kg"}</span>
-                <button
-                  onClick={() => setQty(Math.min(crop.quantity, qty + 1))}
-                  className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
+                <span className="text-xs text-muted-foreground">{isBundle ? "box" : "kg"}</span>
               </div>
             )}
             <Button
