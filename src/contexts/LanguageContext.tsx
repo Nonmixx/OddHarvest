@@ -16,7 +16,7 @@ const translations: Record<string, Record<Language, string>> = {
   "auth.login_desc": { en: "Login to your account", zh: "登录您的账户", ms: "Log masuk ke akaun anda" },
   "auth.signup_desc": { en: "Create your account and start rescuing crops", zh: "创建账户并开始拯救农产品", ms: "Cipta akaun anda dan mula menyelamatkan tanaman" },
   "auth.iam": { en: "I am a...", zh: "我是...", ms: "Saya adalah..." },
-  "auth.farmer": { en: "Farmer", zh: "农民", ms: "Petani" },
+  "auth.farmer": { en: "Seller", zh: "卖家", ms: "Penjual" },
   "auth.buyer": { en: "Buyer", zh: "买家", ms: "Pembeli" },
   "auth.driver": { en: "Driver", zh: "司机", ms: "Pemandu" },
   "auth.farmer_desc": { en: "Sell your imperfect crops", zh: "出售不完美的农产品", ms: "Jual tanaman tidak sempurna" },
