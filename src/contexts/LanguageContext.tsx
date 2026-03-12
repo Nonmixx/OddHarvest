@@ -50,8 +50,8 @@ const translations: Record<string, Record<Language, string>> = {
   "feat.price.desc": { en: "Buy fresh produce at lower prices. Good for your wallet and the planet.", zh: "以更低的价格购买新鲜农产品。对你的钱包和地球都好。", ms: "Beli hasil segar pada harga lebih rendah." },
   "feat.delivery.title": { en: "Easy Delivery", zh: "轻松配送", ms: "Penghantaran Mudah" },
   "feat.delivery.desc": { en: "Get crops delivered to your door with our driver network.", zh: "通过我们的司机网络将农产品送到您家门口。", ms: "Dapatkan tanaman dihantar ke pintu anda." },
-  "feat.support.title": { en: "Support Local Farmers", zh: "支持本地农民", ms: "Sokong Petani Tempatan" },
-  "feat.support.desc": { en: "Help Malaysian farmers earn income from every harvest.", zh: "帮助马来西亚农民从每次收获中获得收入。", ms: "Bantu petani Malaysia memperoleh pendapatan." },
+  "feat.support.title": { en: "Support Local Sellers", zh: "支持本地卖家", ms: "Sokong Penjual Tempatan" },
+  "feat.support.desc": { en: "Help Malaysian sellers earn income from every harvest.", zh: "帮助马来西亚卖家从每次收获中获得收入。", ms: "Bantu penjual Malaysia memperoleh pendapatan." },
 
   // Section headers
   "section.why": { en: "Why OddHarvest? 🌱", zh: "为什么选择 OddHarvest？🌱", ms: "Kenapa OddHarvest? 🌱" },
