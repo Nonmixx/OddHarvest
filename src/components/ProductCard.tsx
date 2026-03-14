@@ -209,7 +209,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                 <button
                   onClick={() => {
                     const step = isBundle ? 1 : 0.1;
-                    setQty(Math.min(crop.quantity, Math.round((qty + step) * 10) / 10));
+                    const newVal = Math.min(crop.quantity, Math.round((qty + step) * 10) / 10);
+                    setQty(newVal);
+                    setQtyInput(String(newVal));
                   }}
                   className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 text-foreground"
                   disabled={qty >= crop.quantity}
