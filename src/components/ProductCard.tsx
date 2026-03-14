@@ -50,7 +50,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     addToCart(crop, qty);
     updateStock(crop.id, qty);
     toast.success(`${qty} ${isBundle ? "box" : "kg"} ${crop.name} ${t("product.added")} 🥕`);
-    setQty(0.5);
+    const resetQty = isBundle ? 1 : 0.5;
+    setQty(resetQty);
+    setQtyInput(String(resetQty));
   };
 
   return (
