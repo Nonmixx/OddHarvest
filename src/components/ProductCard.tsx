@@ -34,7 +34,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
   const { t } = useLanguage();
-  const [qty, setQty] = useState(0.5);
+  const initQty = isBundle ? 1 : 0.5;
+  const [qty, setQty] = useState(initQty);
+  const [qtyInput, setQtyInput] = useState(String(initQty));
   const isBundle = crop.isBundle;
   const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
   const freshness = getFreshnessInfo(crop.harvestDate);
