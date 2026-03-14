@@ -36,6 +36,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { updateStock } = useCropInventory();
   const { t } = useLanguage();
   const isBundle = crop.isBundle;
+  const isMysteryBox = crop.isMysteryBox;
   const initQty = isBundle ? 1 : 0.5;
   const [qty, setQty] = useState(initQty);
   const [qtyInput, setQtyInput] = useState(String(initQty));
