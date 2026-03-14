@@ -27,6 +27,7 @@ import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
 
+// App root with all providers
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
