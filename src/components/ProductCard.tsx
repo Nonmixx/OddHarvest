@@ -34,8 +34,10 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
   const { t } = useLanguage();
-  const [qty, setQty] = useState(0.5);
   const isBundle = crop.isBundle;
+  const initQty = isBundle ? 1 : 0.5;
+  const [qty, setQty] = useState(initQty);
+  const [qtyInput, setQtyInput] = useState(String(initQty));
   const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
   const freshness = getFreshnessInfo(crop.harvestDate);
   const outOfStock = crop.quantity <= 0;
@@ -48,7 +50,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     addToCart(crop, qty);
     updateStock(crop.id, qty);
     toast.success(`${qty} ${isBundle ? "box" : "kg"} ${crop.name} ${t("product.added")} 🥕`);
-    setQty(0.5);
+    const resetQty = isBundle ? 1 : 0.5;
+    setQty(resetQty);
+    setQtyInput(String(resetQty));
   };
 
   return (
@@ -157,22 +161,63 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           <div className="flex flex-col items-end gap-2">
             {!outOfStock && (
               <div className="flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={isBundle ? 1 : 0.1}
-                  max={crop.quantity}
-                  step={isBundle ? 1 : 0.1}
-                  value={qty}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
+                <button
+                  onClick={() => {
+                    const step = isBundle ? 1 : 0.1;
                     const minVal = isBundle ? 1 : 0.1;
-                    if (v >= minVal && v <= crop.quantity) setQty(Math.round(v * 10) / 10);
-                    else if (v < minVal) setQty(minVal);
-                    else setQty(crop.quantity);
+                    const newVal = Math.max(minVal, Math.round((qty - step) * 10) / 10);
+                    setQty(newVal);
+                    setQtyInput(String(newVal));
                   }}
-                  className="w-16 text-center text-sm font-bold bg-background border border-input rounded-md py-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 text-foreground"
+                  disabled={qty <= (isBundle ? 1 : 0.1)}
+                >
+                  −
+                </button>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={qtyInput}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "" || /^\d*\.?\d*$/.test(raw)) {
+                      setQtyInput(raw);
+                      const v = parseFloat(raw);
+                      if (!isNaN(v) && v > 0 && v <= crop.quantity) {
+                        setQty(Math.round(v * 10) / 10);
+                      }
+                    }
+                  }}
+                  onBlur={() => {
+                    const v = parseFloat(qtyInput);
+                    const minVal = isBundle ? 1 : 0.1;
+                    if (isNaN(v) || v < minVal) {
+                      setQty(minVal);
+                      setQtyInput(String(minVal));
+                    } else if (v > crop.quantity) {
+                      setQty(crop.quantity);
+                      setQtyInput(String(crop.quantity));
+                    } else {
+                      const rounded = Math.round(v * 10) / 10;
+                      setQty(rounded);
+                      setQtyInput(String(rounded));
+                    }
+                  }}
+                  className="w-14 text-center text-sm font-bold bg-background border border-input rounded-md py-1"
                 />
                 <span className="text-xs text-muted-foreground">{isBundle ? "box" : "kg"}</span>
+                <button
+                  onClick={() => {
+                    const step = isBundle ? 1 : 0.1;
+                    const newVal = Math.min(crop.quantity, Math.round((qty + step) * 10) / 10);
+                    setQty(newVal);
+                    setQtyInput(String(newVal));
+                  }}
+                  className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 text-foreground"
+                  disabled={qty >= crop.quantity}
+                >
+                  +
+                </button>
               </div>
             )}
             <Button
