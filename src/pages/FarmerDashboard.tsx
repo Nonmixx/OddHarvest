@@ -151,7 +151,11 @@ const FarmerDashboard = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-heading font-bold text-foreground text-sm">{c.name}</h3>
-                      {c.isBundle && <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 Bundle</span>}
+                      {c.isMysteryBox ? (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">🎁 Mystery Box</span>
+                      ) : c.isBundle ? (
+                        <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 Bundle</span>
+                      ) : null}
                     </div>
                     <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? "boxes" : "kg"} · {c.state}</p>
                   </div>

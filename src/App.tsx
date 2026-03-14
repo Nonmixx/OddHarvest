@@ -52,6 +52,7 @@ const App = () => (
                   <Route path="/seller/:id" element={<SellerProfilePage />} />
                   <Route path="/add-crop" element={<AddCropPage />} />
                   <Route path="/add-bundle" element={<AddBundlePage />} />
+                  <Route path="/add-mystery-box" element={<AddMysteryBoxPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

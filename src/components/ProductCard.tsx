@@ -113,13 +113,18 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           </div>
         )}
 
-        {/* Bundle contents */}
-        {isBundle && crop.bundleContents && (
+        {/* Bundle contents or Mystery Box info */}
+        {isMysteryBox ? (
+          <div className="text-xs text-muted-foreground bg-primary/10 rounded-lg p-2">
+            <span className="font-medium text-foreground">🎁 Surprise!</span>{" "}
+            Contents are a mystery — {crop.bundleWeight} kg of rescued produce!
+          </div>
+        ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
             {crop.bundleContents.join(", ")} ({crop.bundleWeight} kg)
           </div>
-        )}
+        ) : null}
 
         <div className="flex items-center gap-1 text-muted-foreground text-xs">
           <MapPin className="h-3 w-3 shrink-0" />
