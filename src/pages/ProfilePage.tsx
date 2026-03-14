@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, MapPin, Phone, Mail, Sprout, ShoppingBag, Truck, Save } from "lucide-react";
 import { toast } from "sonner";
+import VoiceInput from "@/components/VoiceInput";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -61,24 +62,32 @@ const ProfilePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Full Name</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} />
+                <div className="flex gap-2">
+                  <Input value={name} onChange={(e) => setName(e.target.value)} />
+                  <VoiceInput onResult={(text) => setName(text)} />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Email</Label>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <div className="flex gap-2">
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <VoiceInput onResult={(text) => setEmail(text)} />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Phone Number</Label>
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
                   <Input placeholder="+60 12-345 6789" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <VoiceInput onResult={(text) => setPhone(text)} />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Location</Label>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                   <Input placeholder="Your area" value={location} onChange={(e) => setLocation(e.target.value)} />
+                  <VoiceInput onResult={(text) => setLocation(text)} />
                 </div>
               </div>
             </div>
@@ -92,7 +101,10 @@ const ProfilePage = () => {
                 {user.sellerType === "farm" && (
                   <div className="space-y-1.5">
                     <Label>Farm Name</Label>
-                    <Input value={farmName} onChange={(e) => setFarmName(e.target.value)} />
+                    <div className="flex gap-2">
+                      <Input value={farmName} onChange={(e) => setFarmName(e.target.value)} />
+                      <VoiceInput onResult={(text) => setFarmName(text)} />
+                    </div>
                   </div>
                 )}
                 <div className="space-y-1.5">
@@ -101,11 +113,17 @@ const ProfilePage = () => {
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
                   <Label>Crops Grown (comma separated)</Label>
-                  <Input placeholder="Tomatoes, Carrots, Chili" value={cropsGrown} onChange={(e) => setCropsGrown(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Input placeholder="Tomatoes, Carrots, Chili" value={cropsGrown} onChange={(e) => setCropsGrown(e.target.value)} />
+                    <VoiceInput onResult={(text) => setCropsGrown((prev) => prev ? prev + ", " + text : text)} />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label>State</Label>
-                  <Input value={state} onChange={(e) => setState(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Input value={state} onChange={(e) => setState(e.target.value)} />
+                    <VoiceInput onResult={(text) => setState(text)} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,7 +145,10 @@ const ProfilePage = () => {
                 </div>
                 <div className="space-y-1.5">
                   <Label>License Number</Label>
-                  <Input placeholder="e.g. ABC1234" value={licenseNo} onChange={(e) => setLicenseNo(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Input placeholder="e.g. ABC1234" value={licenseNo} onChange={(e) => setLicenseNo(e.target.value)} />
+                    <VoiceInput onResult={(text) => setLicenseNo(text)} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -140,11 +161,17 @@ const ProfilePage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>Preferred Pickup Area</Label>
-                  <Input placeholder="e.g. Petaling Jaya" value={location} onChange={(e) => setLocation(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Input placeholder="e.g. Petaling Jaya" value={location} onChange={(e) => setLocation(e.target.value)} />
+                    <VoiceInput onResult={(text) => setLocation(text)} />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label>State</Label>
-                  <Input value={state} onChange={(e) => setState(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Input value={state} onChange={(e) => setState(e.target.value)} />
+                    <VoiceInput onResult={(text) => setState(text)} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -159,8 +186,5 @@ const ProfilePage = () => {
     </div>
   );
 };
-
-// Need React import for createElement
-import React from "react";
 
 export default ProfilePage;

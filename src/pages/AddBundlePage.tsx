@@ -8,6 +8,7 @@ import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import VoiceInput from "@/components/VoiceInput";
 
 const AddBundlePage = () => {
   const navigate = useNavigate();
@@ -82,12 +83,18 @@ const AddBundlePage = () => {
         <form onSubmit={handleSubmit} className="farm-card p-6 space-y-5">
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_name")}</Label>
-            <Input placeholder="e.g. Rescue Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+            <div className="flex gap-2">
+              <Input placeholder="e.g. Rescue Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+              <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
+            </div>
           </div>
 
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_contents")}</Label>
-            <Input placeholder="Carrots, Cucumbers, Tomatoes" value={contents} onChange={(e) => setContents(e.target.value)} required />
+            <div className="flex gap-2">
+              <Input placeholder="Carrots, Cucumbers, Tomatoes" value={contents} onChange={(e) => setContents(e.target.value)} required />
+              <VoiceInput onResult={(text) => setContents((prev) => prev ? prev + ", " + text : text)} />
+            </div>
           </div>
 
           {/* Image upload */}

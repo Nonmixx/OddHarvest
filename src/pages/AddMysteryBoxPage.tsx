@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import VoiceInput from "@/components/VoiceInput";
 
 const AddMysteryBoxPage = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const AddMysteryBoxPage = () => {
     addCrop({
       id: crypto.randomUUID(),
       name,
-      image: "", // will use default mystery box image
+      image: "",
       quantity: Number(qty),
       usualPrice: boxPrice,
       discountPrice: boxPrice,
@@ -61,12 +62,18 @@ const AddMysteryBoxPage = () => {
         <form onSubmit={handleSubmit} className="farm-card p-6 space-y-5">
           <div className="space-y-1.5">
             <Label>Mystery Box Name</Label>
-            <Input placeholder="e.g. Surprise Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+            <div className="flex gap-2">
+              <Input placeholder="e.g. Surprise Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+              <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
+            </div>
           </div>
 
           <div className="space-y-1.5">
             <Label>Description (optional)</Label>
-            <Input placeholder="A surprise mix of fresh rescued produce!" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <div className="flex gap-2">
+              <Input placeholder="A surprise mix of fresh rescued produce!" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <VoiceInput onResult={(text) => setDescription((prev) => prev ? prev + " " + text : text)} />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

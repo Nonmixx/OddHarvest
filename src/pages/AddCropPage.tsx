@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
+import VoiceInput from "@/components/VoiceInput";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka", "Negeri Sembilan", "Perlis", "Sarawak", "Kuala Lumpur", "Putrajaya", "Labuan"];
 
@@ -86,7 +87,10 @@ const AddCropPage = () => {
         <form onSubmit={handleSubmit} className="farm-card p-6 space-y-5">
           <div className="space-y-1.5">
             <Label>{t("farmer.crop_name")}</Label>
-            <Input placeholder="e.g. Tomatoes (Imperfect Shape)" value={name} onChange={(e) => setName(e.target.value)} required />
+            <div className="flex gap-2">
+              <Input placeholder="e.g. Tomatoes (Imperfect Shape)" value={name} onChange={(e) => setName(e.target.value)} required />
+              <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
+            </div>
           </div>
 
           <div className="space-y-1.5">
@@ -122,7 +126,10 @@ const AddCropPage = () => {
 
           <div className="space-y-1.5">
             <Label>{t("farmer.description")}</Label>
-            <Input placeholder="Describe the crop..." value={desc} onChange={(e) => setDesc(e.target.value)} />
+            <div className="flex gap-2">
+              <Input placeholder="Describe the crop..." value={desc} onChange={(e) => setDesc(e.target.value)} />
+              <VoiceInput onResult={(text) => setDesc((prev) => prev ? prev + " " + text : text)} />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -156,7 +163,10 @@ const AddCropPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>{t("farmer.location")}</Label>
-              <Input placeholder="e.g. Ladang Pak Ali" value={location} onChange={(e) => setLocation(e.target.value)} required />
+              <div className="flex gap-2">
+                <Input placeholder="e.g. Ladang Pak Ali" value={location} onChange={(e) => setLocation(e.target.value)} required />
+                <VoiceInput onResult={(text) => setLocation((prev) => prev ? prev + " " + text : text)} />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label>{t("farmer.state")}</Label>
