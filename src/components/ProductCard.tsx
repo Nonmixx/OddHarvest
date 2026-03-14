@@ -6,10 +6,11 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer } from "lucide-react";
+import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { getFreshnessInfo } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
+import mysteryBoxImg from "@/assets/mystery-box.png";
 
 interface ProductCardProps {
   crop: CropListing;
@@ -35,6 +36,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { updateStock } = useCropInventory();
   const { t } = useLanguage();
   const isBundle = crop.isBundle;
+  const isMysteryBox = crop.isMysteryBox;
   const initQty = isBundle ? 1 : 0.5;
   const [qty, setQty] = useState(initQty);
   const [qtyInput, setQtyInput] = useState(String(initQty));
@@ -59,9 +61,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     <div className="farm-card overflow-hidden group animate-fade-in-up">
       <div className="relative overflow-hidden">
         <img
-          src={crop.image}
+          src={isMysteryBox ? mysteryBoxImg : crop.image}
           alt={crop.name}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          className={`w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ${isMysteryBox ? "object-contain bg-secondary p-4" : ""}`}
         />
         {!isBundle && discount > 0 && (
           <span className="absolute top-3 left-3 farm-badge-green text-xs font-bold">
@@ -71,11 +73,15 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <span className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
           {freshness.emoji} {freshness.label}
         </span>
-        {isBundle && (
+        {isMysteryBox ? (
+          <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+            <Gift className="h-3 w-3" /> Mystery Box
+          </span>
+        ) : isBundle ? (
           <span className="absolute bottom-3 left-3 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Package className="h-3 w-3" /> {t("product.bundle")}
           </span>
-        )}
+        ) : null}
       </div>
       <div className="p-4 space-y-2.5">
         <h3 className="font-heading font-bold text-foreground leading-tight">{crop.name}</h3>
@@ -107,13 +113,18 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           </div>
         )}
 
-        {/* Bundle contents */}
-        {isBundle && crop.bundleContents && (
+        {/* Bundle contents or Mystery Box info */}
+        {isMysteryBox ? (
+          <div className="text-xs text-muted-foreground bg-primary/10 rounded-lg p-2">
+            <span className="font-medium text-foreground">🎁 Surprise!</span>{" "}
+            Contents are a mystery — {crop.bundleWeight} kg of rescued produce!
+          </div>
+        ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
             {crop.bundleContents.join(", ")} ({crop.bundleWeight} kg)
           </div>
-        )}
+        ) : null}
 
         <div className="flex items-center gap-1 text-muted-foreground text-xs">
           <MapPin className="h-3 w-3 shrink-0" />

@@ -57,6 +57,7 @@ export interface CropListing {
   isBundle?: boolean;
   bundleContents?: string[];
   bundleWeight?: number;
+  isMysteryBox?: boolean;
 }
 
 export interface CartItem {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2, User, Timer } from "lucide-react";
+import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2, User, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -82,6 +82,10 @@ const FarmerDashboard = () => {
             <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
               <User className="h-4 w-4 mr-1" /> Profile
             </Button>
+            <Button variant="outline" className="rounded-full" onClick={() => navigate("/add-mystery-box")}>
+              <Gift className="h-4 w-4 mr-1" />
+              Mystery Box
+            </Button>
             <Button variant="outline" className="rounded-full" onClick={() => navigate("/add-bundle")}>
               <Package className="h-4 w-4 mr-1" />
               {t("farmer.add_bundle")}
@@ -147,7 +151,11 @@ const FarmerDashboard = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-heading font-bold text-foreground text-sm">{c.name}</h3>
-                      {c.isBundle && <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 Bundle</span>}
+                      {c.isMysteryBox ? (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">🎁 Mystery Box</span>
+                      ) : c.isBundle ? (
+                        <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 Bundle</span>
+                      ) : null}
                     </div>
                     <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? "boxes" : "kg"} · {c.state}</p>
                   </div>
