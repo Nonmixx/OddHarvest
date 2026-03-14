@@ -73,11 +73,15 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <span className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
           {freshness.emoji} {freshness.label}
         </span>
-        {isBundle && (
+        {isMysteryBox ? (
+          <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+            <Gift className="h-3 w-3" /> Mystery Box
+          </span>
+        ) : isBundle ? (
           <span className="absolute bottom-3 left-3 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Package className="h-3 w-3" /> {t("product.bundle")}
           </span>
-        )}
+        ) : null}
       </div>
       <div className="p-4 space-y-2.5">
         <h3 className="font-heading font-bold text-foreground leading-tight">{crop.name}</h3>
