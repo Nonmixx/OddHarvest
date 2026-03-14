@@ -61,9 +61,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     <div className="farm-card overflow-hidden group animate-fade-in-up">
       <div className="relative overflow-hidden">
         <img
-          src={crop.image}
+          src={isMysteryBox ? mysteryBoxImg : crop.image}
           alt={crop.name}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          className={`w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ${isMysteryBox ? "object-contain bg-secondary p-4" : ""}`}
         />
         {!isBundle && discount > 0 && (
           <span className="absolute top-3 left-3 farm-badge-green text-xs font-bold">
