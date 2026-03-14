@@ -6,10 +6,11 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer } from "lucide-react";
+import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { getFreshnessInfo } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
+import mysteryBoxImg from "@/assets/mystery-box.png";
 
 interface ProductCardProps {
   crop: CropListing;
