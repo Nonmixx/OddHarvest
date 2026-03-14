@@ -82,6 +82,10 @@ const FarmerDashboard = () => {
             <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
               <User className="h-4 w-4 mr-1" /> Profile
             </Button>
+            <Button variant="outline" className="rounded-full" onClick={() => navigate("/add-mystery-box")}>
+              <Gift className="h-4 w-4 mr-1" />
+              Mystery Box
+            </Button>
             <Button variant="outline" className="rounded-full" onClick={() => navigate("/add-bundle")}>
               <Package className="h-4 w-4 mr-1" />
               {t("farmer.add_bundle")}
