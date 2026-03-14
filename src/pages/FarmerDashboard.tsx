@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2, User, Timer } from "lucide-react";
+import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2, User, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
