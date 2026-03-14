@@ -22,6 +22,7 @@ import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
 import SellerProfilePage from "./pages/SellerProfilePage";
 import AddCropPage from "./pages/AddCropPage";
 import AddBundlePage from "./pages/AddBundlePage";
+import AddMysteryBoxPage from "./pages/AddMysteryBoxPage";
 import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
