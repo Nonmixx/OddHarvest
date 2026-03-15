@@ -6,6 +6,7 @@ import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const deliveryRequests = [
   { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
@@ -22,10 +23,11 @@ export const completedDeliveries = [
 const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
-    toast.success(`Delivery ${id} accepted! 🚗`);
+    toast.success(`${id} ${t("driver.accepted_msg")} 🚗`);
   };
 
   return (
@@ -34,23 +36,21 @@ const DriverDashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Driver Dashboard 🚗</h1>
-            <p className="text-muted-foreground text-sm">Accept delivery jobs and earn</p>
+            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("driver.title")}</h1>
+            <p className="text-muted-foreground text-sm">{t("driver.subtitle")}</p>
           </div>
           <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
-            <User className="h-4 w-4 mr-1" /> Profile
+            <User className="h-4 w-4 mr-1" /> {t("common.profile")}
           </Button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard icon={CheckCircle} label="Deliveries Completed" value={15} />
-          <StatCard icon={Navigation} label="Total Distance (km)" value={180} color="bg-farm-orange-light" />
-          <StatCard icon={DollarSign} label="Total Earnings (RM)" value={180} />
+          <StatCard icon={CheckCircle} label={t("driver.deliveries_completed")} value={15} />
+          <StatCard icon={Navigation} label={t("driver.total_distance")} value={180} color="bg-farm-orange-light" />
+          <StatCard icon={DollarSign} label={t("driver.total_earnings")} value={180} />
         </div>
 
-        {/* Available deliveries */}
-        <h2 className="font-heading font-bold text-foreground text-lg mb-4">Available Delivery Requests</h2>
+        <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("driver.available_requests")}</h2>
         <div className="space-y-4">
           {deliveryRequests.map((d) => {
             const isAccepted = accepted.includes(d.id);
@@ -67,25 +67,25 @@ const DriverDashboard = () => {
                   <div className="flex items-start gap-2">
                     <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Pickup</p>
+                      <p className="text-xs text-muted-foreground">{t("driver.pickup")}</p>
                       <p className="font-medium">{d.pickup}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <Navigation className="h-4 w-4 text-accent mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs text-muted-foreground">Drop-off</p>
+                      <p className="text-xs text-muted-foreground">{t("driver.dropoff")}</p>
                       <p className="font-medium">{d.dropoff}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">Distance: {d.distance} km</p>
+                  <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>
                 </div>
                 <div className="mt-4">
                   {isAccepted ? (
-                    <span className="farm-badge-green">✓ Accepted</span>
+                    <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
                   ) : (
                     <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
-                      <Truck className="h-4 w-4 mr-1" /> Accept Delivery
+                      <Truck className="h-4 w-4 mr-1" /> {t("driver.accept")}
                     </Button>
                   )}
                 </div>

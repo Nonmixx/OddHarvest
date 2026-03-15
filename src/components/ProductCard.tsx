@@ -16,7 +16,7 @@ interface ProductCardProps {
   crop: CropListing;
 }
 
-const getExpiryInfo = (expiryDate?: string) => {
+const getExpiryInfo = (expiryDate?: string, t?: (key: string) => string) => {
   if (!expiryDate) return null;
   const now = new Date();
   const expiry = new Date(expiryDate);
@@ -24,7 +24,7 @@ const getExpiryInfo = (expiryDate?: string) => {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffMs <= 0) return { label: "Expired", color: "text-destructive", urgent: true };
+  if (diffMs <= 0) return { label: t?.("product.expired") || "Expired", color: "text-destructive", urgent: true };
   if (diffDays === 0) return { label: `${diffHours}h left`, color: "text-destructive", urgent: true };
   if (diffDays <= 2) return { label: `${diffDays}d ${diffHours % 24}h left`, color: "text-destructive", urgent: true };
   if (diffDays <= 5) return { label: `${diffDays} days left`, color: "text-farm-orange", urgent: false };
@@ -45,7 +45,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const outOfStock = crop.quantity <= 0;
   const reasonInfo = IMPERFECT_REASONS.find((r) => r.value === crop.imperfectReason);
   const seller = mockSellers.find((s) => s.id === crop.sellerId);
-  const expiryInfo = getExpiryInfo(crop.expiryDate);
+  const expiryInfo = getExpiryInfo(crop.expiryDate, t);
 
   const handleAdd = () => {
     if (outOfStock || qty > crop.quantity) return;
@@ -75,7 +75,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         </span>
         {isMysteryBox ? (
           <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <Gift className="h-3 w-3" /> Mystery Box
+            <Gift className="h-3 w-3" /> {t("product.mystery_box")}
           </span>
         ) : isBundle ? (
           <span className="absolute bottom-3 left-3 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -86,12 +86,8 @@ const ProductCard = ({ crop }: ProductCardProps) => {
       <div className="p-4 space-y-2.5">
         <h3 className="font-heading font-bold text-foreground leading-tight">{crop.name}</h3>
 
-        {/* Seller info */}
         <div className="flex items-center gap-2">
-          <Link
-            to={`/seller/${crop.sellerId}`}
-            className="text-xs text-primary hover:underline font-medium flex items-center gap-1"
-          >
+          <Link to={`/seller/${crop.sellerId}`} className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
             {crop.sellerType === "community" ? "🌱" : "🌾"} {crop.farmerName}
           </Link>
           {seller && (
@@ -106,18 +102,16 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           )}
         </div>
 
-        {/* Imperfect reason */}
         {reasonInfo && (
           <div className="farm-badge-orange text-[11px] inline-flex gap-1">
             {reasonInfo.emoji} {t(`imperfect.${crop.imperfectReason}`)}
           </div>
         )}
 
-        {/* Bundle contents or Mystery Box info */}
         {isMysteryBox ? (
           <div className="text-xs text-muted-foreground bg-primary/10 rounded-lg p-2">
-            <span className="font-medium text-foreground">🎁 Surprise!</span>{" "}
-            Contents are a mystery — {crop.bundleWeight} kg of rescued produce!
+            <span className="font-medium text-foreground">🎁 {t("product.surprise")}</span>{" "}
+            {t("product.surprise_desc")} {crop.bundleWeight} kg {t("product.rescued_produce")}
           </div>
         ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
@@ -144,7 +138,6 @@ const ProductCard = ({ crop }: ProductCardProps) => {
           <span>{t("product.harvested")}: {freshness.daysAgo}</span>
         </div>
 
-        {/* Expiry rescue timer */}
         {expiryInfo && (
           <div className={`flex items-center gap-2 text-xs font-medium ${expiryInfo.color}`}>
             <Timer className={`h-3 w-3 ${expiryInfo.urgent ? "animate-pulse" : ""}`} />
@@ -231,12 +224,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                 </button>
               </div>
             )}
-            <Button
-              size="sm"
-              onClick={handleAdd}
-              className="rounded-full"
-              disabled={outOfStock}
-            >
+            <Button size="sm" onClick={handleAdd} className="rounded-full" disabled={outOfStock}>
               <ShoppingCart className="h-4 w-4 mr-1" />
               {outOfStock ? t("product.out_of_stock") : t("product.add")}
             </Button>

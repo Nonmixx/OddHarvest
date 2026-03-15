@@ -39,20 +39,15 @@ const MarketplacePage = () => {
     return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle;
   });
 
-  if (sortBy === "price") {
-    filtered = [...filtered].sort((a, b) => a.discountPrice - b.discountPrice);
-  } else if (sortBy === "freshness") {
-    filtered = [...filtered].sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
-  } else if (sortBy === "distance") {
-    filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
-  }
+  if (sortBy === "price") filtered = [...filtered].sort((a, b) => a.discountPrice - b.discountPrice);
+  else if (sortBy === "freshness") filtered = [...filtered].sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
+  else if (sortBy === "distance") filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
 
   const nearbyFarms = crops
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
-      const key = c.farmLocation;
-      if (!acc.find((f) => f.location === key)) {
-        acc.push({ location: key, distance: c.distanceKm, farmerName: c.farmerName });
+      if (!acc.find((f) => f.location === c.farmLocation)) {
+        acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName });
       }
       return acc;
     }, [] as { location: string; distance: number; farmerName: string }[])
@@ -89,29 +84,16 @@ const MarketplacePage = () => {
             <div className="relative flex-1 max-w-md flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t("market.search")}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder={t("market.search")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
               </div>
               <VoiceInput onResult={(text) => setSearch(text)} />
             </div>
-            <select
-              value={maxDistance}
-              onChange={(e) => setMaxDistance(Number(e.target.value))}
-              className="h-10 rounded-lg border border-input bg-background px-3 text-sm"
-            >
+            <select value={maxDistance} onChange={(e) => setMaxDistance(Number(e.target.value))} className="h-10 rounded-lg border border-input bg-background px-3 text-sm">
               {DISTANCE_OPTIONS_KEYS.map((d) => (
                 <option key={d.value} value={d.value}>{d.labelKey ? t(d.labelKey) : d.label}</option>
               ))}
             </select>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="h-10 rounded-lg border border-input bg-background px-3 text-sm"
-            >
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="h-10 rounded-lg border border-input bg-background px-3 text-sm">
               <option value="default">{t("market.sort")}</option>
               <option value="price">{t("market.sort.price")}</option>
               <option value="freshness">{t("market.sort.fresh")}</option>
@@ -119,23 +101,14 @@ const MarketplacePage = () => {
             </select>
           </div>
 
-          {/* Seller type & imperfect reason filters */}
           <div className="flex flex-wrap items-center gap-3">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <select
-              value={sellerTypeFilter}
-              onChange={(e) => setSellerTypeFilter(e.target.value as typeof sellerTypeFilter)}
-              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
-            >
+            <select value={sellerTypeFilter} onChange={(e) => setSellerTypeFilter(e.target.value as typeof sellerTypeFilter)} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
               <option value="all">{t("market.all_sellers")}</option>
               <option value="farm">🌾 {t("seller.farm")}</option>
               <option value="community">🌱 {t("seller.community")}</option>
             </select>
-            <select
-              value={imperfectFilter}
-              onChange={(e) => setImperfectFilter(e.target.value as typeof imperfectFilter)}
-              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
-            >
+            <select value={imperfectFilter} onChange={(e) => setImperfectFilter(e.target.value as typeof imperfectFilter)} className="h-9 rounded-lg border border-input bg-background px-3 text-sm">
               <option value="all">{t("market.all_reasons")}</option>
               {IMPERFECT_REASONS.map((r) => (
                 <option key={r.value} value={r.value}>{r.emoji} {t(`imperfect.${r.value}`)}</option>
@@ -143,11 +116,7 @@ const MarketplacePage = () => {
             </select>
             <button
               onClick={() => setShowBundlesOnly(!showBundlesOnly)}
-              className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${
-                showBundlesOnly
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background border-input text-foreground hover:bg-secondary"
-              }`}
+              className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${showBundlesOnly ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-secondary"}`}
             >
               📦 {t("market.bundles")}
             </button>
@@ -158,11 +127,7 @@ const MarketplacePage = () => {
               <button
                 key={s}
                 onClick={() => setStateFilter(s)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  stateFilter === s
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                }`}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${stateFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}
               >
                 {s}
               </button>
@@ -170,14 +135,13 @@ const MarketplacePage = () => {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4">{filtered.length} crop{filtered.length !== 1 ? "s" : ""} {t("market.found")}</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          {filtered.length} {filtered.length !== 1 ? t("market.crops_count") : t("market.crop_count")} {t("market.found")}
+        </p>
 
-        {/* Imperfect reason education banner */}
         {imperfectFilter !== "all" && (
           <div className="farm-card p-4 mb-6 bg-farm-green-light border-primary/20">
-            <p className="text-sm text-foreground">
-              💡 {t("imperfect.education")}
-            </p>
+            <p className="text-sm text-foreground">💡 {t("imperfect.education")}</p>
           </div>
         )}
 
@@ -192,18 +156,15 @@ const MarketplacePage = () => {
             <div className="farm-card max-w-md mx-auto p-10 space-y-4">
               <span className="text-5xl block">🌱</span>
               <h2 className="font-heading font-bold text-foreground text-xl">
-                {stateFilter !== "All" ? `No crops in ${stateFilter} yet` : t("market.no_crops")}
+                {stateFilter !== "All" ? t("market.no_crops_in_state").replace("{state}", stateFilter) : t("market.no_crops")}
               </h2>
               <p className="text-sm text-muted-foreground">
                 {stateFilter !== "All"
-                  ? `There are no farmers listing crops in ${stateFilter} at the moment.`
-                  : "Try adjusting your search or filters to find fresh produce."}
+                  ? t("market.no_crops_in_state_desc").replace("{state}", stateFilter)
+                  : t("market.no_crops_desc")}
               </p>
               {stateFilter !== "All" && (
-                <button
-                  onClick={() => setStateFilter("All")}
-                  className="text-sm text-primary font-medium hover:underline"
-                >
+                <button onClick={() => setStateFilter("All")} className="text-sm text-primary font-medium hover:underline">
                   {t("market.browse_all")}
                 </button>
               )}

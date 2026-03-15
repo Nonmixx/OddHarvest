@@ -37,7 +37,7 @@ const AddMysteryBoxPage = () => {
       farmerName: "You",
       sellerId: "seller-self",
       sellerType: "farm",
-      description: description || "A surprise mix of fresh rescued produce!",
+      description: description || t("mystery.desc_placeholder"),
       harvestDate: new Date().toISOString(),
       expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
       distanceKm: 0,
@@ -46,7 +46,7 @@ const AddMysteryBoxPage = () => {
       isMysteryBox: true,
       bundleWeight: Number(weight),
     });
-    toast.success("Mystery Box added! 🎁");
+    toast.success(t("farmer.mystery_added") + " 🎁");
     navigate("/farmer-dashboard");
   };
 
@@ -55,55 +55,55 @@ const AddMysteryBoxPage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Button variant="ghost" className="mb-4" onClick={() => navigate("/farmer-dashboard")}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back_dashboard")}
         </Button>
-        <h1 className="text-2xl font-heading font-bold text-foreground mb-6">🎁 Add Mystery Box</h1>
+        <h1 className="text-2xl font-heading font-bold text-foreground mb-6">🎁 {t("mystery.title")}</h1>
 
         <form onSubmit={handleSubmit} className="farm-card p-6 space-y-5">
           <div className="space-y-1.5">
-            <Label>Mystery Box Name</Label>
+            <Label>{t("mystery.name")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="e.g. Surprise Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input placeholder={t("mystery.name_placeholder")} value={name} onChange={(e) => setName(e.target.value)} required />
               <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Description (optional)</Label>
+            <Label>{t("mystery.description")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="A surprise mix of fresh rescued produce!" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Input placeholder={t("mystery.desc_placeholder")} value={description} onChange={(e) => setDescription(e.target.value)} />
               <VoiceInput onResult={(text) => setDescription((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Weight (kg)</Label>
+              <Label>{t("mystery.weight")}</Label>
               <Input type="number" step="0.1" min={0.1} placeholder="3" value={weight} onChange={(e) => setWeight(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
-              <Label>Price (RM/box)</Label>
+              <Label>{t("mystery.price")}</Label>
               <Input type="number" step="0.01" min={0} placeholder="10.00" value={price} onChange={(e) => setPrice(e.target.value)} required />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label>Quantity (boxes)</Label>
+              <Label>{t("mystery.quantity")}</Label>
               <Input type="number" min={1} placeholder="10" value={qty} onChange={(e) => setQty(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
-              <Label>Estimated Expiry Date</Label>
+              <Label>{t("mystery.expiry")}</Label>
               <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
             </div>
           </div>
 
           <div className="bg-secondary/50 rounded-xl p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground mb-1">🎁 Mystery Box Info</p>
-            <p>Contents will not be shown to buyers — they'll get a surprise mix of your rescued produce! A cute mystery box image will be used automatically.</p>
+            <p className="font-medium text-foreground mb-1">🎁 {t("mystery.info_title")}</p>
+            <p>{t("mystery.info_desc")}</p>
           </div>
 
-          <Button type="submit" className="rounded-full w-full" size="lg">🎁 Add Mystery Box</Button>
+          <Button type="submit" className="rounded-full w-full" size="lg">🎁 {t("mystery.add_btn")}</Button>
         </form>
       </div>
     </div>

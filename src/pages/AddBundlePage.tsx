@@ -76,7 +76,7 @@ const AddBundlePage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Button variant="ghost" className="mb-4" onClick={() => navigate("/farmer-dashboard")}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back_dashboard")}
         </Button>
         <h1 className="text-2xl font-heading font-bold text-foreground mb-6">📦 {t("farmer.create_bundle")}</h1>
 
@@ -97,9 +97,8 @@ const AddBundlePage = () => {
             </div>
           </div>
 
-          {/* Image upload */}
           <div className="space-y-1.5">
-            <Label>Photos (max 5)</Label>
+            <Label>{t("common.photos_max")}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
@@ -112,7 +111,7 @@ const AddBundlePage = () => {
               {images.length < 5 && (
                 <label className="h-20 w-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
                   <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground mt-1">Add</span>
+                  <span className="text-[10px] text-muted-foreground mt-1">{t("common.add")}</span>
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
                 </label>
               )}
@@ -125,7 +124,7 @@ const AddBundlePage = () => {
               <Input type="number" step="0.1" min={0.1} placeholder="5" value={weight} onChange={(e) => setWeight(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
-              <Label>Bundle Price (RM/box)</Label>
+              <Label>{t("bundle.price")}</Label>
               <Input type="number" step="0.01" min={0} placeholder="12.00" value={price} onChange={(e) => setPrice(e.target.value)} required />
             </div>
           </div>
@@ -136,7 +135,7 @@ const AddBundlePage = () => {
               <Input type="number" min={1} placeholder="10" value={qty} onChange={(e) => setQty(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
-              <Label>Estimated Expiry Date</Label>
+              <Label>{t("mystery.expiry")}</Label>
               <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
             </div>
           </div>

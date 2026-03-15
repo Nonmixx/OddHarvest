@@ -34,8 +34,7 @@ const AddCropPage = () => {
     const files = e.target.files;
     if (!files) return;
     const remaining = 5 - images.length;
-    const toProcess = Array.from(files).slice(0, remaining);
-    toProcess.forEach((file) => {
+    Array.from(files).slice(0, remaining).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (ev) => {
         if (ev.target?.result) {
@@ -80,7 +79,7 @@ const AddCropPage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Button variant="ghost" className="mb-4" onClick={() => navigate("/farmer-dashboard")}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back_dashboard")}
         </Button>
         <h1 className="text-2xl font-heading font-bold text-foreground mb-6">{t("farmer.add_new")}</h1>
 
@@ -102,9 +101,8 @@ const AddCropPage = () => {
             </select>
           </div>
 
-          {/* Image upload */}
           <div className="space-y-1.5">
-            <Label>Photos (max 5)</Label>
+            <Label>{t("common.photos_max")}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
@@ -117,7 +115,7 @@ const AddCropPage = () => {
               {images.length < 5 && (
                 <label className="h-20 w-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
                   <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground mt-1">Add</span>
+                  <span className="text-[10px] text-muted-foreground mt-1">{t("common.add")}</span>
                   <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
                 </label>
               )}
@@ -127,7 +125,7 @@ const AddCropPage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.description")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="Describe the crop..." value={desc} onChange={(e) => setDesc(e.target.value)} />
+              <Input placeholder={t("common.describe_crop")} value={desc} onChange={(e) => setDesc(e.target.value)} />
               <VoiceInput onResult={(text) => setDesc((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
@@ -155,9 +153,8 @@ const AddCropPage = () => {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Estimated Expiry Date</Label>
+            <Label>{t("mystery.expiry")}</Label>
             <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
-            <p className="text-xs text-muted-foreground">This helps buyers know how long the crop stays fresh</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -171,7 +168,7 @@ const AddCropPage = () => {
             <div className="space-y-1.5">
               <Label>{t("farmer.state")}</Label>
               <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={state} onChange={(e) => setState(e.target.value)} required>
-                <option value="">Select state</option>
+                <option value="">{t("common.select_state")}</option>
                 {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
