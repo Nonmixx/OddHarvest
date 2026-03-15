@@ -12,6 +12,11 @@ interface User {
   farmName?: string;
   location?: string;
   state?: string;
+  phone?: string;
+  yearsExp?: string;
+  cropsGrown?: string;
+  vehicleType?: string;
+  licenseNo?: string;
 }
 
 interface AuthContextType {
@@ -19,6 +24,7 @@ interface AuthContextType {
   login: (email: string, password: string, role: UserRole) => void;
   signup: (name: string, email: string, password: string, role: UserRole, sellerType?: SellerType, farmName?: string) => void;
   logout: () => void;
+  updateProfile: (data: Partial<User>) => void;
   isAuthenticated: boolean;
 }
 
@@ -37,8 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setUser(null);
 
+  const updateProfile = (data: Partial<User>) => {
+    setUser((prev) => prev ? { ...prev, ...data } : prev);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, updateProfile, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

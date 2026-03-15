@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,22 +9,15 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
 const DEFAULT_PICKUP_SLOTS = [
-  "7:00 AM – 8:00 AM",
-  "8:00 AM – 9:00 AM",
-  "9:00 AM – 10:00 AM",
-  "10:00 AM – 11:00 AM",
-  "11:00 AM – 12:00 PM",
-  "12:00 PM – 1:00 PM",
-  "1:00 PM – 2:00 PM",
-  "2:00 PM – 3:00 PM",
-  "3:00 PM – 4:00 PM",
-  "4:00 PM – 5:00 PM",
-  "5:00 PM – 6:00 PM",
-  "6:00 PM – 7:00 PM",
+  "7:00 AM – 8:00 AM", "8:00 AM – 9:00 AM", "9:00 AM – 10:00 AM",
+  "10:00 AM – 11:00 AM", "11:00 AM – 12:00 PM", "12:00 PM – 1:00 PM",
+  "1:00 PM – 2:00 PM", "2:00 PM – 3:00 PM", "3:00 PM – 4:00 PM",
+  "4:00 PM – 5:00 PM", "5:00 PM – 6:00 PM", "6:00 PM – 7:00 PM",
 ];
 
 const CheckoutPage = () => {
   const { items, total, clearCart } = useCart();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
   const [distance, setDistance] = useState(5);
@@ -33,7 +27,6 @@ const CheckoutPage = () => {
   const [customSlot, setCustomSlot] = useState("");
   const [pickupSlots, setPickupSlots] = useState(DEFAULT_PICKUP_SLOTS);
 
-  // Save order totals before clearing
   const savedRef = useRef({ total: 0, deliveryFee: 0, grandTotal: 0, items: [] as typeof items });
 
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
@@ -53,6 +46,8 @@ const CheckoutPage = () => {
     }
   };
 
+  const paymentLabel = payment === "ewallet" ? t("checkout.ewallet") : payment === "bank" ? t("checkout.bank") : t("checkout.cash");
+
   if (confirmed) {
     const saved = savedRef.current;
     return (
@@ -60,12 +55,12 @@ const CheckoutPage = () => {
         <Navbar />
         <div className="container mx-auto px-4 py-20 text-center max-w-md">
           <CheckCircle className="h-20 w-20 text-primary mx-auto mb-6" />
-          <h1 className="text-3xl font-heading font-bold text-foreground mb-3">Order Confirmed! 🎉</h1>
-          <p className="text-muted-foreground mb-2">Thank you for rescuing imperfect crops!</p>
+          <h1 className="text-3xl font-heading font-bold text-foreground mb-3">{t("checkout.confirmed")}</h1>
+          <p className="text-muted-foreground mb-2">{t("checkout.thank_you")}</p>
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
-              ? `Please head to the farm for pickup. Slot: ${pickupSlot}`
-              : `A driver will deliver your order (${distance} km).`}
+              ? `${t("checkout.pickup_msg")} ${pickupSlot}`
+              : `${t("checkout.delivery_msg")} (${distance} km).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {saved.items.map((item) => (
@@ -76,20 +71,20 @@ const CheckoutPage = () => {
             ))}
             <div className="border-t border-border pt-2 space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
                 <span>RM{saved.total.toFixed(2)}</span>
               </div>
               {delivery === "delivery" && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Delivery Fee</span>
+                  <span className="text-muted-foreground">{t("checkout.delivery_fee")}</span>
                   <span>RM{saved.deliveryFee.toFixed(2)}</span>
                 </div>
               )}
-              <p className="text-sm text-muted-foreground">Payment: <span className="font-medium text-foreground capitalize">{payment === "ewallet" ? "E-Wallet" : payment === "bank" ? "Bank Transfer" : "Cash"}</span></p>
-              <p className="text-sm font-bold">Total: <span className="text-primary">RM{saved.grandTotal.toFixed(2)}</span></p>
+              <p className="text-sm text-muted-foreground">{t("checkout.payment")}: <span className="font-medium text-foreground capitalize">{paymentLabel}</span></p>
+              <p className="text-sm font-bold">{t("cart.total")}: <span className="text-primary">RM{saved.grandTotal.toFixed(2)}</span></p>
             </div>
           </div>
-          <Button className="rounded-full" onClick={() => navigate("/marketplace")}>Continue Shopping</Button>
+          <Button className="rounded-full" onClick={() => navigate("/marketplace")}>{t("checkout.continue_shopping")}</Button>
         </div>
       </div>
     );
@@ -99,11 +94,10 @@ const CheckoutPage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-6">Checkout 📦</h1>
+        <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
-        {/* Order summary */}
         <div className="farm-card p-4 mb-6">
-          <h2 className="font-heading font-bold text-foreground mb-3">Order Summary</h2>
+          <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
               <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? "box" : "kg"}</span>
@@ -111,62 +105,48 @@ const CheckoutPage = () => {
             </div>
           ))}
           <div className="border-t border-border mt-2 pt-2 flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
             <span className="font-medium">RM{total.toFixed(2)}</span>
           </div>
         </div>
 
-        {/* Delivery method */}
         <div className="farm-card p-4 mb-6 space-y-4">
-          <h2 className="font-heading font-bold text-foreground">Delivery Method</h2>
+          <h2 className="font-heading font-bold text-foreground">{t("checkout.delivery_method")}</h2>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setDelivery("pickup")}
-              className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${
-                delivery === "pickup" ? "border-primary bg-farm-green-light" : "border-border"
-              }`}
+              className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "pickup" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
               <PackageCheck className={`h-6 w-6 mx-auto ${delivery === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
-              <p className="text-sm font-medium">Self Pickup</p>
-              <p className="text-xs text-muted-foreground">Free</p>
+              <p className="text-sm font-medium">{t("checkout.self_pickup")}</p>
+              <p className="text-xs text-muted-foreground">{t("checkout.free")}</p>
             </button>
             <button
               onClick={() => setDelivery("delivery")}
-              className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${
-                delivery === "delivery" ? "border-primary bg-farm-green-light" : "border-border"
-              }`}
+              className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "delivery" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
               <Truck className={`h-6 w-6 mx-auto ${delivery === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
-              <p className="text-sm font-medium">Delivery</p>
+              <p className="text-sm font-medium">{t("checkout.delivery")}</p>
               <p className="text-xs text-muted-foreground">RM1/km</p>
             </button>
           </div>
 
           {delivery === "pickup" && (
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Pickup Time Slot</Label>
+              <Label className="text-sm font-medium">{t("checkout.pickup_slot")}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {pickupSlots.map((slot) => (
                   <button
                     key={slot}
                     onClick={() => setPickupSlot(slot)}
-                    className={`p-2 rounded-lg border-2 text-xs font-medium transition-all ${
-                      pickupSlot === slot
-                        ? "border-primary bg-farm-green-light text-primary"
-                        : "border-border text-muted-foreground hover:border-primary/50"
-                    }`}
+                    className={`p-2 rounded-lg border-2 text-xs font-medium transition-all ${pickupSlot === slot ? "border-primary bg-farm-green-light text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}
                   >
                     {slot}
                   </button>
                 ))}
               </div>
               <div className="flex gap-2">
-                <Input
-                  placeholder="Add custom slot e.g. 7:30 PM – 8:30 PM"
-                  value={customSlot}
-                  onChange={(e) => setCustomSlot(e.target.value)}
-                  className="text-sm"
-                />
+                <Input placeholder={t("checkout.add_custom_slot")} value={customSlot} onChange={(e) => setCustomSlot(e.target.value)} className="text-sm" />
                 <Button type="button" variant="outline" size="sm" onClick={addCustomSlot}>
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -176,37 +156,28 @@ const CheckoutPage = () => {
 
           {delivery === "delivery" && (
             <div className="space-y-2">
-              <Label className="text-sm">Distance (km)</Label>
+              <Label className="text-sm">{t("checkout.distance")}</Label>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="number"
-                  min={1}
-                  value={distance}
-                  onChange={(e) => setDistance(Math.max(1, Number(e.target.value)))}
-                  className="w-24"
-                />
-                <span className="text-sm text-muted-foreground">km → Delivery fee: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
+                <Input type="number" min={1} value={distance} onChange={(e) => setDistance(Math.max(1, Number(e.target.value)))} className="w-24" />
+                <span className="text-sm text-muted-foreground">km → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Payment method */}
         <div className="farm-card p-4 mb-6 space-y-4">
-          <h2 className="font-heading font-bold text-foreground">Payment Method</h2>
+          <h2 className="font-heading font-bold text-foreground">{t("checkout.payment_method")}</h2>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { value: "cash" as const, label: "Cash", icon: Banknote },
-              { value: "ewallet" as const, label: "E-Wallet", icon: Wallet },
-              { value: "bank" as const, label: "Bank Transfer", icon: Building },
+              { value: "cash" as const, label: t("checkout.cash"), icon: Banknote },
+              { value: "ewallet" as const, label: t("checkout.ewallet"), icon: Wallet },
+              { value: "bank" as const, label: t("checkout.bank"), icon: Building },
             ].map((p) => (
               <button
                 key={p.value}
                 onClick={() => setPayment(p.value)}
-                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${
-                  payment === p.value ? "border-primary bg-farm-green-light" : "border-border"
-                }`}
+                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${payment === p.value ? "border-primary bg-farm-green-light" : "border-border"}`}
               >
                 <p.icon className={`h-5 w-5 mx-auto ${payment === p.value ? "text-primary" : "text-muted-foreground"}`} />
                 <p className="text-xs font-medium">{p.label}</p>
@@ -215,29 +186,22 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        {/* Total */}
         <div className="farm-card p-6 space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
             <span>RM{total.toFixed(2)}</span>
           </div>
           {delivery === "delivery" && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Delivery Fee ({distance} km)</span>
+              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({distance} km)</span>
               <span>RM{deliveryFee.toFixed(2)}</span>
             </div>
           )}
           <div className="border-t border-border pt-3 flex justify-between">
-            <span className="font-heading font-bold text-lg">Total</span>
+            <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
           </div>
-          <Button
-            className="w-full rounded-full mt-2"
-            size="lg"
-            onClick={handleConfirm}
-          >
-            Confirm Order
-          </Button>
+          <Button className="w-full rounded-full mt-2" size="lg" onClick={handleConfirm}>{t("checkout.confirm")}</Button>
         </div>
       </div>
     </div>

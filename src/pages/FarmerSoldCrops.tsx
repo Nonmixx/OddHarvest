@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, CalendarDays, MapPin, User } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const soldCrops = [
   { id: "SOLD-001", name: "Tomatoes (Imperfect Shape)", qty: 15, price: 3, total: 45, buyer: "Lee Wei Ming", state: "Pahang", date: "5 Mar 2026", location: "Ladang Pak Ali, Cameron Highlands" },
@@ -18,42 +19,37 @@ const totalQty = soldCrops.reduce((sum, c) => sum + c.qty, 0);
 
 const FarmerSoldCrops = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          className="mb-4 rounded-full"
-          onClick={() => navigate("/farmer-dashboard")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Dashboard
+        <Button variant="ghost" className="mb-4 rounded-full" onClick={() => navigate("/farmer-dashboard")}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("common.back_dashboard")}
         </Button>
 
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Crops Sold 📦</h1>
+        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("sold.title")}</h1>
 
         <p className="text-muted-foreground text-sm mb-6">
-          {soldCrops.length} orders · {totalQty} kg sold · RM{totalRevenue.toFixed(2)} earned
+          {soldCrops.length} {t("sold.orders")} · {totalQty} {t("sold.kg_sold")} · RM{totalRevenue.toFixed(2)} {t("sold.earned")}
         </p>
 
-        {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
           <div className="farm-card p-4 text-center">
             <p className="text-2xl font-bold text-primary">{soldCrops.length}</p>
-            <p className="text-xs text-muted-foreground">Orders</p>
+            <p className="text-xs text-muted-foreground">{t("sold.orders")}</p>
           </div>
           <div className="farm-card p-4 text-center">
             <p className="text-2xl font-bold text-primary">{totalQty} kg</p>
-            <p className="text-xs text-muted-foreground">Total Sold</p>
+            <p className="text-xs text-muted-foreground">{t("sold.total_sold")}</p>
           </div>
           <div className="farm-card p-4 text-center sm:col-span-1 col-span-2">
             <p className="text-2xl font-bold text-primary">RM{totalRevenue.toFixed(2)}</p>
-            <p className="text-xs text-muted-foreground">Revenue</p>
+            <p className="text-xs text-muted-foreground">{t("sold.revenue")}</p>
           </div>
         </div>
 
-        {/* Sold items list */}
         <div className="space-y-3">
           {soldCrops.map((c) => (
             <div key={c.id} className="farm-card p-4">
@@ -68,15 +64,9 @@ const FarmerSoldCrops = () => {
                 <span className="font-bold text-primary">RM{c.total.toFixed(2)}</span>
               </div>
               <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-2">
-                <span className="flex items-center gap-1">
-                  <User className="h-3 w-3 text-primary" /> {c.buyer}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3 text-accent" /> {c.state}
-                </span>
-                <span className="flex items-center gap-1">
-                  <CalendarDays className="h-3 w-3" /> {c.date}
-                </span>
+                <span className="flex items-center gap-1"><User className="h-3 w-3 text-primary" /> {c.buyer}</span>
+                <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-accent" /> {c.state}</span>
+                <span className="flex items-center gap-1"><CalendarDays className="h-3 w-3" /> {c.date}</span>
               </div>
             </div>
           ))}

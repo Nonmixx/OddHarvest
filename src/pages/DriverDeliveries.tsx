@@ -5,25 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, ChevronRight } from "lucide-react";
 import { completedDeliveries } from "@/pages/DriverDashboard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const DriverDeliveries = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          className="mb-4 rounded-full"
-          onClick={() => navigate("/driver-dashboard")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Summary
+        <Button variant="ghost" className="mb-4 rounded-full" onClick={() => navigate("/driver-dashboard")}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("driver.back_summary")}
         </Button>
 
-        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Completed Deliveries ✅</h1>
+        <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("driver.completed_title")}</h1>
         <p className="text-muted-foreground text-sm mb-8">
-          You have completed {completedDeliveries.length} deliveries
+          {t("driver.completed_count").replace("{count}", String(completedDeliveries.length))}
         </p>
 
         <div className="space-y-3">
