@@ -149,6 +149,9 @@ const translations: Record<string, Record<Language, string>> = {
   "checkout.delivery_msg": { en: "A driver will deliver your order", zh: "司机将配送您的订单", ms: "Pemandu akan menghantar pesanan anda" },
   "checkout.payment": { en: "Payment", zh: "付款", ms: "Pembayaran" },
   "checkout.continue_shopping": { en: "Continue Shopping", zh: "继续购物", ms: "Teruskan Membeli-belah" },
+  "checkout.your_address": { en: "Delivery Address", zh: "配送地址", ms: "Alamat Penghantaran" },
+  "checkout.deliver_to": { en: "Deliver to", zh: "送到", ms: "Hantar ke" },
+  "checkout.box": { en: "box", zh: "盒", ms: "kotak" },
 
   // Farmer dashboard
   "farmer.title": { en: "Seller Dashboard 🌾", zh: "卖家仪表板 🌾", ms: "Papan Pemuka Penjual 🌾" },
