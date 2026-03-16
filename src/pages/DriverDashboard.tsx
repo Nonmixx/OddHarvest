@@ -58,7 +58,7 @@ const DriverDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("driver.available_requests")}</h2>
         <div className="space-y-4">
-          {deliveryRequests.map((d) => {
+          {deliveryRequests.filter((d) => !rejected.includes(d.id)).map((d) => {
             const isAccepted = accepted.includes(d.id);
             return (
               <div key={d.id} className={`farm-card p-5 ${isAccepted ? "opacity-60" : ""}`}>
@@ -86,13 +86,18 @@ const DriverDashboard = () => {
                   </div>
                   <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 flex gap-2">
                   {isAccepted ? (
                     <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
                   ) : (
-                    <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
-                      <Truck className="h-4 w-4 mr-1" /> {t("driver.accept")}
-                    </Button>
+                    <>
+                      <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
+                        <Truck className="h-4 w-4 mr-1" /> {t("driver.accept")}
+                      </Button>
+                      <Button variant="destructive" onClick={() => handleReject(d.id)} className="rounded-full" size="sm">
+                        <XCircle className="h-4 w-4 mr-1" /> {t("driver.reject")}
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
