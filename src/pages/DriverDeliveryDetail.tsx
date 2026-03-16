@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle } from "lucide-react";
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 
 const allDeliveries = [...deliveryRequests, ...completedDeliveries];
 
@@ -13,6 +15,7 @@ const DriverDeliveryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [rejected, setRejected] = useState(false);
 
   const delivery = allDeliveries.find((d) => d.id === id);
 
@@ -32,6 +35,29 @@ const DriverDeliveryDetail = () => {
   }
 
   const isCompleted = completedDeliveries.some((d) => d.id === id);
+
+  const handleReject = () => {
+    setRejected(true);
+    toast.success(`${delivery.id} ${t("driver.rejected_msg")} ❌`);
+    setTimeout(() => navigate("/driver-dashboard"), 1500);
+  };
+
+  if (rejected) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <XCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
+          <p className="text-2xl font-heading font-bold text-foreground mb-2">{t("driver.delivery_rejected")}</p>
+          <p className="text-muted-foreground mb-6">{t("driver.rejected_desc")}</p>
+          <Button onClick={() => navigate("/driver-dashboard")} className="rounded-full">
+            {t("common.back_dashboard")}
+          </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -117,6 +143,14 @@ const DriverDeliveryDetail = () => {
               </div>
             </div>
           </div>
+
+          {!isCompleted && (
+            <div className="border-t border-border pt-4">
+              <Button variant="destructive" className="rounded-full w-full" onClick={handleReject}>
+                <XCircle className="h-4 w-4 mr-2" /> {t("driver.reject")}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <Footer />

@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus } from "lucide-react";
+import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
@@ -17,6 +18,7 @@ const DEFAULT_PICKUP_SLOTS = [
 
 const CheckoutPage = () => {
   const { items, total, clearCart } = useCart();
+  const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
@@ -31,6 +33,10 @@ const CheckoutPage = () => {
 
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
   const grandTotal = total + deliveryFee;
+
+  const userAddress = user?.location || "";
+  const userState = user?.state || "";
+  const fullAddress = [userAddress, userState].filter(Boolean).join(", ");
 
   const handleConfirm = () => {
     savedRef.current = { total, deliveryFee, grandTotal, items: [...items] };
@@ -63,9 +69,15 @@ const CheckoutPage = () => {
               : `${t("checkout.delivery_msg")} (${distance} km).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
+            {fullAddress && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
+                <Home className="h-4 w-4 shrink-0" />
+                <span>{t("checkout.deliver_to")}: <span className="font-medium text-foreground">{fullAddress}</span></span>
+              </div>
+            )}
             {saved.items.map((item) => (
               <div key={item.crop.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? "box" : "kg"}</span>
+                <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
                 <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
               </div>
             ))}
@@ -96,11 +108,22 @@ const CheckoutPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
+        {/* User address section */}
+        {fullAddress && (
+          <div className="farm-card p-4 mb-6">
+            <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
+              <Home className="h-4 w-4 text-primary" />
+              {t("checkout.your_address")}
+            </h2>
+            <p className="text-sm text-muted-foreground">{fullAddress}</p>
+          </div>
+        )}
+
         <div className="farm-card p-4 mb-6">
           <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? "box" : "kg"}</span>
+              <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
               <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
             </div>
           ))}

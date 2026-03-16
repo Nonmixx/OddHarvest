@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Leaf, TrendingDown, Truck, ShoppingBag, Recycle } from "lucide-react";
 import heroFarm from "@/assets/hero-farm.jpg";
@@ -6,9 +6,22 @@ import farmVeggies from "@/assets/farm-veggies.png";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const Index = () => {
   const { t } = useLanguage();
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  // If authenticated, redirect to appropriate dashboard/marketplace
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === "farmer") navigate("/farmer-dashboard", { replace: true });
+      else if (user.role === "driver") navigate("/driver-dashboard", { replace: true });
+      else navigate("/marketplace", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const features = [
     { icon: Recycle, titleKey: "feat.waste.title", descKey: "feat.waste.desc" },
@@ -47,7 +60,7 @@ const Index = () => {
               {t("hero.desc")}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/marketplace">
+              <Link to="/auth">
                 <Button size="lg" className="rounded-full text-base px-8">
                   {t("hero.browse")}
                 </Button>

@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User } from "lucide-react";
+import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -22,12 +22,18 @@ export const completedDeliveries = [
 
 const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
+  const [rejected, setRejected] = useState<string[]>([]);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
     toast.success(`${id} ${t("driver.accepted_msg")} 🚗`);
+  };
+
+  const handleReject = (id: string) => {
+    setRejected((prev) => [...prev, id]);
+    toast.success(`${id} ${t("driver.rejected_msg")} ❌`);
   };
 
   return (
@@ -52,7 +58,7 @@ const DriverDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("driver.available_requests")}</h2>
         <div className="space-y-4">
-          {deliveryRequests.map((d) => {
+          {deliveryRequests.filter((d) => !rejected.includes(d.id)).map((d) => {
             const isAccepted = accepted.includes(d.id);
             return (
               <div key={d.id} className={`farm-card p-5 ${isAccepted ? "opacity-60" : ""}`}>
@@ -80,13 +86,18 @@ const DriverDashboard = () => {
                   </div>
                   <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 flex gap-2">
                   {isAccepted ? (
                     <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
                   ) : (
-                    <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
-                      <Truck className="h-4 w-4 mr-1" /> {t("driver.accept")}
-                    </Button>
+                    <>
+                      <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
+                        <Truck className="h-4 w-4 mr-1" /> {t("driver.accept")}
+                      </Button>
+                      <Button variant="destructive" onClick={() => handleReject(d.id)} className="rounded-full" size="sm">
+                        <XCircle className="h-4 w-4 mr-1" /> {t("driver.reject")}
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>

@@ -149,6 +149,9 @@ const translations: Record<string, Record<Language, string>> = {
   "checkout.delivery_msg": { en: "A driver will deliver your order", zh: "司机将配送您的订单", ms: "Pemandu akan menghantar pesanan anda" },
   "checkout.payment": { en: "Payment", zh: "付款", ms: "Pembayaran" },
   "checkout.continue_shopping": { en: "Continue Shopping", zh: "继续购物", ms: "Teruskan Membeli-belah" },
+  "checkout.your_address": { en: "Delivery Address", zh: "配送地址", ms: "Alamat Penghantaran" },
+  "checkout.deliver_to": { en: "Deliver to", zh: "送到", ms: "Hantar ke" },
+  "checkout.box": { en: "box", zh: "盒", ms: "kotak" },
 
   // Farmer dashboard
   "farmer.title": { en: "Seller Dashboard 🌾", zh: "卖家仪表板 🌾", ms: "Papan Pemuka Penjual 🌾" },
@@ -259,6 +262,7 @@ const translations: Record<string, Record<Language, string>> = {
   "profile.area_placeholder": { en: "e.g. Petaling Jaya", zh: "例如 八打灵再也", ms: "cth. Petaling Jaya" },
   "profile.save": { en: "Save Profile", zh: "保存个人资料", ms: "Simpan Profil" },
   "profile.updated": { en: "Profile updated!", zh: "个人资料已更新！", ms: "Profil dikemas kini!" },
+  "profile.photo_updated": { en: "Profile photo updated!", zh: "头像已更新！", ms: "Foto profil dikemas kini!" },
   "profile.seller": { en: "Seller", zh: "卖家", ms: "Penjual" },
   "profile.driver": { en: "Driver", zh: "司机", ms: "Pemandu" },
   "profile.buyer": { en: "Buyer", zh: "买家", ms: "Pembeli" },
@@ -297,6 +301,10 @@ const translations: Record<string, Record<Language, string>> = {
   "driver.accept": { en: "Accept Delivery", zh: "接受配送", ms: "Terima Penghantaran" },
   "driver.accepted": { en: "Accepted", zh: "已接受", ms: "Diterima" },
   "driver.accepted_msg": { en: "accepted!", zh: "已接受！", ms: "diterima!" },
+  "driver.reject": { en: "Reject Delivery", zh: "拒绝配送", ms: "Tolak Penghantaran" },
+  "driver.rejected_msg": { en: "rejected!", zh: "已拒绝！", ms: "ditolak!" },
+  "driver.delivery_rejected": { en: "Delivery Rejected", zh: "配送已拒绝", ms: "Penghantaran Ditolak" },
+  "driver.rejected_desc": { en: "This delivery has been rejected. Returning to dashboard.", zh: "此配送已被拒绝。返回仪表板。", ms: "Penghantaran ini telah ditolak. Kembali ke papan pemuka." },
 
   // Driver deliveries
   "driver.completed_title": { en: "Completed Deliveries ✅", zh: "已完成配送 ✅", ms: "Penghantaran Selesai ✅" },
