@@ -22,12 +22,18 @@ export const completedDeliveries = [
 
 const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
+  const [rejected, setRejected] = useState<string[]>([]);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
     toast.success(`${id} ${t("driver.accepted_msg")} 🚗`);
+  };
+
+  const handleReject = (id: string) => {
+    setRejected((prev) => [...prev, id]);
+    toast.success(`${id} ${t("driver.rejected_msg")} ❌`);
   };
 
   return (
