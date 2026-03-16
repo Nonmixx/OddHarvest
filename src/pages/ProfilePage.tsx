@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -6,13 +6,14 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, MapPin, Phone, Mail, Sprout, ShoppingBag, Truck, Save } from "lucide-react";
+import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera } from "lucide-react";
 import { toast } from "sonner";
 import VoiceInput from "@/components/VoiceInput";
 
 const ProfilePage = () => {
   const { user, updateProfile } = useAuth();
   const { t } = useLanguage();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
@@ -23,8 +24,8 @@ const ProfilePage = () => {
   const [cropsGrown, setCropsGrown] = useState(user?.cropsGrown || "");
   const [vehicleType, setVehicleType] = useState(user?.vehicleType || "Motorcycle");
   const [licenseNo, setLicenseNo] = useState(user?.licenseNo || "");
+  const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
 
-  // Sync from user context when user changes
   useEffect(() => {
     if (user) {
       setName(user.name || "");
@@ -37,17 +38,33 @@ const ProfilePage = () => {
       setCropsGrown(user.cropsGrown || "");
       setVehicleType(user.vehicleType || "Motorcycle");
       setLicenseNo(user.licenseNo || "");
+      setProfilePicture(user.profilePicture || "");
     }
   }, [user]);
 
   const roleIcon = user?.role === "farmer" ? Sprout : user?.role === "driver" ? Truck : ShoppingBag;
   const roleLabel = user?.role === "farmer" ? t("profile.seller") : user?.role === "driver" ? t("profile.driver") : t("profile.buyer");
 
+  const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        const pic = ev.target.result as string;
+        setProfilePicture(pic);
+        updateProfile({ profilePicture: pic });
+        toast.success(t("profile.photo_updated") + " 📸");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = () => {
     updateProfile({
       name, email, phone, location, state,
       farmName, yearsExp, cropsGrown,
-      vehicleType, licenseNo,
+      vehicleType, licenseNo, profilePicture,
     });
     toast.success(t("profile.updated") + " ✅");
   };
@@ -57,8 +74,30 @@ const ProfilePage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="flex items-center gap-3 mb-8">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-8 w-8 text-primary" />
+          <div className="relative group">
+            <div
+              className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {profilePicture ? (
+                <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User className="h-8 w-8 text-primary" />
+              )}
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md"
+            >
+              <Camera className="h-3 w-3" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleProfilePictureUpload}
+            />
           </div>
           <div>
             <h1 className="text-2xl font-heading font-bold text-foreground">{t("profile.title")}</h1>

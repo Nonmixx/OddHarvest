@@ -17,6 +17,7 @@ interface User {
   cropsGrown?: string;
   vehicleType?: string;
   licenseNo?: string;
+  profilePicture?: string;
 }
 
 interface AuthContextType {

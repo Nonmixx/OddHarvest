@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
@@ -20,7 +22,9 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
+  const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [maxDistance, setMaxDistance] = useState(999);
@@ -28,6 +32,13 @@ const MarketplacePage = () => {
   const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
   const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
   const [showBundlesOnly, setShowBundlesOnly] = useState(false);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   let filtered = crops.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
@@ -52,6 +63,8 @@ const MarketplacePage = () => {
       return acc;
     }, [] as { location: string; distance: number; farmerName: string }[])
     .sort((a, b) => a.distance - b.distance);
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen">

@@ -36,7 +36,7 @@ const Navbar = () => {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
           <LanguageSelector />
-          {showMarketplace && (
+          {showMarketplace && isAuthenticated && (
             <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-w-[80px] text-center">
               {t("nav.marketplace")}
             </Link>
@@ -46,7 +46,7 @@ const Navbar = () => {
               {t("nav.dashboard")}
             </Link>
           )}
-          {showCart && (
+          {showCart && isAuthenticated && (
             <Link to="/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
               {itemCount > 0 && (
@@ -58,10 +58,14 @@ const Navbar = () => {
           )}
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                <User className="h-4 w-4" />
-                {user?.name}
-              </span>
+              <Link to="/profile" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+                {user?.profilePicture ? (
+                  <img src={user.profilePicture} alt="Profile" className="h-7 w-7 rounded-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+                <span className="text-sm text-muted-foreground">{user?.name}</span>
+              </Link>
               <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); }}>
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -83,21 +87,31 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="md:hidden bg-card border-b border-border px-4 pb-4 space-y-3">
           <LanguageSelector />
-          {showMarketplace && (
+          {showMarketplace && isAuthenticated && (
             <Link to="/marketplace" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.marketplace")}</Link>
           )}
           {isAuthenticated && (
             <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
           )}
-          {showCart && (
+          {showCart && isAuthenticated && (
             <Link to="/cart" className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
               {t("nav.cart")} ({itemCount})
             </Link>
           )}
           {isAuthenticated ? (
-            <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
-              {t("nav.logout")}
-            </Button>
+            <>
+              <Link to="/profile" className="flex items-center gap-2 text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+                {user?.profilePicture ? (
+                  <img src={user.profilePicture} alt="Profile" className="h-6 w-6 rounded-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+                {t("common.profile")}
+              </Link>
+              <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
+                {t("nav.logout")}
+              </Button>
+            </>
           ) : (
             <Link to="/auth" onClick={() => setMobileOpen(false)}>
               <Button size="sm" className="w-full">{t("nav.login")}</Button>
