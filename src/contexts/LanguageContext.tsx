@@ -297,6 +297,10 @@ const translations: Record<string, Record<Language, string>> = {
   "driver.accept": { en: "Accept Delivery", zh: "接受配送", ms: "Terima Penghantaran" },
   "driver.accepted": { en: "Accepted", zh: "已接受", ms: "Diterima" },
   "driver.accepted_msg": { en: "accepted!", zh: "已接受！", ms: "diterima!" },
+  "driver.reject": { en: "Reject Delivery", zh: "拒绝配送", ms: "Tolak Penghantaran" },
+  "driver.rejected_msg": { en: "rejected!", zh: "已拒绝！", ms: "ditolak!" },
+  "driver.delivery_rejected": { en: "Delivery Rejected", zh: "配送已拒绝", ms: "Penghantaran Ditolak" },
+  "driver.rejected_desc": { en: "This delivery has been rejected. Returning to dashboard.", zh: "此配送已被拒绝。返回仪表板。", ms: "Penghantaran ini telah ditolak. Kembali ke papan pemuka." },
 
   // Driver deliveries
   "driver.completed_title": { en: "Completed Deliveries ✅", zh: "已完成配送 ✅", ms: "Penghantaran Selesai ✅" },
