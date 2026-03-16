@@ -259,6 +259,7 @@ const translations: Record<string, Record<Language, string>> = {
   "profile.area_placeholder": { en: "e.g. Petaling Jaya", zh: "例如 八打灵再也", ms: "cth. Petaling Jaya" },
   "profile.save": { en: "Save Profile", zh: "保存个人资料", ms: "Simpan Profil" },
   "profile.updated": { en: "Profile updated!", zh: "个人资料已更新！", ms: "Profil dikemas kini!" },
+  "profile.photo_updated": { en: "Profile photo updated!", zh: "头像已更新！", ms: "Foto profil dikemas kini!" },
   "profile.seller": { en: "Seller", zh: "卖家", ms: "Penjual" },
   "profile.driver": { en: "Driver", zh: "司机", ms: "Pemandu" },
   "profile.buyer": { en: "Buyer", zh: "买家", ms: "Pembeli" },
