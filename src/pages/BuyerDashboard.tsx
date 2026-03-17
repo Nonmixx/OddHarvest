@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
@@ -76,7 +75,7 @@ const BuyerDashboard = () => {
           )}
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, CalendarDays, MapPin, User } from "lucide-react";
@@ -72,7 +71,7 @@ const FarmerSoldCrops = () => {
           ))}
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

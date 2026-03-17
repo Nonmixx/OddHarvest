@@ -5,7 +5,6 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -469,7 +468,7 @@ const MealPlannerPage = () => {
           </div>
         )}
       </div>
-      <Footer />
+      
     </div>
   );
 };

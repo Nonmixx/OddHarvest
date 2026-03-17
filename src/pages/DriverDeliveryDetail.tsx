@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle } from "lucide-react";
@@ -32,7 +31,7 @@ const DriverDeliveryDetail = () => {
             {t("common.back_dashboard")}
           </Button>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -57,7 +56,7 @@ const DriverDeliveryDetail = () => {
             {t("common.back_dashboard")}
           </Button>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -149,7 +148,7 @@ const DriverDeliveryDetail = () => {
           )}
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

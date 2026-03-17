@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Star, Store, MapPin, CheckCircle } from "lucide-react";
@@ -128,7 +127,7 @@ const OrderDetailPage = () => {
           <h1 className="text-2xl font-heading font-bold text-foreground mb-4">{t("order.not_found")}</h1>
           <Button onClick={() => navigate("/buyer-dashboard")}>{t("order.back_dashboard")}</Button>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -266,7 +265,7 @@ const OrderDetailPage = () => {
           );
         })}
       </div>
-      <Footer />
+      
     </div>
   );
 };
