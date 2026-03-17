@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
@@ -22,6 +23,7 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
+  const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [search, setSearch] = useState("");
@@ -53,11 +55,11 @@ const MarketplacePage = () => {
   const nearbyFarms = crops
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
-      if (!acc.find((f) => f.location === c.farmLocation)) {
-        acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName });
+      if (!acc.find((f) => f.sellerId === c.sellerId)) {
+        acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName, sellerId: c.sellerId });
       }
       return acc;
-    }, [] as { location: string; distance: number; farmerName: string }[])
+    }, [] as { location: string; distance: number; farmerName: string; sellerId: string }[])
     .sort((a, b) => a.distance - b.distance);
 
   
@@ -79,7 +81,11 @@ const MarketplacePage = () => {
             </h2>
             <div className="flex flex-wrap gap-3">
               {nearbyFarms.map((f, i) => (
-                <div key={i} className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2">
+                <div
+                  key={i}
+                  className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2 cursor-pointer hover:shadow-md hover:bg-farm-green-light/80 transition-all"
+                  onClick={() => navigate(`/seller/${f.sellerId}`)}
+                >
                   <span className="text-sm font-medium text-foreground">{tc(f.location)}</span>
                   <span className="text-xs text-primary font-bold">{formatDistance(f.distance, language)}</span>
                 </div>
