@@ -199,7 +199,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                   }}
                   className="w-14 text-center text-sm font-bold bg-background border border-input rounded-md py-1"
                 />
-                <span className="text-xs text-muted-foreground">{isBundle ? "box" : "kg"}</span>
+                <span className="text-xs text-muted-foreground">{unitLabel}</span>
                 <button
                   onClick={() => {
                     const step = isBundle ? 1 : 0.1;

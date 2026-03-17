@@ -228,7 +228,7 @@ const CheckoutPage = () => {
           </div>
           {delivery === "delivery" && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({distance} km)</span>
+              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({formatDistance(distance, language)})</span>
               <span>RM{deliveryFee.toFixed(2)}</span>
             </div>
           )}
