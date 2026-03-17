@@ -61,7 +61,7 @@ const Index = () => {
             </p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full text-base px-8">
-                <Link to="/marketplace">{t("hero.browse")}</Link>
+                <Link to="/auth">{t("hero.browse")}</Link>
               </Button>
               <Button asChild size="lg" variant="secondary" className="rounded-full text-base px-8">
                 <Link to="/auth">{t("hero.join")}</Link>
