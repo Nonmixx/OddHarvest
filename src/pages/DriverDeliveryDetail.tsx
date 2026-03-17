@@ -15,7 +15,8 @@ const allDeliveries = [...deliveryRequests, ...completedDeliveries];
 const DriverDeliveryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const [rejected, setRejected] = useState(false);
 
   const delivery = allDeliveries.find((d) => d.id === id);
