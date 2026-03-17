@@ -176,7 +176,7 @@ const OrderDetailPage = () => {
               <span className="farm-badge-green text-xs">{tc(order.status)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Total Rescued")}</span>
+              <span className="text-muted-foreground">{t("order.total_rescued")}</span>
               <span className="font-medium text-foreground">{order.kg} kg</span>
             </div>
             <div className="flex justify-between text-sm font-bold">
