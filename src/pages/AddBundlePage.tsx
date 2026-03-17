@@ -8,6 +8,7 @@ import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import VoiceInput from "@/components/VoiceInput";
 
 const AddBundlePage = () => {
