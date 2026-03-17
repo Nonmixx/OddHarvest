@@ -11,6 +11,7 @@ interface User {
   sellerType?: SellerType;
   farmName?: string;
   location?: string;
+  address?: string;
   state?: string;
   phone?: string;
   yearsExp?: string;
