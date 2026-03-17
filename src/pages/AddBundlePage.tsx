@@ -85,7 +85,7 @@ const AddBundlePage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_name")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="e.g. Rescue Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input placeholder={t("farmer.bundle_name_placeholder")} value={name} onChange={(e) => setName(e.target.value)} required />
               <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
