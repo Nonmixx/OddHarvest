@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { CropListing, IMPERFECT_REASONS } from "@/contexts/CartContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
@@ -22,6 +23,8 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const tc = (text: string) => translateContent(text, language);
   const isBundle = crop.isBundle;
   const isMysteryBox = crop.isMysteryBox;
@@ -38,6 +41,10 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const expiryInfo = getExpiryInfo(crop.expiryDate, language);
 
   const handleAdd = () => {
+    if (!isAuthenticated) {
+      navigate("/auth");
+      return;
+    }
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);

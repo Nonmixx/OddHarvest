@@ -36,11 +36,6 @@ const MarketplacePage = () => {
   const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
   const [showBundlesOnly, setShowBundlesOnly] = useState(false);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/auth", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
 
   let filtered = crops.filter((c) => {
     const translatedName = tc(c.name).toLowerCase();
