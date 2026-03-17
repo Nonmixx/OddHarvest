@@ -137,7 +137,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
 
         {crop.distanceKm && (
           <div className="text-xs text-muted-foreground">
-            📍 {crop.distanceKm} {t("product.from_you")}
+            📍 {formatDistance(crop.distanceKm, language)} {language === "zh" ? "距离您" : t("product.from_you")}
           </div>
         )}
 
