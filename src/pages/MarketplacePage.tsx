@@ -31,6 +31,7 @@ const MarketplacePage = () => {
   const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
   const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
   const [showBundlesOnly, setShowBundlesOnly] = useState(false);
+  const [showMysteryOnly, setShowMysteryOnly] = useState(false);
 
 
   let filtered = crops.filter((c) => {
