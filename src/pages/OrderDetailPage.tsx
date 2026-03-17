@@ -249,7 +249,7 @@ const OrderDetailPage = () => {
                                       className="h-7 text-xs rounded-full"
                                       onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
                                     >
-                                      {tc("Submit")}
+                                      {t("order.submit")}
                                     </Button>
                                   )}
                                 </div>
