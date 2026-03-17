@@ -36,9 +36,10 @@ const CheckoutPage = () => {
   const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
   const grandTotal = total + deliveryFee;
 
-  const userAddress = user?.location || "";
+  const userAddress = user?.address || "";
+  const userLocation = user?.location || "";
   const userState = user?.state || "";
-  const fullAddress = [userAddress, userState].filter(Boolean).join(", ");
+  const fullAddress = [userAddress, userLocation, userState].filter(Boolean).join(", ");
 
   const handleConfirm = () => {
     savedRef.current = { total, deliveryFee, grandTotal, items: [...items] };
