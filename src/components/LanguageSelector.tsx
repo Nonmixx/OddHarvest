@@ -4,7 +4,7 @@ import { Globe } from "lucide-react";
 const LANGS: { code: Language; label: string }[] = [
   { code: "en", label: "EN" },
   { code: "zh", label: "中" },
-  { code: "ms", label: "MY" },
+  { code: "ms", label: "BM" },
 ];
 
 const LanguageSelector = () => {
