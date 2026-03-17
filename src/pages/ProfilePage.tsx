@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -66,6 +67,8 @@ const ProfilePage = () => {
     reader.readAsDataURL(file);
   };
 
+  const navigate = useNavigate();
+
   const handleSave = () => {
     updateProfile({
       name, email, phone, location, address, state,
@@ -73,6 +76,7 @@ const ProfilePage = () => {
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
+    navigate("/marketplace");
   };
 
   return (
