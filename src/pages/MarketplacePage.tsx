@@ -54,11 +54,11 @@ const MarketplacePage = () => {
   const nearbyFarms = crops
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
-      if (!acc.find((f) => f.location === c.farmLocation)) {
-        acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName });
+      if (!acc.find((f) => f.sellerId === c.sellerId)) {
+        acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName, sellerId: c.sellerId });
       }
       return acc;
-    }, [] as { location: string; distance: number; farmerName: string }[])
+    }, [] as { location: string; distance: number; farmerName: string; sellerId: string }[])
     .sort((a, b) => a.distance - b.distance);
 
   
