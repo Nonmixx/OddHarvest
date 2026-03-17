@@ -17,20 +17,6 @@ interface ProductCardProps {
   crop: CropListing;
 }
 
-const getExpiryInfo = (expiryDate?: string, t?: (key: string) => string) => {
-  if (!expiryDate) return null;
-  const now = new Date();
-  const expiry = new Date(expiryDate);
-  const diffMs = expiry.getTime() - now.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMs <= 0) return { label: t?.("product.expired") || "Expired", color: "text-destructive", urgent: true };
-  if (diffDays === 0) return { label: `${diffHours}h left`, color: "text-destructive", urgent: true };
-  if (diffDays <= 2) return { label: `${diffDays}d ${diffHours % 24}h left`, color: "text-destructive", urgent: true };
-  if (diffDays <= 5) return { label: `${diffDays} days left`, color: "text-farm-orange", urgent: false };
-  return { label: `${diffDays} days left`, color: "text-primary", urgent: false };
-};
 
 const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
