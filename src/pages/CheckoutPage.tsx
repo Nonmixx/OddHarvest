@@ -41,6 +41,7 @@ const CheckoutPage = () => {
   const userLocation = user?.location || "";
   const userState = user?.state || "";
   const fullAddress = [userAddress, userLocation, userState].filter(Boolean).join(", ");
+  const pickupArea = user?.preferredPickupArea || "";
 
   const handleConfirm = () => {
     savedRef.current = { total, deliveryFee, grandTotal, items: [...items] };
