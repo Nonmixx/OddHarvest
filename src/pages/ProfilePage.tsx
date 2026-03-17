@@ -67,6 +67,8 @@ const ProfilePage = () => {
     reader.readAsDataURL(file);
   };
 
+  const navigate = useNavigate();
+
   const handleSave = () => {
     updateProfile({
       name, email, phone, location, address, state,
@@ -74,6 +76,7 @@ const ProfilePage = () => {
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
+    navigate("/marketplace");
   };
 
   return (
