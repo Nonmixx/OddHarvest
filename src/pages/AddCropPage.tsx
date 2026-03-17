@@ -107,7 +107,7 @@ const AddCropPage = () => {
             <div className="flex flex-wrap gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
-                  <img src={img} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`${t("common.profile")} ${idx + 1}`} className="w-full h-full object-cover" />
                   <button type="button" onClick={() => removeImage(idx)} className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full h-5 w-5 flex items-center justify-center">
                     <X className="h-3 w-3" />
                   </button>
