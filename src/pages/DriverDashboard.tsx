@@ -117,6 +117,44 @@ const DriverDashboard = () => {
             );
           })}
         </div>
+
+        {/* Completed Deliveries Section */}
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-heading font-bold text-foreground text-lg">{t("driver.completed_title") || "Completed Deliveries"}</h2>
+            <Button variant="ghost" size="sm" className="rounded-full" onClick={() => navigate("/driver-deliveries")}>
+              {tc("View All")} <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {completedDeliveries.slice(0, 3).map((d) => (
+              <div
+                key={d.id}
+                className="farm-card p-4 cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => navigate(`/driver-delivery/${d.id}`)}
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-heading font-bold text-foreground text-sm">{d.id}</p>
+                      <span className="farm-badge-green text-xs">{tc("Completed")}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{tc(d.crop)} · {d.date}</p>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" />{tc(d.pickup.split(",")[0])}</span>
+                      <span>→</span>
+                      <span className="flex items-center gap-1"><Navigation className="h-3 w-3 text-accent" />{tc(d.dropoff.split(",")[0])}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-primary text-sm">RM{d.fee.toFixed(2)}</span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
