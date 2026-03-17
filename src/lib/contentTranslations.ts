@@ -104,6 +104,15 @@ const contentMap: Record<string, Record<Language, string>> = {
   "Kebun Tomat, Cameron Highlands": { en: "Kebun Tomat, Cameron Highlands", zh: "番茄园，金马仑高原", ms: "Kebun Tomat, Cameron Highlands" },
   "Ladang Cili, Kota Bharu": { en: "Ladang Cili, Kota Bharu", zh: "辣椒农场，哥打巴鲁", ms: "Ladang Cili, Kota Bharu" },
 
+  // Seller locations (cities)
+  "Cameron Highlands": { en: "Cameron Highlands", zh: "金马仑高原", ms: "Cameron Highlands" },
+  "Tanah Rata": { en: "Tanah Rata", zh: "丹那拉打", ms: "Tanah Rata" },
+  "Ipoh": { en: "Ipoh", zh: "怡保", ms: "Ipoh" },
+  "Kota Bharu": { en: "Kota Bharu", zh: "哥打巴鲁", ms: "Kota Bharu" },
+  "Serdang": { en: "Serdang", zh: "沙登", ms: "Serdang" },
+  "Petaling Jaya": { en: "Petaling Jaya", zh: "八打灵再也", ms: "Petaling Jaya" },
+  "Kajang": { en: "Kajang", zh: "加影", ms: "Kajang" },
+
   // Buyer dashboard order items
   "Tomatoes, Carrots": { en: "Tomatoes, Carrots", zh: "番茄、胡萝卜", ms: "Tomato, Lobak Merah" },
   "Corn, Cucumbers": { en: "Corn, Cucumbers", zh: "玉米、黄瓜", ms: "Jagung, Timun" },

@@ -199,10 +199,10 @@ const OrderDetailPage = () => {
                 >
                   <Store className="h-5 w-5 text-primary" />
                   <div>
-                    <p className="font-heading font-bold text-foreground text-sm">{seller.sellerName}</p>
+                    <p className="font-heading font-bold text-foreground text-sm">{tc(seller.sellerName)}</p>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <MapPin className="h-3 w-3" />
-                      {seller.sellerLocation}
+                      {tc(seller.sellerLocation)}
                     </div>
                   </div>
                 </div>
