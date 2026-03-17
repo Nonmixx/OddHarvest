@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
-import { getFreshnessInfo } from "@/lib/freshness";
+import { formatDistance, getExpiryInfo, getFreshnessInfo, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
 import mysteryBoxImg from "@/assets/mystery-box.png";
 
@@ -17,20 +17,6 @@ interface ProductCardProps {
   crop: CropListing;
 }
 
-const getExpiryInfo = (expiryDate?: string, t?: (key: string) => string) => {
-  if (!expiryDate) return null;
-  const now = new Date();
-  const expiry = new Date(expiryDate);
-  const diffMs = expiry.getTime() - now.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffMs <= 0) return { label: t?.("product.expired") || "Expired", color: "text-destructive", urgent: true };
-  if (diffDays === 0) return { label: `${diffHours}h left`, color: "text-destructive", urgent: true };
-  if (diffDays <= 2) return { label: `${diffDays}d ${diffHours % 24}h left`, color: "text-destructive", urgent: true };
-  if (diffDays <= 5) return { label: `${diffDays} days left`, color: "text-farm-orange", urgent: false };
-  return { label: `${diffDays} days left`, color: "text-primary", urgent: false };
-};
 
 const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
@@ -39,21 +25,23 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const tc = (text: string) => translateContent(text, language);
   const isBundle = crop.isBundle;
   const isMysteryBox = crop.isMysteryBox;
+  const unitLabel = getUnitLabel(language, isBundle ? "box" : "kg");
+  const priceUnitLabel = getPriceUnitLabel(language, isBundle ? "box" : "kg");
   const initQty = isBundle ? 1 : 0.5;
   const [qty, setQty] = useState(initQty);
   const [qtyInput, setQtyInput] = useState(String(initQty));
   const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
-  const freshness = getFreshnessInfo(crop.harvestDate);
+  const freshness = getFreshnessInfo(crop.harvestDate, language);
   const outOfStock = crop.quantity <= 0;
   const reasonInfo = IMPERFECT_REASONS.find((r) => r.value === crop.imperfectReason);
   const seller = mockSellers.find((s) => s.id === crop.sellerId);
-  const expiryInfo = getExpiryInfo(crop.expiryDate, t);
+  const expiryInfo = getExpiryInfo(crop.expiryDate, language);
 
   const handleAdd = () => {
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);
-    toast.success(`${qty} ${isBundle ? "box" : "kg"} ${tc(crop.name)} ${t("product.added")} 🥕`);
+    toast.success(`${qty} ${unitLabel} ${tc(crop.name)} ${t("product.added")} 🥕`);
     const resetQty = isBundle ? 1 : 0.5;
     setQty(resetQty);
     setQtyInput(String(resetQty));
@@ -113,12 +101,12 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         {isMysteryBox ? (
           <div className="text-xs text-muted-foreground bg-primary/10 rounded-lg p-2">
             <span className="font-medium text-foreground">🎁 {t("product.surprise")}</span>{" "}
-            {t("product.surprise_desc")} {crop.bundleWeight} kg {t("product.rescued_produce")}
+            {t("product.surprise_desc")} {crop.bundleWeight} {getUnitLabel(language, "kg")} {t("product.rescued_produce")}
           </div>
         ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
-            {translateContentArray(crop.bundleContents, language).join(", ")} ({crop.bundleWeight} kg)
+            {translateContentArray(crop.bundleContents, language).join(", ")} ({crop.bundleWeight} {getUnitLabel(language, "kg")})
           </div>
         ) : null}
 
@@ -149,18 +137,18 @@ const ProductCard = ({ crop }: ProductCardProps) => {
 
         {crop.distanceKm && (
           <div className="text-xs text-muted-foreground">
-            📍 {crop.distanceKm} {t("product.from_you")}
+            📍 {formatDistance(crop.distanceKm, language)} {language === "zh" ? "距离您" : t("product.from_you")}
           </div>
         )}
 
         <div className="flex items-end justify-between pt-1">
           <div>
             {isBundle ? (
-              <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/box</p>
+              <p className="price-discount">RM{crop.discountPrice.toFixed(2)}{priceUnitLabel}</p>
             ) : (
               <>
-                <p className="price-original">RM{crop.usualPrice.toFixed(2)}/kg</p>
-                <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/kg</p>
+                <p className="price-original">RM{crop.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</p>
+                <p className="price-discount">RM{crop.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</p>
               </>
             )}
           </div>
@@ -211,7 +199,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                   }}
                   className="w-14 text-center text-sm font-bold bg-background border border-input rounded-md py-1"
                 />
-                <span className="text-xs text-muted-foreground">{isBundle ? "box" : "kg"}</span>
+                <span className="text-xs text-muted-foreground">{unitLabel}</span>
                 <button
                   onClick={() => {
                     const step = isBundle ? 1 : 0.1;

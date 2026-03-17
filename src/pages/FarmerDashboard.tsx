@@ -13,6 +13,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS } from "@/contexts/CartContext";
+import { formatDistance, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka"];
 
@@ -147,7 +148,7 @@ const FarmerDashboard = () => {
                         <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 {t("product.bundle")}</span>
                       ) : null}
                     </div>
-                    <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? t("checkout.box") : "kg"} · {tc(c.state)}</p>
+                    <p className="text-xs text-muted-foreground">{c.quantity} {getUnitLabel(language, c.isBundle ? "box" : "kg")} · {tc(c.state)}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
@@ -167,15 +168,15 @@ const FarmerDashboard = () => {
                   </span>
                 )}
                 {c.isBundle && c.bundleContents && (
-                  <p className="text-xs text-muted-foreground">📦 {translateContentArray(c.bundleContents, language).join(", ")} ({c.bundleWeight} kg)</p>
+                  <p className="text-xs text-muted-foreground">📦 {translateContentArray(c.bundleContents, language).join(", ")} ({c.bundleWeight} {getUnitLabel(language, "kg")})</p>
                 )}
                 <div className="flex gap-2 items-center">
                   {c.isBundle ? (
-                    <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/box</span>
+                    <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "box")}</span>
                   ) : (
                     <>
-                      <span className="price-original text-xs">RM{c.usualPrice.toFixed(2)}</span>
-                      <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/kg</span>
+                      <span className="price-original text-xs">RM{c.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>
+                      <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>
                       <span className="text-xs text-muted-foreground">· {t("product.save")} {Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100)}%</span>
                     </>
                   )}

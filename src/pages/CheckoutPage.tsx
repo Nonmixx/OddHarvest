@@ -3,6 +3,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance, getUnitLabel } from "@/lib/freshness";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -69,7 +70,7 @@ const CheckoutPage = () => {
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
               ? `${t("checkout.pickup_msg")} ${pickupSlot}`
-              : `${t("checkout.delivery_msg")} (${distance} km).`}
+              : `${t("checkout.delivery_msg")} (${formatDistance(distance, language)}).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {fullAddress && (
@@ -80,7 +81,7 @@ const CheckoutPage = () => {
             )}
             {saved.items.map((item) => (
               <div key={item.crop.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+                <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
                 <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
               </div>
             ))}
@@ -134,7 +135,7 @@ const CheckoutPage = () => {
           <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
               <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
             </div>
           ))}
@@ -194,7 +195,7 @@ const CheckoutPage = () => {
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <Input type="number" min={1} value={distance} onChange={(e) => setDistance(Math.max(1, Number(e.target.value)))} className="w-24" />
-                <span className="text-sm text-muted-foreground">km → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
+                <span className="text-sm text-muted-foreground">{formatDistance(distance, language)} → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
               </div>
             </div>
           )}
@@ -227,7 +228,7 @@ const CheckoutPage = () => {
           </div>
           {delivery === "delivery" && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({distance} km)</span>
+              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({formatDistance(distance, language)})</span>
               <span>RM{deliveryFee.toFixed(2)}</span>
             </div>
           )}

@@ -8,6 +8,7 @@ import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle } fro
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance } from "@/lib/freshness";
 
 export const deliveryRequests = [
   { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
@@ -86,7 +87,7 @@ const DriverDashboard = () => {
                       <p className="font-medium">{tc(d.dropoff)}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>
+                  <p className="text-xs text-muted-foreground">{t("driver.distance")}: {formatDistance(d.distance, language)}</p>
                 </div>
                 <div className="mt-4 flex gap-2">
                   {isAccepted ? (

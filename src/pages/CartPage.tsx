@@ -1,6 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -38,7 +39,8 @@ const CartPage = () => {
         <div className="space-y-4 mb-8">
           {items.map((item) => {
             const isBundle = item.crop.isBundle;
-            const unit = isBundle ? "box" : "kg";
+            const unitLabel = getUnitLabel(language, isBundle ? "box" : "kg");
+            const priceUnitLabel = getPriceUnitLabel(language, isBundle ? "box" : "kg");
             const minQty = isBundle ? 1 : 0.1;
             const qtyStep = isBundle ? 1 : step;
             return (
@@ -48,8 +50,8 @@ const CartPage = () => {
                   <h3 className="font-heading font-bold text-foreground text-sm truncate">{tc(item.crop.name)}</h3>
                   <p className="text-xs text-muted-foreground">{tc(item.crop.farmLocation)}</p>
                   <div className="flex items-center gap-1 mt-1">
-                    {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}</span>}
-                    <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}/{unit}</span>
+                    {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>}
+                    <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}{priceUnitLabel}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-between">
@@ -75,7 +77,7 @@ const CartPage = () => {
                       }}
                       className="w-16 text-center font-bold text-sm bg-background border border-input rounded-md py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="text-xs text-muted-foreground">{unit}</span>
+                    <span className="text-xs text-muted-foreground">{unitLabel}</span>
                     <button
                       onClick={() => updateQuantity(item.crop.id, Math.round((item.quantity + qtyStep) * 10) / 10)}
                       className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"

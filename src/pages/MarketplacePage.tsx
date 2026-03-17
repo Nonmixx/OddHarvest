@@ -4,6 +4,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance } from "@/lib/freshness";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -87,7 +88,7 @@ const MarketplacePage = () => {
               {nearbyFarms.map((f, i) => (
                 <div key={i} className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2">
                   <span className="text-sm font-medium text-foreground">{tc(f.location)}</span>
-                  <span className="text-xs text-primary font-bold">{f.distance} km</span>
+                  <span className="text-xs text-primary font-bold">{formatDistance(f.distance, language)}</span>
                 </div>
               ))}
             </div>

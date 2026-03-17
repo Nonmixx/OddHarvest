@@ -8,6 +8,7 @@ import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance } from "@/lib/freshness";
 import { toast } from "sonner";
 
 const allDeliveries = [...deliveryRequests, ...completedDeliveries];
@@ -120,7 +121,7 @@ const DriverDeliveryDetail = () => {
               <Route className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-xs text-muted-foreground">{t("driver.distance")}</p>
-                <p className="font-bold text-foreground">{delivery.distance} km</p>
+                <p className="font-bold text-foreground">{formatDistance(delivery.distance, language)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
