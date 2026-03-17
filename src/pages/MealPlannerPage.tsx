@@ -328,11 +328,7 @@ const MealPlannerPage = () => {
               <Loader2 className="h-8 w-8 text-primary animate-spin" />
               <div className="text-left">
                 <p className="font-heading font-bold text-foreground">{l("generating")}</p>
-                <p className="text-xs text-muted-foreground">
-                  {language === "en" ? "Analyzing your ingredients and finding the best recipes..." :
-                   language === "zh" ? "正在分析您的食材并寻找最佳食谱..." :
-                   "Menganalisis bahan anda dan mencari resipi terbaik..."}
-                </p>
+                <p className="text-xs text-muted-foreground">{l("analyzing")}</p>
               </div>
             </div>
           </div>
@@ -344,7 +340,7 @@ const MealPlannerPage = () => {
             <div className="flex items-center justify-between">
               <h2 className="font-heading font-bold text-foreground text-lg">{l("suggested_meals")}</h2>
               <Badge variant="outline" className="text-xs gap-1">
-                <Sparkles className="h-3 w-3" /> {suggestedMeals.length} {language === "en" ? "meals" : language === "zh" ? "道菜" : "hidangan"}
+                <Sparkles className="h-3 w-3" /> {suggestedMeals.length} {l("meals_count")}
               </Badge>
             </div>
 
