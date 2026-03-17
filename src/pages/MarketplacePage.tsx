@@ -41,8 +41,9 @@ const MarketplacePage = () => {
     const matchDistance = c.distanceKm <= maxDistance;
     const matchSellerType = sellerTypeFilter === "all" || c.sellerType === sellerTypeFilter;
     const matchImperfect = imperfectFilter === "all" || c.imperfectReason === imperfectFilter;
-    const matchBundle = !showBundlesOnly || c.isBundle;
-    return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle;
+    const matchBundle = !showBundlesOnly || (c.isBundle && !c.isMysteryBox);
+    const matchMystery = !showMysteryOnly || c.isMysteryBox;
+    return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle && matchMystery;
   });
 
   if (sortBy === "price") filtered = [...filtered].sort((a, b) => a.discountPrice - b.discountPrice);
