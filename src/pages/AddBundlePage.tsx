@@ -14,7 +14,7 @@ import VoiceInput from "@/components/VoiceInput";
 const AddBundlePage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
   const [contents, setContents] = useState("");

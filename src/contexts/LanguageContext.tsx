@@ -197,7 +197,9 @@ const translations: Record<string, Record<Language, string>> = {
   "farmer.listing_removed": { en: "Listing removed!", zh: "列表已删除！", ms: "Senarai dipadamkan!" },
   "farmer.create_bundle": { en: "Create Crop Bundle", zh: "创建农产品套装", ms: "Cipta Bundle Tanaman" },
   "farmer.bundle_name": { en: "Bundle Name", zh: "套装名称", ms: "Nama Bundle" },
+  "farmer.bundle_name_placeholder": { en: "e.g. Rescue Veggie Box", zh: "例如 拯救蔬菜箱", ms: "cth. Kotak Sayur Diselamatkan" },
   "farmer.bundle_contents": { en: "Contents (comma separated)", zh: "内容（逗号分隔）", ms: "Kandungan (pisah dengan koma)" },
+  "farmer.bundle_contents_placeholder": { en: "Carrots, Cucumbers, Tomatoes", zh: "胡萝卜、黄瓜、番茄", ms: "Lobak Merah, Timun, Tomato" },
   "farmer.bundle_weight": { en: "Total Weight (kg)", zh: "总重量（公斤）", ms: "Jumlah Berat (kg)" },
   "farmer.active": { en: "Active", zh: "活跃", ms: "Aktif" },
   "farmer.sold_out": { en: "Sold Out", zh: "售罄", ms: "Habis" },
@@ -208,6 +210,8 @@ const translations: Record<string, Record<Language, string>> = {
   "farmer.today": { en: "Today", zh: "今天", ms: "Hari Ini" },
   "farmer.days_ago": { en: "days ago", zh: "天前", ms: "hari lepas" },
   "farmer.day_ago": { en: "day ago", zh: "天前", ms: "hari lepas" },
+  "farmer.crop_name_placeholder": { en: "e.g. Tomatoes (Imperfect Shape)", zh: "例如 番茄（形状不规则）", ms: "cth. Tomato (Bentuk Tidak Sempurna)" },
+  "farmer.location_placeholder": { en: "e.g. Ladang Pak Ali", zh: "例如 Ladang Pak Ali", ms: "cth. Ladang Pak Ali" },
 
   // Farmer sold crops
   "sold.title": { en: "Crops Sold 📦", zh: "已售农产品 📦", ms: "Tanaman Terjual 📦" },
@@ -242,6 +246,7 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Bundle page
   "bundle.price": { en: "Bundle Price (RM/box)", zh: "套装价格（RM/盒）", ms: "Harga Bundle (RM/kotak)" },
+  "checkout.rate_per_km": { en: "RM1/km", zh: "RM1/公里", ms: "RM1/km" },
 
   // Profile
   "profile.title": { en: "My Profile", zh: "我的个人资料", ms: "Profil Saya" },

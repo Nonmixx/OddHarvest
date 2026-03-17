@@ -17,7 +17,7 @@ const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Pe
 const AddCropPage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
   const [images, setImages] = useState<string[]>([]);
