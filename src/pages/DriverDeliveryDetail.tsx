@@ -138,13 +138,6 @@ const DriverDeliveryDetail = () => {
                 <p className="font-bold text-foreground">{delivery.date}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">{t("driver.farmer")}</p>
-                <p className="font-bold text-foreground">{delivery.farmer}</p>
-              </div>
-            </div>
           </div>
 
           {!isCompleted && (
