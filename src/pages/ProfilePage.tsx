@@ -70,7 +70,7 @@ const ProfilePage = () => {
     updateProfile({
       name, email, phone, location, address, state,
       farmName, yearsExp, cropsGrown,
-      vehicleType, licenseNo, profilePicture,
+      vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
   };
