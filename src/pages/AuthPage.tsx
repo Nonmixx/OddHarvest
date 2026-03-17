@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Leaf, Sprout, ShoppingBag, Truck, Home } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 import Navbar from "@/components/Navbar";
+import { toast } from "@/hooks/use-toast";
 
 const roles: { value: UserRole; labelKey: string; icon: typeof Sprout; descKey: string }[] = [
   { value: "farmer", labelKey: "auth.farmer", icon: Sprout, descKey: "auth.farmer_desc" },
@@ -32,11 +33,18 @@ const AuthPage = () => {
     e.preventDefault();
     if (isLogin) {
       login(email, password, role);
+      const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
+      navigate(dest);
     } else {
       signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
+      toast({
+        title: t("auth.signup_success_title"),
+        description: t("auth.signup_success_desc"),
+      });
+      // Reset to login mode so user can log in
+      setIsLogin(true);
+      setPassword("");
     }
-    const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
-    navigate(dest);
   };
 
   return (
