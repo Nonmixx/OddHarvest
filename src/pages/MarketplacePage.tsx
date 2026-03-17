@@ -80,7 +80,11 @@ const MarketplacePage = () => {
             </h2>
             <div className="flex flex-wrap gap-3">
               {nearbyFarms.map((f, i) => (
-                <div key={i} className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2">
+                <div
+                  key={i}
+                  className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2 cursor-pointer hover:shadow-md hover:bg-farm-green-light/80 transition-all"
+                  onClick={() => navigate(`/seller/${f.sellerId}`)}
+                >
                   <span className="text-sm font-medium text-foreground">{tc(f.location)}</span>
                   <span className="text-xs text-primary font-bold">{formatDistance(f.distance, language)}</span>
                 </div>
