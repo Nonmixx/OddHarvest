@@ -162,7 +162,7 @@ const CheckoutPage = () => {
             >
               <Truck className={`h-6 w-6 mx-auto ${delivery === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
               <p className="text-sm font-medium">{t("checkout.delivery")}</p>
-              <p className="text-xs text-muted-foreground">RM1/km</p>
+              <p className="text-xs text-muted-foreground">{t("checkout.rate_per_km")}</p>
             </button>
           </div>
 
