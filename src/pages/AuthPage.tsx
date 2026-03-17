@@ -132,11 +132,11 @@ const AuthPage = () => {
             )}
             <div className="space-y-1.5">
               <Label htmlFor="email">{t("auth.email")}</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.email_placeholder")} required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">{t("auth.password")}</Label>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("auth.password_placeholder")} required />
             </div>
             <Button type="submit" className="w-full rounded-full" size="lg">
               {isLogin ? t("auth.login_btn") : t("auth.signup_btn")}

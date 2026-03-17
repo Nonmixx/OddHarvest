@@ -354,6 +354,10 @@ const translations: Record<string, Record<Language, string>> = {
   // Footer
   "footer.desc": { en: "Rescuing imperfect crops, one harvest at a time. 🌿 Malaysia's marketplace against food waste.", zh: "拯救不完美的农产品，一次一个收获。🌿 马来西亚对抗食物浪费的市场。", ms: "Menyelamatkan tanaman tidak sempurna, satu tuaian pada satu masa. 🌿 Pasaran Malaysia menentang pembaziran makanan." },
 
+  // Not found
+  "notfound.title": { en: "Oops! Page not found", zh: "哎呀！找不到页面", ms: "Oops! Halaman tidak ditemui" },
+  "notfound.back_home": { en: "Return to Home", zh: "返回首页", ms: "Kembali ke Laman Utama" },
+
   // Language
   "lang.en": { en: "English", zh: "英语", ms: "Bahasa Inggeris" },
   "lang.zh": { en: "Chinese", zh: "中文", ms: "Bahasa Cina" },
