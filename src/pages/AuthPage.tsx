@@ -33,11 +33,18 @@ const AuthPage = () => {
     e.preventDefault();
     if (isLogin) {
       login(email, password, role);
+      const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
+      navigate(dest);
     } else {
       signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
+      toast({
+        title: t("auth.signup_success_title"),
+        description: t("auth.signup_success_desc"),
+      });
+      // Reset to login mode so user can log in
+      setIsLogin(true);
+      setPassword("");
     }
-    const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
-    navigate(dest);
   };
 
   return (
