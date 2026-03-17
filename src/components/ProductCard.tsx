@@ -23,6 +23,8 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const tc = (text: string) => translateContent(text, language);
   const isBundle = crop.isBundle;
   const isMysteryBox = crop.isMysteryBox;
