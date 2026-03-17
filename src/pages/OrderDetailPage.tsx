@@ -235,7 +235,7 @@ const OrderDetailPage = () => {
                             {isSubmitted ? (
                               <div className="flex items-center gap-1.5 text-xs text-primary">
                                 <CheckCircle className="h-4 w-4" />
-                                {tc("Rated")} {currentRating}/5 — {tc("Thank you!")}
+                                {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
                               </div>
                             ) : (
                               <div className="space-y-1.5">
