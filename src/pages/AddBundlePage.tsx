@@ -93,7 +93,7 @@ const AddBundlePage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_contents")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="Carrots, Cucumbers, Tomatoes" value={contents} onChange={(e) => setContents(e.target.value)} required />
+              <Input placeholder={t("farmer.bundle_contents_placeholder")} value={contents} onChange={(e) => setContents(e.target.value)} required />
               <VoiceInput onResult={(text) => setContents((prev) => prev ? prev + ", " + text : text)} />
             </div>
           </div>
