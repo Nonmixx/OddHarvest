@@ -49,8 +49,8 @@ const CartPage = () => {
                   <h3 className="font-heading font-bold text-foreground text-sm truncate">{tc(item.crop.name)}</h3>
                   <p className="text-xs text-muted-foreground">{tc(item.crop.farmLocation)}</p>
                   <div className="flex items-center gap-1 mt-1">
-                    {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}</span>}
-                    <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}/{unit}</span>
+                    {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>}
+                    <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}{priceUnitLabel}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-between">
