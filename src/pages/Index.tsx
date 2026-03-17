@@ -127,7 +127,7 @@ const Index = () => {
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
           {t("section.cta.desc")}
         </p>
-        <Link to="/auth">
+        <Link to="/marketplace">
           <Button size="lg" className="rounded-full text-base px-10">{t("section.cta.btn")}</Button>
         </Link>
       </section>
