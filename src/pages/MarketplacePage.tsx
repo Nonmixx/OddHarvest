@@ -31,6 +31,7 @@ const MarketplacePage = () => {
   const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
   const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
   const [showBundlesOnly, setShowBundlesOnly] = useState(false);
+  const [showMysteryOnly, setShowMysteryOnly] = useState(false);
 
 
   let filtered = crops.filter((c) => {
@@ -40,8 +41,9 @@ const MarketplacePage = () => {
     const matchDistance = c.distanceKm <= maxDistance;
     const matchSellerType = sellerTypeFilter === "all" || c.sellerType === sellerTypeFilter;
     const matchImperfect = imperfectFilter === "all" || c.imperfectReason === imperfectFilter;
-    const matchBundle = !showBundlesOnly || c.isBundle;
-    return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle;
+    const matchBundle = !showBundlesOnly || (c.isBundle && !c.isMysteryBox);
+    const matchMystery = !showMysteryOnly || c.isMysteryBox;
+    return matchSearch && matchState && matchDistance && matchSellerType && matchImperfect && matchBundle && matchMystery;
   });
 
   if (sortBy === "price") filtered = [...filtered].sort((a, b) => a.discountPrice - b.discountPrice);
@@ -122,10 +124,16 @@ const MarketplacePage = () => {
               ))}
             </select>
             <button
-              onClick={() => setShowBundlesOnly(!showBundlesOnly)}
+              onClick={() => { setShowBundlesOnly(!showBundlesOnly); if (!showBundlesOnly) setShowMysteryOnly(false); }}
               className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${showBundlesOnly ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-secondary"}`}
             >
               📦 {t("market.bundles")}
+            </button>
+            <button
+              onClick={() => { setShowMysteryOnly(!showMysteryOnly); if (!showMysteryOnly) setShowBundlesOnly(false); }}
+              className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${showMysteryOnly ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-secondary"}`}
+            >
+              🎁 {t("product.mystery_box") || "Mystery Box"}
             </button>
           </div>
 
