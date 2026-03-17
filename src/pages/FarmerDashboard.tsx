@@ -168,7 +168,7 @@ const FarmerDashboard = () => {
                   </span>
                 )}
                 {c.isBundle && c.bundleContents && (
-                  <p className="text-xs text-muted-foreground">📦 {translateContentArray(c.bundleContents, language).join(", ")} ({c.bundleWeight} kg)</p>
+                  <p className="text-xs text-muted-foreground">📦 {translateContentArray(c.bundleContents, language).join(", ")} ({c.bundleWeight} {getUnitLabel(language, "kg")})</p>
                 )}
                 <div className="flex gap-2 items-center">
                   {c.isBundle ? (
