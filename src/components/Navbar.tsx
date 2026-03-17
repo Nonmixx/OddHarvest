@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Leaf, LogOut, User } from "lucide-react";
+import { ShoppingCart, Menu, X, Leaf, LogOut, User, ChefHat } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
