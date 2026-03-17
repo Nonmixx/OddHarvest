@@ -24,6 +24,7 @@ const Navbar = () => {
 
   const showMarketplace = !user || user.role === "buyer";
   const showCart = !user || user.role === "buyer";
+  const showMealPlanner = !user || user.role === "buyer";
 
   return (
     <nav className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
@@ -46,7 +47,7 @@ const Navbar = () => {
               {t("nav.dashboard")}
             </Link>
           )}
-          {isAuthenticated && (
+          {showMealPlanner && isAuthenticated && (
             <Link to="/meal-planner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <ChefHat className="h-4 w-4" /> {t("nav.meal_planner")}
             </Link>
@@ -98,7 +99,7 @@ const Navbar = () => {
           {isAuthenticated && (
             <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
           )}
-          {isAuthenticated && (
+          {showMealPlanner && isAuthenticated && (
             <Link to="/meal-planner" className="flex items-center gap-1 text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
               <ChefHat className="h-4 w-4" /> {t("nav.meal_planner")}
             </Link>
