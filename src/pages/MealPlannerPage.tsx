@@ -445,7 +445,7 @@ const MealPlannerPage = () => {
                                       : "bg-destructive/10 text-destructive"
                                   }`}
                                 >
-                                  {isAvailable ? "✓" : "✗"} {ing}
+                                  {isAvailable ? "✓" : "✗"} {displayIngredient(normalizeIngredient(ing) || ing.toLowerCase(), language)}
                                 </span>
                               );
                             })}
