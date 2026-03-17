@@ -41,6 +41,10 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const expiryInfo = getExpiryInfo(crop.expiryDate, language);
 
   const handleAdd = () => {
+    if (!isAuthenticated) {
+      navigate("/auth");
+      return;
+    }
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);
