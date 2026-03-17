@@ -22,10 +22,8 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
-  const { isAuthenticated } = useAuth();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
-  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [maxDistance, setMaxDistance] = useState(999);
