@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Leaf, Sprout, ShoppingBag, Truck, Home } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 import Navbar from "@/components/Navbar";
+import { toast } from "@/hooks/use-toast";
 
 const roles: { value: UserRole; labelKey: string; icon: typeof Sprout; descKey: string }[] = [
   { value: "farmer", labelKey: "auth.farmer", icon: Sprout, descKey: "auth.farmer_desc" },
