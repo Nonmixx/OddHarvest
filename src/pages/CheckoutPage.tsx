@@ -70,14 +70,20 @@ const CheckoutPage = () => {
           <p className="text-muted-foreground mb-2">{t("checkout.thank_you")}</p>
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
-              ? `${t("checkout.pickup_msg")} ${pickupSlot}`
+              ? `${tc("Please head to")} ${pickupArea || tc("the farm")} ${tc("for pickup.")} ${t("checkout.pickup_msg")} ${pickupSlot}`
               : `${t("checkout.delivery_msg")} (${formatDistance(distance, language)}).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
-            {fullAddress && (
+            {delivery === "delivery" && fullAddress && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
                 <Home className="h-4 w-4 shrink-0" />
                 <span>{t("checkout.deliver_to")}: <span className="font-medium text-foreground">{fullAddress}</span></span>
+              </div>
+            )}
+            {delivery === "pickup" && pickupArea && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span>{tc("Pickup at")}: <span className="font-medium text-foreground">{pickupArea}</span></span>
               </div>
             )}
             {saved.items.map((item) => (
