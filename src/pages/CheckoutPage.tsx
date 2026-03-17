@@ -2,10 +2,11 @@ import { useState, useRef } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home } from "lucide-react";
+import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
@@ -19,7 +20,8 @@ const DEFAULT_PICKUP_SLOTS = [
 const CheckoutPage = () => {
   const { items, total, clearCart } = useCart();
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
   const [distance, setDistance] = useState(5);
@@ -77,7 +79,7 @@ const CheckoutPage = () => {
             )}
             {saved.items.map((item) => (
               <div key={item.crop.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+                <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
                 <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
               </div>
             ))}
@@ -108,22 +110,30 @@ const CheckoutPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
-        {/* User address section */}
-        {fullAddress && (
-          <div className="farm-card p-4 mb-6">
-            <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
-              <Home className="h-4 w-4 text-primary" />
-              {t("checkout.your_address")}
-            </h2>
+        {/* User address section - always show, prompt to add if missing */}
+        <div className="farm-card p-4 mb-6">
+          <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
+            <Home className="h-4 w-4 text-primary" />
+            {t("checkout.your_address")}
+          </h2>
+          {fullAddress ? (
             <p className="text-sm text-muted-foreground">{fullAddress}</p>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{t("checkout.no_address")}</span>
+              <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile")}>
+                {t("checkout.add_address")}
+              </Button>
+            </div>
+          )}
+        </div>
 
         <div className="farm-card p-4 mb-6">
           <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{item.crop.name} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
               <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
             </div>
           ))}

@@ -4,6 +4,7 @@ import { CropListing, IMPERFECT_REASONS } from "@/contexts/CartContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
@@ -34,7 +35,8 @@ const getExpiryInfo = (expiryDate?: string, t?: (key: string) => string) => {
 const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { updateStock } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const isBundle = crop.isBundle;
   const isMysteryBox = crop.isMysteryBox;
   const initQty = isBundle ? 1 : 0.5;
@@ -51,7 +53,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);
-    toast.success(`${qty} ${isBundle ? "box" : "kg"} ${crop.name} ${t("product.added")} 🥕`);
+    toast.success(`${qty} ${isBundle ? "box" : "kg"} ${tc(crop.name)} ${t("product.added")} 🥕`);
     const resetQty = isBundle ? 1 : 0.5;
     setQty(resetQty);
     setQtyInput(String(resetQty));
@@ -62,7 +64,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
       <div className="relative overflow-hidden">
         <img
           src={isMysteryBox ? mysteryBoxImg : crop.image}
-          alt={crop.name}
+          alt={tc(crop.name)}
           className={`w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ${isMysteryBox ? "object-contain bg-secondary p-4" : ""}`}
         />
         {!isBundle && discount > 0 && (
@@ -84,11 +86,11 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         ) : null}
       </div>
       <div className="p-4 space-y-2.5">
-        <h3 className="font-heading font-bold text-foreground leading-tight">{crop.name}</h3>
+        <h3 className="font-heading font-bold text-foreground leading-tight">{tc(crop.name)}</h3>
 
         <div className="flex items-center gap-2">
           <Link to={`/seller/${crop.sellerId}`} className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
-            {crop.sellerType === "community" ? "🌱" : "🌾"} {crop.farmerName}
+            {crop.sellerType === "community" ? "🌱" : "🌾"} {tc(crop.farmerName)}
           </Link>
           {seller && (
             <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
@@ -116,17 +118,17 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
-            {crop.bundleContents.join(", ")} ({crop.bundleWeight} kg)
+            {translateContentArray(crop.bundleContents, language).join(", ")} ({crop.bundleWeight} kg)
           </div>
         ) : null}
 
         <div className="flex items-center gap-1 text-muted-foreground text-xs">
           <MapPin className="h-3 w-3 shrink-0" />
-          <span className="truncate">{crop.farmLocation}</span>
+          <span className="truncate">{tc(crop.farmLocation)}</span>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
-          <span className="farm-badge-green text-[11px]">{crop.state}</span>
+          <span className="farm-badge-green text-[11px]">{tc(crop.state)}</span>
           <span className={`flex items-center gap-1 ${outOfStock ? "text-destructive font-bold" : "text-muted-foreground"}`}>
             <Sprout className="h-3 w-3" />
             {outOfStock ? t("product.out_of_stock") : `${crop.quantity} ${isBundle ? t("product.boxes_left") : t("product.left")}`}

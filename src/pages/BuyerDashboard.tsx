@@ -5,10 +5,12 @@ import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 
 const BuyerDashboard = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
 
   return (
     <div className="min-h-screen">
@@ -68,12 +70,12 @@ const BuyerDashboard = () => {
             <div key={o.id} className="farm-card p-4 flex justify-between items-center">
               <div>
                 <p className="font-heading font-bold text-foreground text-sm">{o.id}</p>
-                <p className="text-xs text-muted-foreground">{o.items}</p>
+                <p className="text-xs text-muted-foreground">{tc(o.items)}</p>
                 <p className="text-xs text-muted-foreground">{o.date} · {o.kg} {t("buyer.kg_rescued")}</p>
               </div>
               <div className="text-right">
                 <p className="font-bold text-primary text-sm">RM{o.total.toFixed(2)}</p>
-                <span className="farm-badge-green text-xs">{o.status}</span>
+                <span className="farm-badge-green text-xs">{tc(o.status)}</span>
               </div>
             </div>
           )}

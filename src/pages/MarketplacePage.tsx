@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -23,7 +24,8 @@ const DISTANCE_OPTIONS_KEYS = [
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
   const { isAuthenticated } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
@@ -33,7 +35,6 @@ const MarketplacePage = () => {
   const [imperfectFilter, setImperfectFilter] = useState<ImperfectReason | "all">("all");
   const [showBundlesOnly, setShowBundlesOnly] = useState(false);
 
-  // Redirect to auth if not logged in
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/auth", { replace: true });
@@ -41,7 +42,8 @@ const MarketplacePage = () => {
   }, [isAuthenticated, navigate]);
 
   let filtered = crops.filter((c) => {
-    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase());
+    const translatedName = tc(c.name).toLowerCase();
+    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || translatedName.includes(search.toLowerCase());
     const matchState = stateFilter === "All" || c.state === stateFilter;
     const matchDistance = c.distanceKm <= maxDistance;
     const matchSellerType = sellerTypeFilter === "all" || c.sellerType === sellerTypeFilter;
@@ -84,7 +86,7 @@ const MarketplacePage = () => {
             <div className="flex flex-wrap gap-3">
               {nearbyFarms.map((f, i) => (
                 <div key={i} className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">{f.location}</span>
+                  <span className="text-sm font-medium text-foreground">{tc(f.location)}</span>
                   <span className="text-xs text-primary font-bold">{f.distance} km</span>
                 </div>
               ))}
@@ -142,7 +144,7 @@ const MarketplacePage = () => {
                 onClick={() => setStateFilter(s)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${stateFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}
               >
-                {s}
+                {tc(s)}
               </button>
             ))}
           </div>
@@ -169,11 +171,11 @@ const MarketplacePage = () => {
             <div className="farm-card max-w-md mx-auto p-10 space-y-4">
               <span className="text-5xl block">🌱</span>
               <h2 className="font-heading font-bold text-foreground text-xl">
-                {stateFilter !== "All" ? t("market.no_crops_in_state").replace("{state}", stateFilter) : t("market.no_crops")}
+                {stateFilter !== "All" ? t("market.no_crops_in_state").replace("{state}", tc(stateFilter)) : t("market.no_crops")}
               </h2>
               <p className="text-sm text-muted-foreground">
                 {stateFilter !== "All"
-                  ? t("market.no_crops_in_state_desc").replace("{state}", stateFilter)
+                  ? t("market.no_crops_in_state_desc").replace("{state}", tc(stateFilter))
                   : t("market.no_crops_desc")}
               </p>
               {stateFilter !== "All" && (

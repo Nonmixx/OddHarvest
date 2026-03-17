@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle } from "lucide-react";
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { toast } from "sonner";
 
 const allDeliveries = [...deliveryRequests, ...completedDeliveries];
@@ -14,7 +15,8 @@ const allDeliveries = [...deliveryRequests, ...completedDeliveries];
 const DriverDeliveryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const [rejected, setRejected] = useState(false);
 
   const delivery = allDeliveries.find((d) => d.id === id);
@@ -83,7 +85,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.item")}</p>
-              <p className="font-heading font-bold text-foreground text-lg">{delivery.crop}</p>
+              <p className="font-heading font-bold text-foreground text-lg">{tc(delivery.crop)}</p>
             </div>
           </div>
 
@@ -95,7 +97,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.pickup_location")}</p>
-              <p className="font-medium text-foreground">{delivery.pickup}</p>
+              <p className="font-medium text-foreground">{tc(delivery.pickup)}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("driver.farmer")}: {delivery.farmer}</p>
             </div>
           </div>
@@ -106,7 +108,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.dropoff_location")}</p>
-              <p className="font-medium text-foreground">{delivery.dropoff}</p>
+              <p className="font-medium text-foreground">{tc(delivery.dropoff)}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("driver.buyer")}: {delivery.buyer}</p>
             </div>
           </div>
