@@ -153,6 +153,8 @@ const translations: Record<string, Record<Language, string>> = {
   "checkout.your_address": { en: "Delivery Address", zh: "配送地址", ms: "Alamat Penghantaran" },
   "checkout.deliver_to": { en: "Deliver to", zh: "送到", ms: "Hantar ke" },
   "checkout.box": { en: "box", zh: "盒", ms: "kotak" },
+  "checkout.no_address": { en: "No address saved. Please add your address in profile.", zh: "未保存地址。请在个人资料中添加地址。", ms: "Tiada alamat disimpan. Sila tambah alamat di profil." },
+  "checkout.add_address": { en: "Go to Profile →", zh: "前往个人资料 →", ms: "Pergi ke Profil →" },
 
   // Farmer dashboard
   "farmer.title": { en: "Seller Dashboard 🌾", zh: "卖家仪表板 🌾", ms: "Papan Pemuka Penjual 🌾" },
