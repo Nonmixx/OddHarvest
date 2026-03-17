@@ -28,6 +28,7 @@ const ProfilePage = () => {
   const [vehicleType, setVehicleType] = useState(user?.vehicleType || "Motorcycle");
   const [licenseNo, setLicenseNo] = useState(user?.licenseNo || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
+  const [preferredPickupArea, setPreferredPickupArea] = useState(user?.preferredPickupArea || "");
 
   useEffect(() => {
     if (user) {
