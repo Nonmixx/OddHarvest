@@ -119,7 +119,7 @@ const CheckoutPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
-        {delivery === "delivery" ? (
+        {delivery === "delivery" && (
           <div className="farm-card p-4 mb-6">
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
               <Home className="h-4 w-4 text-primary" />
