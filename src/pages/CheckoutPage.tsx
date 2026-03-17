@@ -195,7 +195,7 @@ const CheckoutPage = () => {
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <Input type="number" min={1} value={distance} onChange={(e) => setDistance(Math.max(1, Number(e.target.value)))} className="w-24" />
-                <span className="text-sm text-muted-foreground">km → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
+                <span className="text-sm text-muted-foreground">{formatDistance(distance, language)} → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
               </div>
             </div>
           )}
