@@ -25,6 +25,7 @@ import AddBundlePage from "./pages/AddBundlePage";
 import AddMysteryBoxPage from "./pages/AddMysteryBoxPage";
 import ProfilePage from "./pages/ProfilePage";
 import MealPlannerPage from "./pages/MealPlannerPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
                   <Route path="/add-mystery-box" element={<AddMysteryBoxPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/meal-planner" element={<MealPlannerPage />} />
+                  <Route path="/order/:id" element={<OrderDetailPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
