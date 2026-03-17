@@ -148,7 +148,7 @@ const FarmerDashboard = () => {
                         <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 {t("product.bundle")}</span>
                       ) : null}
                     </div>
-                    <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? t("checkout.box") : "kg"} · {tc(c.state)}</p>
+                    <p className="text-xs text-muted-foreground">{c.quantity} {getUnitLabel(language, c.isBundle ? "box" : "kg")} · {tc(c.state)}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
