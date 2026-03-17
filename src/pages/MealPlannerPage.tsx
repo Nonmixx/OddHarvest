@@ -258,13 +258,7 @@ const MealPlannerPage = () => {
               onKeyDown={(e) => e.key === "Enter" && addIngredient()}
               className="flex-1"
             />
-            <VoiceInput onResult={(text) => {
-              const normalized = normalizeIngredient(text);
-              const toAdd = normalized || text.toLowerCase().trim();
-              if (toAdd && !selectedIngredients.includes(toAdd)) {
-                setSelectedIngredients((prev) => [...prev, toAdd]);
-              }
-            }} />
+            <VoiceInput onResult={(text) => setInputText((prev) => prev ? prev + " " + text : text)} />
             <Button onClick={addIngredient} size="sm">
               <Plus className="h-4 w-4 mr-1" /> {l("add")}
             </Button>
