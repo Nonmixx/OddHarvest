@@ -8,12 +8,13 @@ import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import VoiceInput from "@/components/VoiceInput";
 
 const AddBundlePage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
   const [contents, setContents] = useState("");
@@ -84,7 +85,7 @@ const AddBundlePage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_name")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="e.g. Rescue Veggie Box" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input placeholder={t("farmer.bundle_name_placeholder")} value={name} onChange={(e) => setName(e.target.value)} required />
               <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
@@ -92,7 +93,7 @@ const AddBundlePage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.bundle_contents")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="Carrots, Cucumbers, Tomatoes" value={contents} onChange={(e) => setContents(e.target.value)} required />
+              <Input placeholder={t("farmer.bundle_contents_placeholder")} value={contents} onChange={(e) => setContents(e.target.value)} required />
               <VoiceInput onResult={(text) => setContents((prev) => prev ? prev + ", " + text : text)} />
             </div>
           </div>
@@ -102,7 +103,7 @@ const AddBundlePage = () => {
             <div className="flex flex-wrap gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
-                  <img src={img} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`${t("common.profile")} ${idx + 1}`} className="w-full h-full object-cover" />
                   <button type="button" onClick={() => removeImage(idx)} className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full h-5 w-5 flex items-center justify-center">
                     <X className="h-3 w-3" />
                   </button>

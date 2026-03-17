@@ -11,7 +11,7 @@ import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, P
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
-const DEFAULT_PICKUP_SLOTS = [
+const DEFAULT_PICKUP_SLOTS: string[] = [
   "7:00 AM – 8:00 AM", "8:00 AM – 9:00 AM", "9:00 AM – 10:00 AM",
   "10:00 AM – 11:00 AM", "11:00 AM – 12:00 PM", "12:00 PM – 1:00 PM",
   "1:00 PM – 2:00 PM", "2:00 PM – 3:00 PM", "3:00 PM – 4:00 PM",
@@ -162,7 +162,7 @@ const CheckoutPage = () => {
             >
               <Truck className={`h-6 w-6 mx-auto ${delivery === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
               <p className="text-sm font-medium">{t("checkout.delivery")}</p>
-              <p className="text-xs text-muted-foreground">RM1/km</p>
+              <p className="text-xs text-muted-foreground">{t("checkout.rate_per_km")}</p>
             </button>
           </div>
 

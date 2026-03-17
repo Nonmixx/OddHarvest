@@ -15,13 +15,70 @@ const LANG_MAP: Record<string, string> = {
   ms: "ms-MY",
 };
 
+const UI_TEXT = {
+  unsupported: {
+    en: "Voice input is not supported in this browser. Please use Chrome or Edge.",
+    zh: "此浏览器不支持语音输入。请使用 Chrome 或 Edge。",
+    ms: "Input suara tidak disokong dalam pelayar ini. Sila gunakan Chrome atau Edge.",
+  },
+  listening: {
+    en: "🎤 Listening... Speak now",
+    zh: "🎤 正在聆听... 请开始说话",
+    ms: "🎤 Sedang mendengar... Sila bercakap sekarang",
+  },
+  denied: {
+    en: "Microphone access denied. Please allow microphone permissions.",
+    zh: "麦克风访问被拒绝。请允许麦克风权限。",
+    ms: "Akses mikrofon ditolak. Sila benarkan kebenaran mikrofon.",
+  },
+  noSpeech: {
+    en: "No speech detected. Please try again.",
+    zh: "未检测到语音。请再试一次。",
+    ms: "Tiada suara dikesan. Sila cuba lagi.",
+  },
+  network: {
+    en: "Network error. Voice input requires an internet connection.",
+    zh: "网络错误。语音输入需要互联网连接。",
+    ms: "Ralat rangkaian. Input suara memerlukan sambungan internet.",
+  },
+  genericError: {
+    en: "Voice input error:",
+    zh: "语音输入错误：",
+    ms: "Ralat input suara:",
+  },
+  retry: {
+    en: "Please try again.",
+    zh: "请再试一次。",
+    ms: "Sila cuba lagi.",
+  },
+  heard: {
+    en: "Heard:",
+    zh: "识别到：",
+    ms: "Didengar:",
+  },
+  failed: {
+    en: "Failed to start voice input. Please check browser permissions.",
+    zh: "无法启动语音输入。请检查浏览器权限。",
+    ms: "Gagal memulakan input suara. Sila semak kebenaran pelayar.",
+  },
+  stopTitle: {
+    en: "Stop listening",
+    zh: "停止聆听",
+    ms: "Hentikan pendengaran",
+  },
+  startTitle: {
+    en: "Voice input",
+    zh: "语音输入",
+    ms: "Input suara",
+  },
+};
+
 const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
   const [isListening, setIsListening] = useState(false);
   const { language } = useLanguage();
   const recognitionRef = useRef<any>(null);
 
   const startListening = useCallback(() => {
-    // If already listening, stop
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
@@ -31,7 +88,7 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      toast.error("Voice input is not supported in this browser. Please use Chrome or Edge.");
+      toast.error(UI_TEXT.unsupported[language]);
       return;
     }
 
@@ -45,7 +102,7 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
 
       recognition.onstart = () => {
         setIsListening(true);
-        toast.info("🎤 Listening... Speak now");
+        toast.info(UI_TEXT.listening[language]);
       };
 
       recognition.onend = () => {
@@ -57,25 +114,25 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
         setIsListening(false);
         recognitionRef.current = null;
         const errorMsg = event.error === "not-allowed"
-          ? "Microphone access denied. Please allow microphone permissions."
+          ? UI_TEXT.denied[language]
           : event.error === "no-speech"
-          ? "No speech detected. Please try again."
+          ? UI_TEXT.noSpeech[language]
           : event.error === "network"
-          ? "Network error. Voice input requires an internet connection."
-          : `Voice input error: ${event.error}. Please try again.`;
+          ? UI_TEXT.network[language]
+          : `${UI_TEXT.genericError[language]} ${event.error}. ${UI_TEXT.retry[language]}`;
         toast.error(errorMsg);
       };
 
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         onResult(transcript);
-        toast.success(`Heard: "${transcript}"`);
+        toast.success(`${UI_TEXT.heard[language]} "${transcript}"`);
       };
 
       recognition.start();
     } catch (err) {
       setIsListening(false);
-      toast.error("Failed to start voice input. Please check browser permissions.");
+      toast.error(UI_TEXT.failed[language]);
     }
   }, [onResult, language, isListening]);
 
@@ -86,7 +143,7 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
       size="icon"
       className={`shrink-0 ${className}`}
       onClick={startListening}
-      title={isListening ? "Stop listening" : "Voice input"}
+      title={isListening ? UI_TEXT.stopTitle[language] : UI_TEXT.startTitle[language]}
     >
       {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
     </Button>

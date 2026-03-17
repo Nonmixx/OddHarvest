@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
@@ -92,7 +92,7 @@ const INGREDIENT_DISPLAY: Record<string, Record<string, string>> = {
 };
 
 function displayIngredient(key: string, lang: string): string {
-  return INGREDIENT_DISPLAY[key]?.[lang] || key.charAt(0).toUpperCase() + key.slice(1);
+  return INGREDIENT_DISPLAY[key]?.[lang] || translateContent(key, lang as "en" | "zh" | "ms") || key.charAt(0).toUpperCase() + key.slice(1);
 }
 
 function normalizeIngredient(input: string): string | null {
@@ -224,6 +224,8 @@ const MealPlannerPage = () => {
     error: { en: "Failed to generate meals. Please try again.", zh: "生成膳食失败。请再试一次。", ms: "Gagal menjana hidangan. Sila cuba lagi." },
     ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
     all_ingredients: { en: "All Ingredients Needed", zh: "所需全部食材", ms: "Semua Bahan Diperlukan" },
+    analyzing: { en: "Analyzing your ingredients and finding the best recipes...", zh: "正在分析您的食材并寻找最佳食谱...", ms: "Menganalisis bahan anda dan mencari resipi terbaik..." },
+    meals_count: { en: "meals", zh: "道菜", ms: "hidangan" },
   };
 
   const l = (key: keyof typeof labels) => labels[key][language];
@@ -326,11 +328,7 @@ const MealPlannerPage = () => {
               <Loader2 className="h-8 w-8 text-primary animate-spin" />
               <div className="text-left">
                 <p className="font-heading font-bold text-foreground">{l("generating")}</p>
-                <p className="text-xs text-muted-foreground">
-                  {language === "en" ? "Analyzing your ingredients and finding the best recipes..." :
-                   language === "zh" ? "正在分析您的食材并寻找最佳食谱..." :
-                   "Menganalisis bahan anda dan mencari resipi terbaik..."}
-                </p>
+                <p className="text-xs text-muted-foreground">{l("analyzing")}</p>
               </div>
             </div>
           </div>
@@ -342,7 +340,7 @@ const MealPlannerPage = () => {
             <div className="flex items-center justify-between">
               <h2 className="font-heading font-bold text-foreground text-lg">{l("suggested_meals")}</h2>
               <Badge variant="outline" className="text-xs gap-1">
-                <Sparkles className="h-3 w-3" /> {suggestedMeals.length} {language === "en" ? "meals" : language === "zh" ? "道菜" : "hidangan"}
+                <Sparkles className="h-3 w-3" /> {suggestedMeals.length} {l("meals_count")}
               </Badge>
             </div>
 
@@ -403,7 +401,7 @@ const MealPlannerPage = () => {
                           <div className="flex flex-wrap gap-1.5">
                             {meal.missingIngredients.map((m, i) => (
                               <span key={i} className="px-2 py-0.5 bg-destructive/10 text-destructive rounded-full text-xs capitalize">
-                                {m}
+                                {displayIngredient(normalizeIngredient(m) || m.toLowerCase(), language)}
                               </span>
                             ))}
                           </div>
@@ -447,7 +445,7 @@ const MealPlannerPage = () => {
                                       : "bg-destructive/10 text-destructive"
                                   }`}
                                 >
-                                  {isAvailable ? "✓" : "✗"} {ing}
+                                  {isAvailable ? "✓" : "✗"} {displayIngredient(normalizeIngredient(ing) || ing.toLowerCase(), language)}
                                 </span>
                               );
                             })}

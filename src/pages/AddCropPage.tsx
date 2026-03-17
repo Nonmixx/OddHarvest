@@ -8,6 +8,7 @@ import { ArrowLeft, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import VoiceInput from "@/components/VoiceInput";
 
@@ -16,7 +17,7 @@ const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Pe
 const AddCropPage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -87,7 +88,7 @@ const AddCropPage = () => {
           <div className="space-y-1.5">
             <Label>{t("farmer.crop_name")}</Label>
             <div className="flex gap-2">
-              <Input placeholder="e.g. Tomatoes (Imperfect Shape)" value={name} onChange={(e) => setName(e.target.value)} required />
+              <Input placeholder={t("farmer.crop_name_placeholder")} value={name} onChange={(e) => setName(e.target.value)} required />
               <VoiceInput onResult={(text) => setName((prev) => prev ? prev + " " + text : text)} />
             </div>
           </div>
@@ -106,7 +107,7 @@ const AddCropPage = () => {
             <div className="flex flex-wrap gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
-                  <img src={img} alt={`Upload ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`${t("common.profile")} ${idx + 1}`} className="w-full h-full object-cover" />
                   <button type="button" onClick={() => removeImage(idx)} className="absolute top-0.5 right-0.5 bg-destructive text-destructive-foreground rounded-full h-5 w-5 flex items-center justify-center">
                     <X className="h-3 w-3" />
                   </button>
@@ -161,7 +162,7 @@ const AddCropPage = () => {
             <div className="space-y-1.5">
               <Label>{t("farmer.location")}</Label>
               <div className="flex gap-2">
-                <Input placeholder="e.g. Ladang Pak Ali" value={location} onChange={(e) => setLocation(e.target.value)} required />
+                <Input placeholder={t("farmer.location_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} required />
                 <VoiceInput onResult={(text) => setLocation((prev) => prev ? prev + " " + text : text)} />
               </div>
             </div>
@@ -169,7 +170,7 @@ const AddCropPage = () => {
               <Label>{t("farmer.state")}</Label>
               <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={state} onChange={(e) => setState(e.target.value)} required>
                 <option value="">{t("common.select_state")}</option>
-                {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {STATES.map((s) => <option key={s} value={s}>{translateContent(s, language)}</option>)}
               </select>
             </div>
           </div>
