@@ -144,11 +144,11 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <div className="flex items-end justify-between pt-1">
           <div>
             {isBundle ? (
-              <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/box</p>
+              <p className="price-discount">RM{crop.discountPrice.toFixed(2)}{priceUnitLabel}</p>
             ) : (
               <>
-                <p className="price-original">RM{crop.usualPrice.toFixed(2)}/kg</p>
-                <p className="price-discount">RM{crop.discountPrice.toFixed(2)}/kg</p>
+                <p className="price-original">RM{crop.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</p>
+                <p className="price-discount">RM{crop.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</p>
               </>
             )}
           </div>
