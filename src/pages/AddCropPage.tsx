@@ -162,7 +162,7 @@ const AddCropPage = () => {
             <div className="space-y-1.5">
               <Label>{t("farmer.location")}</Label>
               <div className="flex gap-2">
-                <Input placeholder="e.g. Ladang Pak Ali" value={location} onChange={(e) => setLocation(e.target.value)} required />
+                <Input placeholder={t("farmer.location_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} required />
                 <VoiceInput onResult={(text) => setLocation((prev) => prev ? prev + " " + text : text)} />
               </div>
             </div>
