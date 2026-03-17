@@ -246,22 +246,6 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {/* Buyer Preferences */}
-          {user?.role === "buyer" && (
-            <div className="farm-card p-6 space-y-4">
-              <h2 className="font-heading font-bold text-foreground">{t("profile.preferences")}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>{t("profile.preferred_area")}</Label>
-                  <div className="flex gap-2">
-                    <Input placeholder={t("profile.area_placeholder")} value={preferredPickupArea} onChange={(e) => setPreferredPickupArea(e.target.value)} />
-                    <VoiceInput onResult={(text) => setPreferredPickupArea(text)} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           <Button className="rounded-full w-full" size="lg" onClick={handleSave}>
             <Save className="h-4 w-4 mr-2" /> {t("profile.save")}
           </Button>
