@@ -135,7 +135,7 @@ const CheckoutPage = () => {
           <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
           {items.map((item) => (
             <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
               <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
             </div>
           ))}
