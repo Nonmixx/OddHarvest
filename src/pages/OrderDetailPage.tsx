@@ -180,7 +180,7 @@ const OrderDetailPage = () => {
               <span className="font-medium text-foreground">{order.kg} kg</span>
             </div>
             <div className="flex justify-between text-sm font-bold">
-              <span className="text-foreground">{tc("Total")}</span>
+              <span className="text-foreground">{t("order.total")}</span>
               <span className="text-primary">RM{order.total.toFixed(2)}</span>
             </div>
           </CardContent>
