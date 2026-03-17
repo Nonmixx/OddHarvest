@@ -239,7 +239,7 @@ const OrderDetailPage = () => {
                               </div>
                             ) : (
                               <div className="space-y-1.5">
-                                <p className="text-xs text-muted-foreground">{tc("Rate this crop")}:</p>
+                                <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
                                 <div className="flex items-center gap-2">
                                   <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
                                   {currentRating > 0 && (
