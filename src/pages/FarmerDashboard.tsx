@@ -13,6 +13,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS } from "@/contexts/CartContext";
+import { formatDistance, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka"];
 

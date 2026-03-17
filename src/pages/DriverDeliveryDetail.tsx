@@ -8,6 +8,7 @@ import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance } from "@/lib/freshness";
 import { toast } from "sonner";
 
 const allDeliveries = [...deliveryRequests, ...completedDeliveries];
