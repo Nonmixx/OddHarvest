@@ -168,7 +168,7 @@ const OrderDetailPage = () => {
         <Card className="mb-6">
           <CardContent className="p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Date")}</span>
+              <span className="text-muted-foreground">{t("order.date")}</span>
               <span className="font-medium text-foreground">{order.date}</span>
             </div>
             <div className="flex justify-between text-sm">
