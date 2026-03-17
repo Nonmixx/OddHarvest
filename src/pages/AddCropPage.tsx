@@ -170,7 +170,7 @@ const AddCropPage = () => {
               <Label>{t("farmer.state")}</Label>
               <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={state} onChange={(e) => setState(e.target.value)} required>
                 <option value="">{t("common.select_state")}</option>
-                {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {STATES.map((s) => <option key={s} value={s}>{translateContent(s, language)}</option>)}
               </select>
             </div>
           </div>
