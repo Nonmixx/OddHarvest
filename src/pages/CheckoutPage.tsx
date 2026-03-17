@@ -70,7 +70,7 @@ const CheckoutPage = () => {
           <p className="text-muted-foreground mb-2">{t("checkout.thank_you")}</p>
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
-              ? `${tc("Please head to")} ${pickupArea || tc("the farm")} ${tc("for pickup.")} ${t("checkout.pickup_msg")} ${pickupSlot}`
+              ? `${tc("Please head to")} ${pickupArea || tc("the farm")} ${tc("for pickup.")} Slot: ${pickupSlot}`
               : `${t("checkout.delivery_msg")} (${formatDistance(distance, language)}).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
