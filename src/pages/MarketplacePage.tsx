@@ -124,10 +124,16 @@ const MarketplacePage = () => {
               ))}
             </select>
             <button
-              onClick={() => setShowBundlesOnly(!showBundlesOnly)}
+              onClick={() => { setShowBundlesOnly(!showBundlesOnly); if (!showBundlesOnly) setShowMysteryOnly(false); }}
               className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${showBundlesOnly ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-secondary"}`}
             >
               📦 {t("market.bundles")}
+            </button>
+            <button
+              onClick={() => { setShowMysteryOnly(!showMysteryOnly); if (!showMysteryOnly) setShowBundlesOnly(false); }}
+              className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${showMysteryOnly ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input text-foreground hover:bg-secondary"}`}
+            >
+              🎁 {t("product.mystery_box") || "Mystery Box"}
             </button>
           </div>
 

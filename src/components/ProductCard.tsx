@@ -177,31 +177,55 @@ const ProductCard = ({ crop }: ProductCardProps) => {
                 </button>
                 <input
                   type="text"
-                  inputMode="decimal"
+                  inputMode={isBundle ? "numeric" : "decimal"}
                   value={qtyInput}
                   onChange={(e) => {
                     const raw = e.target.value;
-                    if (raw === "" || /^\d*\.?\d*$/.test(raw)) {
-                      setQtyInput(raw);
-                      const v = parseFloat(raw);
-                      if (!isNaN(v) && v > 0 && v <= crop.quantity) {
-                        setQty(Math.round(v * 10) / 10);
+                    if (isBundle) {
+                      if (raw === "" || /^\d*$/.test(raw)) {
+                        setQtyInput(raw);
+                        const v = parseInt(raw, 10);
+                        if (!isNaN(v) && v > 0 && v <= crop.quantity) {
+                          setQty(v);
+                        }
+                      }
+                    } else {
+                      if (raw === "" || /^\d*\.?\d*$/.test(raw)) {
+                        setQtyInput(raw);
+                        const v = parseFloat(raw);
+                        if (!isNaN(v) && v > 0 && v <= crop.quantity) {
+                          setQty(Math.round(v * 10) / 10);
+                        }
                       }
                     }
                   }}
                   onBlur={() => {
-                    const v = parseFloat(qtyInput);
-                    const minVal = isBundle ? 1 : 0.1;
-                    if (isNaN(v) || v < minVal) {
-                      setQty(minVal);
-                      setQtyInput(String(minVal));
-                    } else if (v > crop.quantity) {
-                      setQty(crop.quantity);
-                      setQtyInput(String(crop.quantity));
+                    if (isBundle) {
+                      const v = parseInt(qtyInput, 10);
+                      if (isNaN(v) || v < 1) {
+                        setQty(1);
+                        setQtyInput("1");
+                      } else if (v > crop.quantity) {
+                        setQty(crop.quantity);
+                        setQtyInput(String(crop.quantity));
+                      } else {
+                        setQty(v);
+                        setQtyInput(String(v));
+                      }
                     } else {
-                      const rounded = Math.round(v * 10) / 10;
-                      setQty(rounded);
-                      setQtyInput(String(rounded));
+                      const v = parseFloat(qtyInput);
+                      const minVal = 0.1;
+                      if (isNaN(v) || v < minVal) {
+                        setQty(minVal);
+                        setQtyInput(String(minVal));
+                      } else if (v > crop.quantity) {
+                        setQty(crop.quantity);
+                        setQtyInput(String(crop.quantity));
+                      } else {
+                        const rounded = Math.round(v * 10) / 10;
+                        setQty(rounded);
+                        setQtyInput(String(rounded));
+                      }
                     }
                   }}
                   className="w-14 text-center text-sm font-bold bg-background border border-input rounded-md py-1"
