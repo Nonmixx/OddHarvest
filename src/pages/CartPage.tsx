@@ -41,6 +41,7 @@ const CartPage = () => {
             const isBundle = item.crop.isBundle;
             const unitLabel = getUnitLabel(language, isBundle ? "box" : "kg");
             const priceUnitLabel = getPriceUnitLabel(language, isBundle ? "box" : "kg");
+            const minQty = isBundle ? 1 : 0.1;
             const qtyStep = isBundle ? 1 : step;
             return (
               <div key={item.crop.id} className="farm-card p-4 flex gap-4">
