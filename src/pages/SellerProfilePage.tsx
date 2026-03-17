@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { crops } = useCropInventory();
   const { t } = useLanguage();
   const seller = mockSellers.find((s) => s.id === id);
