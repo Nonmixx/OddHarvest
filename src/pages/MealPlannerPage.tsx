@@ -58,6 +58,43 @@ const INGREDIENT_ALIASES: Record<string, string[]> = {
   "coconut milk": ["coconut milk", "santan", "椰奶"],
 };
 
+// Display names for ingredients per language
+const INGREDIENT_DISPLAY: Record<string, Record<string, string>> = {
+  "tomato": { en: "Tomato", zh: "番茄", ms: "Tomato" },
+  "carrot": { en: "Carrot", zh: "胡萝卜", ms: "Lobak Merah" },
+  "cucumber": { en: "Cucumber", zh: "黄瓜", ms: "Timun" },
+  "apple": { en: "Apple", zh: "苹果", ms: "Epal" },
+  "corn": { en: "Corn", zh: "玉米", ms: "Jagung" },
+  "bell pepper": { en: "Bell Pepper", zh: "彩椒", ms: "Lada Benggala" },
+  "banana": { en: "Banana", zh: "香蕉", ms: "Pisang" },
+  "spinach": { en: "Spinach", zh: "菠菜", ms: "Bayam" },
+  "chili": { en: "Chili", zh: "辣椒", ms: "Cili" },
+  "chicken": { en: "Chicken", zh: "鸡肉", ms: "Ayam" },
+  "potato": { en: "Potato", zh: "土豆", ms: "Kentang" },
+  "onion": { en: "Onion", zh: "洋葱", ms: "Bawang" },
+  "garlic": { en: "Garlic", zh: "大蒜", ms: "Bawang Putih" },
+  "egg": { en: "Egg", zh: "鸡蛋", ms: "Telur" },
+  "basil": { en: "Basil", zh: "罗勒", ms: "Selasih" },
+  "mint": { en: "Mint", zh: "薄荷", ms: "Pudina" },
+  "soy sauce": { en: "Soy Sauce", zh: "酱油", ms: "Kicap" },
+  "milk": { en: "Milk", zh: "牛奶", ms: "Susu" },
+  "honey": { en: "Honey", zh: "蜂蜜", ms: "Madu" },
+  "pasta": { en: "Pasta", zh: "意面", ms: "Pasta" },
+  "lemon": { en: "Lemon", zh: "柠檬", ms: "Lemon" },
+  "rice": { en: "Rice", zh: "米饭", ms: "Nasi" },
+  "tofu": { en: "Tofu", zh: "豆腐", ms: "Tauhu" },
+  "prawn": { en: "Prawn", zh: "虾", ms: "Udang" },
+  "fish": { en: "Fish", zh: "鱼", ms: "Ikan" },
+  "eggplant": { en: "Eggplant", zh: "茄子", ms: "Terung" },
+  "mushroom": { en: "Mushroom", zh: "蘑菇", ms: "Cendawan" },
+  "ginger": { en: "Ginger", zh: "姜", ms: "Halia" },
+  "coconut milk": { en: "Coconut Milk", zh: "椰奶", ms: "Santan" },
+};
+
+function displayIngredient(key: string, lang: string): string {
+  return INGREDIENT_DISPLAY[key]?.[lang] || key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 function normalizeIngredient(input: string): string | null {
   const lower = input.toLowerCase().trim();
   for (const [key, aliases] of Object.entries(INGREDIENT_ALIASES)) {
