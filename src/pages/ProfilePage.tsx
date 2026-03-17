@@ -248,8 +248,8 @@ const ProfilePage = () => {
                 <div className="space-y-1.5">
                   <Label>{t("profile.preferred_area")}</Label>
                   <div className="flex gap-2">
-                    <Input placeholder={t("profile.area_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} />
-                    <VoiceInput onResult={(text) => setLocation(text)} />
+                    <Input placeholder={t("profile.area_placeholder")} value={preferredPickupArea} onChange={(e) => setPreferredPickupArea(e.target.value)} />
+                    <VoiceInput onResult={(text) => setPreferredPickupArea(text)} />
                   </div>
                 </div>
               </div>
