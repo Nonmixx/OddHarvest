@@ -97,7 +97,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.pickup_location")}</p>
-              <p className="font-medium text-foreground">{delivery.pickup}</p>
+              <p className="font-medium text-foreground">{tc(delivery.pickup)}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("driver.farmer")}: {delivery.farmer}</p>
             </div>
           </div>
