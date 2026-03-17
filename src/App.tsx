@@ -24,6 +24,7 @@ import AddCropPage from "./pages/AddCropPage";
 import AddBundlePage from "./pages/AddBundlePage";
 import AddMysteryBoxPage from "./pages/AddMysteryBoxPage";
 import ProfilePage from "./pages/ProfilePage";
+import MealPlannerPage from "./pages/MealPlannerPage";
 
 const queryClient = new QueryClient();
 
