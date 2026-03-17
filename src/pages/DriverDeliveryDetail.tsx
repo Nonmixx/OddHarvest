@@ -85,7 +85,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.item")}</p>
-              <p className="font-heading font-bold text-foreground text-lg">{delivery.crop}</p>
+              <p className="font-heading font-bold text-foreground text-lg">{tc(delivery.crop)}</p>
             </div>
           </div>
 
