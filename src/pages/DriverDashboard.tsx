@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 
 export const deliveryRequests = [
   { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
@@ -24,7 +25,8 @@ const DriverDashboard = () => {
   const [accepted, setAccepted] = useState<string[]>([]);
   const [rejected, setRejected] = useState<string[]>([]);
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
@@ -65,7 +67,7 @@ const DriverDashboard = () => {
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="font-heading font-bold text-foreground">{d.id}</p>
-                    <p className="text-sm text-muted-foreground">{d.crop}</p>
+                    <p className="text-sm text-muted-foreground">{tc(d.crop)}</p>
                   </div>
                   <span className="font-bold text-primary text-lg">RM{d.fee.toFixed(2)}</span>
                 </div>
@@ -74,14 +76,14 @@ const DriverDashboard = () => {
                     <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">{t("driver.pickup")}</p>
-                      <p className="font-medium">{d.pickup}</p>
+                      <p className="font-medium">{tc(d.pickup)}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <Navigation className="h-4 w-4 text-accent mt-0.5 shrink-0" />
                     <div>
                       <p className="text-xs text-muted-foreground">{t("driver.dropoff")}</p>
-                      <p className="font-medium">{d.dropoff}</p>
+                      <p className="font-medium">{tc(d.dropoff)}</p>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>

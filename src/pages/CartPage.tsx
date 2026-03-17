@@ -1,5 +1,6 @@
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,7 +8,8 @@ import Navbar from "@/components/Navbar";
 
 const CartPage = () => {
   const { items, updateQuantity, removeFromCart, total, itemCount } = useCart();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
 
   if (items.length === 0) {
     return (
@@ -41,10 +43,10 @@ const CartPage = () => {
             const qtyStep = isBundle ? 1 : step;
             return (
               <div key={item.crop.id} className="farm-card p-4 flex gap-4">
-                <img src={item.crop.image} alt={item.crop.name} className="w-20 h-20 rounded-xl object-cover" />
+                <img src={item.crop.image} alt={tc(item.crop.name)} className="w-20 h-20 rounded-xl object-cover" />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-heading font-bold text-foreground text-sm truncate">{item.crop.name}</h3>
-                  <p className="text-xs text-muted-foreground">{item.crop.farmLocation}</p>
+                  <h3 className="font-heading font-bold text-foreground text-sm truncate">{tc(item.crop.name)}</h3>
+                  <p className="text-xs text-muted-foreground">{tc(item.crop.farmLocation)}</p>
                   <div className="flex items-center gap-1 mt-1">
                     {!isBundle && <span className="price-original text-xs">RM{item.crop.usualPrice.toFixed(2)}</span>}
                     <span className="text-primary font-bold text-sm">RM{item.crop.discountPrice.toFixed(2)}/{unit}</span>

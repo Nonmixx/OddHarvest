@@ -11,6 +11,7 @@ import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, Che
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS } from "@/contexts/CartContext";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka"];
@@ -18,7 +19,8 @@ const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Pe
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   const { crops, updateCrop, removeCrop } = useCropInventory();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tc = (text: string) => translateContent(text, language);
   const [editCropId, setEditCropId] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>(null);
 
@@ -138,14 +140,14 @@ const FarmerDashboard = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-heading font-bold text-foreground text-sm">{c.name}</h3>
+                      <h3 className="font-heading font-bold text-foreground text-sm">{tc(c.name)}</h3>
                       {c.isMysteryBox ? (
                         <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">🎁 {t("product.mystery_box")}</span>
                       ) : c.isBundle ? (
                         <span className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">📦 {t("product.bundle")}</span>
                       ) : null}
                     </div>
-                    <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? t("checkout.box") : "kg"} · {c.state}</p>
+                    <p className="text-xs text-muted-foreground">{c.quantity} {c.isBundle ? t("checkout.box") : "kg"} · {tc(c.state)}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(c)}>
@@ -165,7 +167,7 @@ const FarmerDashboard = () => {
                   </span>
                 )}
                 {c.isBundle && c.bundleContents && (
-                  <p className="text-xs text-muted-foreground">📦 {c.bundleContents.join(", ")} ({c.bundleWeight} kg)</p>
+                  <p className="text-xs text-muted-foreground">📦 {translateContentArray(c.bundleContents, language).join(", ")} ({c.bundleWeight} kg)</p>
                 )}
                 <div className="flex gap-2 items-center">
                   {c.isBundle ? (
@@ -223,7 +225,7 @@ const FarmerDashboard = () => {
                 <div className="space-y-1.5">
                   <Label>{t("farmer.state")}</Label>
                   <select className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm" value={editData.state} onChange={(e) => setEditData({ ...editData, state: e.target.value })}>
-                    {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {STATES.map((s) => <option key={s} value={s}>{tc(s)}</option>)}
                   </select>
                 </div>
               </div>
