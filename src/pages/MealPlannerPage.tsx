@@ -92,7 +92,7 @@ const INGREDIENT_DISPLAY: Record<string, Record<string, string>> = {
 };
 
 function displayIngredient(key: string, lang: string): string {
-  return INGREDIENT_DISPLAY[key]?.[lang] || key.charAt(0).toUpperCase() + key.slice(1);
+  return INGREDIENT_DISPLAY[key]?.[lang] || translateContent(key, lang as "en" | "zh" | "ms") || key.charAt(0).toUpperCase() + key.slice(1);
 }
 
 function normalizeIngredient(input: string): string | null {
