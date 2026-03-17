@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle } from "lucide-react";
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateContent } from "@/lib/contentTranslations";
 import { toast } from "sonner";
 
 const allDeliveries = [...deliveryRequests, ...completedDeliveries];
