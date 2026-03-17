@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
@@ -26,17 +25,9 @@ const MarketplacePage = () => {
   const { crops } = useCropInventory();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { isAuthenticated } = useAuth();
   const tc = (text: string) => translateContent(text, language);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
-
-  // Redirect unauthenticated users to login
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/auth", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
   const [maxDistance, setMaxDistance] = useState(999);
   const [sortBy, setSortBy] = useState<"default" | "price" | "freshness" | "distance">("default");
   const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
