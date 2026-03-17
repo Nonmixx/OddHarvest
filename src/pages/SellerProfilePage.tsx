@@ -5,7 +5,7 @@ import { mockSellers } from "@/data/mockSellers";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
-import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award } from "lucide-react";
+import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
