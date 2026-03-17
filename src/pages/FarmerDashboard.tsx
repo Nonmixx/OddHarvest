@@ -78,9 +78,6 @@ const FarmerDashboard = () => {
             <p className="text-muted-foreground text-sm mt-1">{t("farmer.subtitle")}</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
-              <User className="h-4 w-4 mr-1" /> {t("common.profile")}
-            </Button>
             <Button variant="outline" className="rounded-full" onClick={() => navigate("/add-mystery-box")}>
               <Gift className="h-4 w-4 mr-1" /> {t("farmer.add_mystery_box")}
             </Button>
