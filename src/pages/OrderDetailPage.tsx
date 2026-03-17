@@ -172,7 +172,7 @@ const OrderDetailPage = () => {
               <span className="font-medium text-foreground">{order.date}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Status")}</span>
+              <span className="text-muted-foreground">{t("order.status")}</span>
               <span className="farm-badge-green text-xs">{tc(order.status)}</span>
             </div>
             <div className="flex justify-between text-sm">
