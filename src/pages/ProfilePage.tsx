@@ -44,6 +44,7 @@ const ProfilePage = () => {
       setVehicleType(user.vehicleType || "Motorcycle");
       setLicenseNo(user.licenseNo || "");
       setProfilePicture(user.profilePicture || "");
+      setPreferredPickupArea(user.preferredPickupArea || "");
     }
   }, [user]);
 
