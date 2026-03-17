@@ -76,7 +76,7 @@ const CartPage = () => {
                       }}
                       className="w-16 text-center font-bold text-sm bg-background border border-input rounded-md py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="text-xs text-muted-foreground">{unit}</span>
+                    <span className="text-xs text-muted-foreground">{unitLabel}</span>
                     <button
                       onClick={() => updateQuantity(item.crop.id, Math.round((item.quantity + qtyStep) * 10) / 10)}
                       className="h-7 w-7 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80"

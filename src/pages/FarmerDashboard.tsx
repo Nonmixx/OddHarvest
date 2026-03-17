@@ -172,11 +172,11 @@ const FarmerDashboard = () => {
                 )}
                 <div className="flex gap-2 items-center">
                   {c.isBundle ? (
-                    <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/box</span>
+                    <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "box")}</span>
                   ) : (
                     <>
-                      <span className="price-original text-xs">RM{c.usualPrice.toFixed(2)}</span>
-                      <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}/kg</span>
+                      <span className="price-original text-xs">RM{c.usualPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>
+                      <span className="text-primary font-bold text-sm">RM{c.discountPrice.toFixed(2)}{getPriceUnitLabel(language, "kg")}</span>
                       <span className="text-xs text-muted-foreground">· {t("product.save")} {Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100)}%</span>
                     </>
                   )}

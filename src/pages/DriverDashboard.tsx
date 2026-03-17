@@ -87,7 +87,7 @@ const DriverDashboard = () => {
                       <p className="font-medium">{tc(d.dropoff)}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t("driver.distance")}: {d.distance} km</p>
+                  <p className="text-xs text-muted-foreground">{t("driver.distance")}: {formatDistance(d.distance, language)}</p>
                 </div>
                 <div className="mt-4 flex gap-2">
                   {isAccepted ? (
