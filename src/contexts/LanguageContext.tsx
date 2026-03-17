@@ -368,6 +368,20 @@ const translations: Record<string, Record<Language, string>> = {
   "lang.zh": { en: "Chinese", zh: "中文", ms: "Bahasa Cina" },
   "lang.ms": { en: "Malay", zh: "马来语", ms: "Bahasa Melayu" },
   "lang.select": { en: "Language", zh: "语言", ms: "Bahasa" },
+
+  // Order Detail
+  "order.details": { en: "Order Details", zh: "订单详情", ms: "Butiran Pesanan" },
+  "order.not_found": { en: "Order not found", zh: "订单未找到", ms: "Pesanan tidak ditemui" },
+  "order.back_dashboard": { en: "Back to Dashboard", zh: "返回仪表板", ms: "Kembali ke Papan Pemuka" },
+  "order.date": { en: "Date", zh: "日期", ms: "Tarikh" },
+  "order.status": { en: "Status", zh: "状态", ms: "Status" },
+  "order.total_rescued": { en: "Total Rescued", zh: "总拯救量", ms: "Jumlah Diselamatkan" },
+  "order.total": { en: "Total", zh: "总计", ms: "Jumlah" },
+  "order.rate_crop": { en: "Rate this crop", zh: "为此农产品评分", ms: "Nilai tanaman ini" },
+  "order.rated": { en: "Rated", zh: "已评分", ms: "Dinilai" },
+  "order.thank_you": { en: "Thank you!", zh: "谢谢！", ms: "Terima kasih!" },
+  "order.submit": { en: "Submit", zh: "提交", ms: "Hantar" },
+  "order.rating_submitted": { en: "Rating submitted for", zh: "已为以下提交评分：", ms: "Penilaian dihantar untuk" },
 };
 
 interface LanguageContextType {

@@ -125,8 +125,8 @@ const OrderDetailPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-heading font-bold text-foreground mb-4">{tc("Order not found")}</h1>
-          <Button onClick={() => navigate("/buyer-dashboard")}>{tc("Back to Dashboard")}</Button>
+          <h1 className="text-2xl font-heading font-bold text-foreground mb-4">{t("order.not_found")}</h1>
+          <Button onClick={() => navigate("/buyer-dashboard")}>{t("order.back_dashboard")}</Button>
         </div>
         <Footer />
       </div>
@@ -146,7 +146,7 @@ const OrderDetailPage = () => {
 
   const handleSubmitRating = (key: string, sellerName: string) => {
     setSubmittedRatings((prev) => ({ ...prev, [key]: true }));
-    toast.success(`${tc("Rating submitted for")} ${sellerName}! ⭐`);
+    toast.success(`${t("order.rating_submitted")} ${sellerName}! ⭐`);
   };
 
   return (
@@ -159,7 +159,7 @@ const OrderDetailPage = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-heading font-bold text-foreground">{tc("Order Details")}</h1>
+            <h1 className="text-2xl font-heading font-bold text-foreground">{t("order.details")}</h1>
             <p className="text-muted-foreground text-sm">{order.id}</p>
           </div>
         </div>
@@ -168,19 +168,19 @@ const OrderDetailPage = () => {
         <Card className="mb-6">
           <CardContent className="p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Date")}</span>
+              <span className="text-muted-foreground">{t("order.date")}</span>
               <span className="font-medium text-foreground">{order.date}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Status")}</span>
+              <span className="text-muted-foreground">{t("order.status")}</span>
               <span className="farm-badge-green text-xs">{tc(order.status)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{tc("Total Rescued")}</span>
+              <span className="text-muted-foreground">{t("order.total_rescued")}</span>
               <span className="font-medium text-foreground">{order.kg} kg</span>
             </div>
             <div className="flex justify-between text-sm font-bold">
-              <span className="text-foreground">{tc("Total")}</span>
+              <span className="text-foreground">{t("order.total")}</span>
               <span className="text-primary">RM{order.total.toFixed(2)}</span>
             </div>
           </CardContent>
@@ -235,11 +235,11 @@ const OrderDetailPage = () => {
                             {isSubmitted ? (
                               <div className="flex items-center gap-1.5 text-xs text-primary">
                                 <CheckCircle className="h-4 w-4" />
-                                {tc("Rated")} {currentRating}/5 — {tc("Thank you!")}
+                                {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
                               </div>
                             ) : (
                               <div className="space-y-1.5">
-                                <p className="text-xs text-muted-foreground">{tc("Rate this crop")}:</p>
+                                <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
                                 <div className="flex items-center gap-2">
                                   <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
                                   {currentRating > 0 && (
@@ -249,7 +249,7 @@ const OrderDetailPage = () => {
                                       className="h-7 text-xs rounded-full"
                                       onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
                                     >
-                                      {tc("Submit")}
+                                      {t("order.submit")}
                                     </Button>
                                   )}
                                 </div>
