@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle } from "lucide-react";
+import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle, History, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
