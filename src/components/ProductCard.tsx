@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
-import { getFreshnessInfo } from "@/lib/freshness";
+import { formatDistance, getExpiryInfo, getFreshnessInfo, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
 import mysteryBoxImg from "@/assets/mystery-box.png";
 

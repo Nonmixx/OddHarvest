@@ -4,6 +4,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { formatDistance } from "@/lib/freshness";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
