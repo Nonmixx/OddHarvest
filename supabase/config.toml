@@ -1,1 +1,4 @@
 project_id = "hkudzlarvontnstzjazg"
+
+[functions.meal-planner]
+verify_jwt = false
