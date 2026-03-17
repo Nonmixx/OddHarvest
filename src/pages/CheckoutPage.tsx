@@ -70,7 +70,7 @@ const CheckoutPage = () => {
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
               ? `${t("checkout.pickup_msg")} ${pickupSlot}`
-              : `${t("checkout.delivery_msg")} (${distance} km).`}
+              : `${t("checkout.delivery_msg")} (${formatDistance(distance, language)}).`}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {fullAddress && (
@@ -81,7 +81,7 @@ const CheckoutPage = () => {
             )}
             {saved.items.map((item) => (
               <div key={item.crop.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {item.crop.isBundle ? t("checkout.box") : "kg"}</span>
+                <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
                 <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
               </div>
             ))}
