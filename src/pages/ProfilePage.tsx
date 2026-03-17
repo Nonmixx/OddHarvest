@@ -76,7 +76,9 @@ const ProfilePage = () => {
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
-    navigate("/marketplace");
+    if (user?.role === "buyer") {
+      navigate("/marketplace");
+    }
   };
 
   return (
