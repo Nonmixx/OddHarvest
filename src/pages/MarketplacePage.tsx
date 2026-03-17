@@ -58,7 +58,7 @@ const MarketplacePage = () => {
     }, [] as { location: string; distance: number; farmerName: string }[])
     .sort((a, b) => a.distance - b.distance);
 
-  if (!isAuthenticated) return null;
+  
 
   return (
     <div className="min-h-screen">
