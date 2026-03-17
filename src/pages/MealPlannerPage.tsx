@@ -274,8 +274,8 @@ const MealPlannerPage = () => {
               <p className="text-xs text-muted-foreground mb-2">{l("your_ingredients")}:</p>
               <div className="flex flex-wrap gap-2">
                 {selectedIngredients.map((ing) => (
-                  <Badge key={ing} variant="secondary" className="gap-1 px-3 py-1.5 text-sm capitalize">
-                    {ing}
+                  <Badge key={ing} variant="secondary" className="gap-1 px-3 py-1.5 text-sm">
+                    {displayIngredient(ing, language)}
                     <button onClick={() => removeIngredient(ing)}>
                       <X className="h-3 w-3" />
                     </button>
