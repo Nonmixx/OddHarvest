@@ -24,6 +24,7 @@ const Navbar = () => {
 
   const showMarketplace = !user || user.role === "buyer";
   const showCart = !user || user.role === "buyer";
+  const showMealPlanner = !user || user.role === "buyer";
 
   return (
     <nav className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
