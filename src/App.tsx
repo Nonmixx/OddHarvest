@@ -26,6 +26,8 @@ import AddMysteryBoxPage from "./pages/AddMysteryBoxPage";
 import ProfilePage from "./pages/ProfilePage";
 import MealPlannerPage from "./pages/MealPlannerPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import VerifyCodePage from "./pages/VerifyCodePage";
 
 const queryClient = new QueryClient();
 

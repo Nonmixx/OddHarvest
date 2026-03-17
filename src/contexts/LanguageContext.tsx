@@ -40,6 +40,29 @@ const translations: Record<string, Record<Language, string>> = {
   "auth.has_account": { en: "Already have an account?", zh: "已有账户？", ms: "Sudah ada akaun?" },
   "auth.signup_success_title": { en: "Sign Up Successful!", zh: "注册成功！", ms: "Pendaftaran Berjaya!" },
   "auth.signup_success_desc": { en: "Your account has been created. Please log in to continue.", zh: "您的账户已创建。请登录以继续。", ms: "Akaun anda telah dicipta. Sila log masuk untuk meneruskan." },
+  "auth.forgot_password": { en: "Forgot Password?", zh: "忘记密码？", ms: "Lupa Kata Laluan?" },
+
+  // Forgot password
+  "forgot.back_to_login": { en: "Back to Login", zh: "返回登录", ms: "Kembali ke Log Masuk" },
+  "forgot.title": { en: "Forgot Password?", zh: "忘记密码？", ms: "Lupa Kata Laluan?" },
+  "forgot.desc": { en: "Enter your email and we'll send you a verification code", zh: "输入您的邮箱，我们将发送验证码", ms: "Masukkan e-mel anda dan kami akan menghantar kod pengesahan" },
+  "forgot.email_label": { en: "Email Address", zh: "邮箱地址", ms: "Alamat E-mel" },
+  "forgot.email_placeholder": { en: "Enter your email", zh: "输入您的邮箱", ms: "Masukkan e-mel anda" },
+  "forgot.send_btn": { en: "Send Verification Code", zh: "发送验证码", ms: "Hantar Kod Pengesahan" },
+  "forgot.sending": { en: "Sending...", zh: "发送中...", ms: "Menghantar..." },
+  "forgot.code_sent_title": { en: "Code Sent!", zh: "验证码已发送！", ms: "Kod Dihantar!" },
+  "forgot.code_sent_desc": { en: "Please check your email for the verification code.", zh: "请检查您的邮箱获取验证码。", ms: "Sila semak e-mel anda untuk kod pengesahan." },
+
+  // Verify code
+  "verify.title": { en: "Verify Your Email", zh: "验证您的邮箱", ms: "Sahkan E-mel Anda" },
+  "verify.desc": { en: "We've sent a 4-digit code to", zh: "我们已发送4位验证码到", ms: "Kami telah menghantar kod 4 digit ke" },
+  "verify.enter_code": { en: "Enter Verification Code", zh: "输入验证码", ms: "Masukkan Kod Pengesahan" },
+  "verify.verify_btn": { en: "Verify Code", zh: "验证", ms: "Sahkan Kod" },
+  "verify.verifying": { en: "Verifying...", zh: "验证中...", ms: "Mengesahkan..." },
+  "verify.success_title": { en: "Verified!", zh: "验证成功！", ms: "Berjaya Disahkan!" },
+  "verify.success_desc": { en: "Your password has been reset. Please log in with your new credentials.", zh: "您的密码已重置。请使用新凭据登录。", ms: "Kata laluan anda telah ditetapkan semula. Sila log masuk dengan kelayakan baharu." },
+  "verify.no_code": { en: "Didn't receive the code?", zh: "没有收到验证码？", ms: "Tidak terima kod?" },
+  "verify.resend": { en: "Resend", zh: "重新发送", ms: "Hantar Semula" },
 
   // Index page
   "hero.title1": { en: "Perfectly Imperfect,", zh: "完美的不完美,", ms: "Sempurna Tidak Sempurna," },

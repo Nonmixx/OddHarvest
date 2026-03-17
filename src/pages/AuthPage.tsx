@@ -145,6 +145,17 @@ const AuthPage = () => {
             <div className="space-y-1.5">
               <Label htmlFor="password">{t("auth.password")}</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("auth.password_placeholder")} required />
+              {isLogin && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/forgot-password")}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    {t("auth.forgot_password")}
+                  </button>
+                </div>
+              )}
             </div>
             <Button type="submit" className="w-full rounded-full" size="lg">
               {isLogin ? t("auth.login_btn") : t("auth.signup_btn")}
