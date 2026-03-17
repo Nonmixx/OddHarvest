@@ -39,6 +39,11 @@ const DriverDashboard = () => {
     toast.success(`${id} ${t("driver.rejected_msg")} ❌`);
   };
 
+  const handleCancel = (id: string) => {
+    setAccepted((prev) => prev.filter((a) => a !== id));
+    toast.success(`${id} ${tc("cancelled")} 🔄`);
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
