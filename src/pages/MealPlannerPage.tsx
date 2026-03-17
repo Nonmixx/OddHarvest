@@ -224,6 +224,8 @@ const MealPlannerPage = () => {
     error: { en: "Failed to generate meals. Please try again.", zh: "生成膳食失败。请再试一次。", ms: "Gagal menjana hidangan. Sila cuba lagi." },
     ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
     all_ingredients: { en: "All Ingredients Needed", zh: "所需全部食材", ms: "Semua Bahan Diperlukan" },
+    analyzing: { en: "Analyzing your ingredients and finding the best recipes...", zh: "正在分析您的食材并寻找最佳食谱...", ms: "Menganalisis bahan anda dan mencari resipi terbaik..." },
+    meals_count: { en: "meals", zh: "道菜", ms: "hidangan" },
   };
 
   const l = (key: keyof typeof labels) => labels[key][language];
