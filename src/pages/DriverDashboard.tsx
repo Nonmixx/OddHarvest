@@ -39,6 +39,11 @@ const DriverDashboard = () => {
     toast.success(`${id} ${t("driver.rejected_msg")} ❌`);
   };
 
+  const handleCancel = (id: string) => {
+    setAccepted((prev) => prev.filter((a) => a !== id));
+    toast.success(`${id} ${tc("cancelled")} 🔄`);
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -91,7 +96,12 @@ const DriverDashboard = () => {
                 </div>
                 <div className="mt-4 flex gap-2">
                   {isAccepted ? (
-                    <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
+                      <Button variant="outline" size="sm" className="rounded-full text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => handleCancel(d.id)}>
+                        <XCircle className="h-4 w-4 mr-1" /> {tc("Cancel")}
+                      </Button>
+                    </div>
                   ) : (
                     <>
                       <Button onClick={() => handleAccept(d.id)} className="rounded-full" size="sm">
