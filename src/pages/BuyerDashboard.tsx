@@ -67,7 +67,7 @@ const BuyerDashboard = () => {
           { id: "ORD-004", items: "Bananas, Spinach", total: 10.5, date: "2026-02-25", status: "Delivered", kg: 5 },
           { id: "ORD-005", items: "Tomatoes, Corn", total: 12, date: "2026-02-20", status: "Picked Up", kg: 3 },
           { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 }].map((o) =>
-            <div key={o.id} className="farm-card p-4 flex justify-between items-center">
+            <div key={o.id} className="farm-card p-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/order/${o.id}`)}>
               <div>
                 <p className="font-heading font-bold text-foreground text-sm">{o.id}</p>
                 <p className="text-xs text-muted-foreground">{tc(o.items)}</p>
