@@ -1,11 +1,11 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mockSellers } from "@/data/mockSellers";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
-import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award } from "lucide-react";
+import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { crops } = useCropInventory();
   const { t } = useLanguage();
   const seller = mockSellers.find((s) => s.id === id);
@@ -60,6 +61,9 @@ const SellerProfilePage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
+        <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("common.back") || "Back"}
+        </Button>
         <div className="farm-card p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="h-24 w-24 rounded-2xl bg-farm-green-light flex items-center justify-center shrink-0">
