@@ -26,6 +26,8 @@ import AddMysteryBoxPage from "./pages/AddMysteryBoxPage";
 import ProfilePage from "./pages/ProfilePage";
 import MealPlannerPage from "./pages/MealPlannerPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import VerifyCodePage from "./pages/VerifyCodePage";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/verify-code" element={<VerifyCodePage />} />
                   <Route path="/marketplace" element={<MarketplacePage />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
