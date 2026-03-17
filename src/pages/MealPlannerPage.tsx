@@ -3,138 +3,29 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import VoiceInput from "@/components/VoiceInput";
-import { ChefHat, Sparkles, Flame, Dumbbell, Wheat, Leaf, ShoppingCart, X, Plus, ArrowRight, Clock, Users } from "lucide-react";
+import { ChefHat, Sparkles, Flame, Dumbbell, Wheat, Leaf, ShoppingCart, X, Plus, ArrowRight, Clock, Users, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-// Meal database with nutrition and recipes
-const MEAL_DATABASE = [
-  {
-    nameKey: "meal.chicken_soup",
-    name: { en: "Chicken Vegetable Soup", zh: "鸡肉蔬菜汤", ms: "Sup Ayam Sayur" },
-    ingredients: ["chicken", "carrot", "potato", "onion", "garlic"],
-    calories: 350,
-    protein: "High",
-    proteinKey: "meal.high",
-    nutritionLevel: "balanced",
-    nutritionKey: "meal.balanced",
-    servings: 4,
-    time: 40,
-    steps: {
-      en: ["Boil chicken in water for 15 minutes", "Dice carrots and potatoes", "Add vegetables and simmer for 20 minutes", "Season with salt and pepper, serve hot"],
-      zh: ["将鸡肉在水中煮15分钟", "切胡萝卜和土豆", "加入蔬菜，小火煮20分钟", "加盐和胡椒调味，趁热食用"],
-      ms: ["Rebus ayam dalam air selama 15 minit", "Potong dadu lobak merah dan kentang", "Tambah sayur dan masak perlahan selama 20 minit", "Perasakan dengan garam dan lada, hidang panas"],
-    },
-  },
-  {
-    nameKey: "meal.stir_fry",
-    name: { en: "Stir-Fried Vegetables", zh: "炒蔬菜", ms: "Sayur Goreng" },
-    ingredients: ["bell pepper", "carrot", "cucumber", "garlic", "soy sauce"],
-    calories: 180,
-    protein: "Low",
-    proteinKey: "meal.low",
-    nutritionLevel: "balanced",
-    nutritionKey: "meal.balanced",
-    servings: 2,
-    time: 15,
-    steps: {
-      en: ["Heat oil in a wok", "Add garlic and stir until fragrant", "Add vegetables and stir-fry on high heat for 5 minutes", "Add soy sauce, toss and serve"],
-      zh: ["在锅中加热油", "加入大蒜炒至香", "加入蔬菜大火翻炒5分钟", "加入酱油，翻炒后上桌"],
-      ms: ["Panaskan minyak dalam kuali", "Masukkan bawang putih dan tumis hingga wangi", "Masukkan sayur dan goreng atas api besar 5 minit", "Tambah kicap, gaul dan hidang"],
-    },
-  },
-  {
-    nameKey: "meal.banana_smoothie",
-    name: { en: "Banana Smoothie Bowl", zh: "香蕉冰沙碗", ms: "Mangkuk Smoothie Pisang" },
-    ingredients: ["banana", "spinach", "milk", "honey"],
-    calories: 280,
-    protein: "Medium",
-    proteinKey: "meal.medium",
-    nutritionLevel: "high_carb",
-    nutritionKey: "meal.high_carb",
-    servings: 1,
-    time: 5,
-    steps: {
-      en: ["Blend frozen bananas with spinach and milk", "Pour into a bowl", "Drizzle with honey", "Top with sliced fruits or granola"],
-      zh: ["将冷冻香蕉与菠菜和牛奶混合", "倒入碗中", "淋上蜂蜜", "上面放切片水果或格兰诺拉麦片"],
-      ms: ["Kisar pisang beku dengan bayam dan susu", "Tuang ke dalam mangkuk", "Titiskan madu", "Hias dengan buah potong atau granola"],
-    },
-  },
-  {
-    nameKey: "meal.tomato_pasta",
-    name: { en: "Tomato Pasta", zh: "番茄意面", ms: "Pasta Tomato" },
-    ingredients: ["tomato", "pasta", "garlic", "basil", "onion"],
-    calories: 420,
-    protein: "Medium",
-    proteinKey: "meal.medium",
-    nutritionLevel: "high_carb",
-    nutritionKey: "meal.high_carb",
-    servings: 2,
-    time: 25,
-    steps: {
-      en: ["Cook pasta until al dente", "Sauté garlic and onion in olive oil", "Add diced tomatoes and simmer 10 minutes", "Toss with pasta, garnish with basil"],
-      zh: ["煮意面至半熟", "在橄榄油中炒大蒜和洋葱", "加入切丁番茄小火煮10分钟", "与意面拌匀，用罗勒装饰"],
-      ms: ["Masak pasta hingga al dente", "Tumis bawang putih dan bawang dalam minyak zaitun", "Tambah tomato potong dadu dan masak perlahan 10 minit", "Gaul dengan pasta, hiaskan dengan selasih"],
-    },
-  },
-  {
-    nameKey: "meal.spicy_chili",
-    name: { en: "Spicy Chili Stir-Fry", zh: "辣椒炒肉", ms: "Tumis Cili Pedas" },
-    ingredients: ["chili", "chicken", "garlic", "bell pepper", "soy sauce"],
-    calories: 310,
-    protein: "High",
-    proteinKey: "meal.high",
-    nutritionLevel: "high_protein",
-    nutritionKey: "meal.high_protein",
-    servings: 2,
-    time: 20,
-    steps: {
-      en: ["Slice chicken into strips", "Heat oil, add garlic and chili", "Stir-fry chicken until golden", "Add bell peppers and soy sauce, cook 5 more minutes"],
-      zh: ["将鸡肉切成条", "加热油，放入大蒜和辣椒", "翻炒鸡肉至金黄", "加入彩椒和酱油，再煮5分钟"],
-      ms: ["Hiris ayam menjadi jalur", "Panaskan minyak, masukkan bawang putih dan cili", "Goreng ayam hingga keemasan", "Tambah lada benggala dan kicap, masak 5 minit lagi"],
-    },
-  },
-  {
-    nameKey: "meal.corn_soup",
-    name: { en: "Sweet Corn Soup", zh: "甜玉米汤", ms: "Sup Jagung Manis" },
-    ingredients: ["corn", "egg", "chicken stock", "cornstarch"],
-    calories: 200,
-    protein: "Medium",
-    proteinKey: "meal.medium",
-    nutritionLevel: "balanced",
-    nutritionKey: "meal.balanced",
-    servings: 3,
-    time: 20,
-    steps: {
-      en: ["Blend half the corn kernels", "Bring stock to a boil, add blended and whole corn", "Thicken with cornstarch slurry", "Drizzle beaten egg, stir gently and serve"],
-      zh: ["将一半玉米粒打碎", "煮沸高汤，加入打碎的和整粒玉米", "用玉米淀粉勾芡", "淋入蛋液，轻轻搅拌后上桌"],
-      ms: ["Kisar separuh biji jagung", "Didihkan stok, tambah jagung yang dikisar dan biji jagung", "Pekatkan dengan bancuhan kanji", "Titiskan telur pukul, kacau perlahan dan hidang"],
-    },
-  },
-  {
-    nameKey: "meal.apple_salad",
-    name: { en: "Apple Cucumber Salad", zh: "苹果黄瓜沙拉", ms: "Salad Epal Timun" },
-    ingredients: ["apple", "cucumber", "lemon", "honey", "mint"],
-    calories: 150,
-    protein: "Low",
-    proteinKey: "meal.low",
-    nutritionLevel: "balanced",
-    nutritionKey: "meal.balanced",
-    servings: 2,
-    time: 10,
-    steps: {
-      en: ["Dice apples and cucumbers", "Mix lemon juice and honey for dressing", "Toss vegetables with dressing", "Garnish with fresh mint leaves"],
-      zh: ["将苹果和黄瓜切丁", "混合柠檬汁和蜂蜜做酱汁", "将蔬菜与酱汁拌匀", "用新鲜薄荷叶装饰"],
-      ms: ["Potong dadu epal dan timun", "Campurkan jus lemon dan madu untuk sos", "Gaul sayur dengan sos", "Hiaskan dengan daun pudina segar"],
-    },
-  },
-];
+interface AIMeal {
+  name: string;
+  calories: number;
+  protein: "High" | "Medium" | "Low";
+  nutritionLevel: "balanced" | "high_protein" | "high_carb";
+  servings: number;
+  time: number;
+  ingredients: string[];
+  missingIngredients: string[];
+  steps: string[];
+}
 
-// Ingredient aliases for matching
+// Ingredient aliases for matching user input
 const INGREDIENT_ALIASES: Record<string, string[]> = {
   "tomato": ["tomato", "tomatoes", "番茄", "tomato"],
   "carrot": ["carrot", "carrots", "胡萝卜", "lobak merah", "lobak"],
@@ -157,8 +48,14 @@ const INGREDIENT_ALIASES: Record<string, string[]> = {
   "honey": ["honey", "蜂蜜", "madu"],
   "pasta": ["pasta", "noodle", "noodles", "意面", "pasta"],
   "lemon": ["lemon", "柠檬", "lemon"],
-  "chicken stock": ["chicken stock", "broth", "高汤", "stok ayam"],
-  "cornstarch": ["cornstarch", "corn starch", "玉米淀粉", "kanji"],
+  "rice": ["rice", "米饭", "nasi"],
+  "tofu": ["tofu", "豆腐", "tauhu"],
+  "prawn": ["prawn", "prawns", "shrimp", "虾", "udang"],
+  "fish": ["fish", "鱼", "ikan"],
+  "eggplant": ["eggplant", "aubergine", "茄子", "terung"],
+  "mushroom": ["mushroom", "mushrooms", "蘑菇", "cendawan"],
+  "ginger": ["ginger", "姜", "halia"],
+  "coconut milk": ["coconut milk", "santan", "椰奶"],
 };
 
 function normalizeIngredient(input: string): string | null {
@@ -175,9 +72,10 @@ const MealPlannerPage = () => {
   const { crops } = useCropInventory();
   const [inputText, setInputText] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [suggestedMeals, setSuggestedMeals] = useState<typeof MEAL_DATABASE>([]);
+  const [suggestedMeals, setSuggestedMeals] = useState<AIMeal[]>([]);
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const addIngredient = () => {
     const trimmed = inputText.trim();
@@ -201,22 +99,40 @@ const MealPlannerPage = () => {
     }
   };
 
-  const generateMeals = () => {
-    const matched = MEAL_DATABASE.filter((meal) => {
-      const matchCount = meal.ingredients.filter((ing) => selectedIngredients.includes(ing)).length;
-      return matchCount >= 2;
-    }).sort((a, b) => {
-      const aMatch = a.ingredients.filter((ing) => selectedIngredients.includes(ing)).length;
-      const bMatch = b.ingredients.filter((ing) => selectedIngredients.includes(ing)).length;
-      return bMatch - aMatch;
-    });
-    setSuggestedMeals(matched);
+  const generateMeals = async () => {
+    setIsLoading(true);
     setHasSearched(true);
     setExpandedMeal(null);
-  };
+    setSuggestedMeals([]);
 
-  const getMissingIngredients = (meal: typeof MEAL_DATABASE[0]) => {
-    return meal.ingredients.filter((ing) => !selectedIngredients.includes(ing));
+    try {
+      const { data, error } = await supabase.functions.invoke("meal-planner", {
+        body: { ingredients: selectedIngredients, language },
+      });
+
+      if (error) {
+        console.error("Edge function error:", error);
+        toast.error(labels.error[language]);
+        return;
+      }
+
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      const meals = data?.meals || [];
+      setSuggestedMeals(meals);
+
+      if (meals.length === 0) {
+        toast.info(labels.no_meals[language]);
+      }
+    } catch (err) {
+      console.error("Failed to generate meals:", err);
+      toast.error(labels.error[language]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getNutritionColor = (level: string) => {
@@ -228,28 +144,35 @@ const MealPlannerPage = () => {
     }
   };
 
-  const getNutritionLabel = (key: string) => {
-    const labels: Record<string, Record<string, string>> = {
-      "meal.balanced": { en: "Balanced Meal ✅", zh: "均衡膳食 ✅", ms: "Hidangan Seimbang ✅" },
-      "meal.high_protein": { en: "High Protein 💪", zh: "高蛋白 💪", ms: "Protein Tinggi 💪" },
-      "meal.high_carb": { en: "High Carbs 🍞", zh: "高碳水 🍞", ms: "Karbohidrat Tinggi 🍞" },
-      "meal.high": { en: "High", zh: "高", ms: "Tinggi" },
-      "meal.medium": { en: "Medium", zh: "中等", ms: "Sederhana" },
-      "meal.low": { en: "Low", zh: "低", ms: "Rendah" },
+  const getNutritionLabel = (level: string) => {
+    const map: Record<string, Record<string, string>> = {
+      "balanced": { en: "Balanced Meal ✅", zh: "均衡膳食 ✅", ms: "Hidangan Seimbang ✅" },
+      "high_protein": { en: "High Protein 💪", zh: "高蛋白 💪", ms: "Protein Tinggi 💪" },
+      "high_carb": { en: "High Carbs 🍞", zh: "高碳水 🍞", ms: "Karbohidrat Tinggi 🍞" },
     };
-    return labels[key]?.[language] ?? key;
+    return map[level]?.[language] ?? level;
+  };
+
+  const getProteinLabel = (protein: string) => {
+    const map: Record<string, Record<string, string>> = {
+      "High": { en: "High", zh: "高", ms: "Tinggi" },
+      "Medium": { en: "Medium", zh: "中等", ms: "Sederhana" },
+      "Low": { en: "Low", zh: "低", ms: "Rendah" },
+    };
+    return map[protein]?.[language] ?? protein;
   };
 
   const labels = {
     title: { en: "AI Smart Meal Planner 🍳", zh: "AI 智能膳食规划师 🍳", ms: "Perancang Hidangan Pintar AI 🍳" },
-    subtitle: { en: "Turn your rescued ingredients into delicious, nutritious meals!", zh: "将您拯救的食材变成美味又营养的膳食！", ms: "Tukar bahan yang diselamatkan menjadi hidangan lazat dan berkhasiat!" },
+    subtitle: { en: "Turn your rescued ingredients into delicious, nutritious meals — powered by AI!", zh: "用 AI 将您拯救的食材变成美味又营养的膳食！", ms: "Tukar bahan yang diselamatkan menjadi hidangan lazat dan berkhasiat — dikuasakan oleh AI!" },
     input_label: { en: "What ingredients do you have?", zh: "您有什么食材？", ms: "Apakah bahan yang anda ada?" },
-    input_placeholder: { en: "Type an ingredient (e.g., tomato, chicken)...", zh: "输入食材（例如：番茄、鸡肉）...", ms: "Taip bahan (cth: tomato, ayam)..." },
+    input_placeholder: { en: "Type an ingredient (e.g., tomato, chicken, rice)...", zh: "输入食材（例如：番茄、鸡肉、米饭）...", ms: "Taip bahan (cth: tomato, ayam, nasi)..." },
     add: { en: "Add", zh: "添加", ms: "Tambah" },
     quick_add: { en: "Quick add from your rescued crops:", zh: "从您拯救的农产品中快速添加：", ms: "Tambah pantas dari tanaman yang diselamatkan:" },
-    generate: { en: "🍽️ Generate Meal Ideas", zh: "🍽️ 生成膳食建议", ms: "🍽️ Jana Idea Hidangan" },
+    generate: { en: "🍽️ Generate Meal Ideas with AI", zh: "🍽️ 用 AI 生成膳食建议", ms: "🍽️ Jana Idea Hidangan dengan AI" },
+    generating: { en: "🤖 AI is cooking up ideas...", zh: "🤖 AI 正在构思菜谱...", ms: "🤖 AI sedang menjana idea..." },
     your_ingredients: { en: "Your Ingredients", zh: "您的食材", ms: "Bahan Anda" },
-    suggested_meals: { en: "Suggested Meals", zh: "建议膳食", ms: "Hidangan Dicadangkan" },
+    suggested_meals: { en: "AI Suggested Meals", zh: "AI 建议膳食", ms: "Hidangan Dicadangkan AI" },
     calories: { en: "Calories", zh: "卡路里", ms: "Kalori" },
     protein: { en: "Protein", zh: "蛋白质", ms: "Protein" },
     nutrition: { en: "Nutrition Level", zh: "营养等级", ms: "Tahap Pemakanan" },
@@ -257,16 +180,18 @@ const MealPlannerPage = () => {
     nearby_surplus: { en: "Available nearby as surplus!", zh: "附近有剩余的可用！", ms: "Tersedia berdekatan sebagai lebihan!" },
     cooking_guide: { en: "Cooking Guide", zh: "烹饪指南", ms: "Panduan Memasak" },
     step: { en: "Step", zh: "步骤", ms: "Langkah" },
-    no_meals: { en: "No meals found with your ingredients. Try adding more!", zh: "未找到匹配的膳食。尝试添加更多食材！", ms: "Tiada hidangan ditemui dengan bahan anda. Cuba tambah lagi!" },
+    no_meals: { en: "No meals found. Try different ingredients!", zh: "未找到匹配的膳食。尝试不同的食材！", ms: "Tiada hidangan ditemui. Cuba bahan lain!" },
     servings: { en: "servings", zh: "份", ms: "hidangan" },
     minutes: { en: "min", zh: "分钟", ms: "minit" },
     no_ingredients: { en: "Add at least 2 ingredients to generate meal ideas", zh: "添加至少2种食材以生成膳食建议", ms: "Tambah sekurang-kurangnya 2 bahan untuk menjana idea hidangan" },
+    error: { en: "Failed to generate meals. Please try again.", zh: "生成膳食失败。请再试一次。", ms: "Gagal menjana hidangan. Sila cuba lagi." },
+    ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
+    all_ingredients: { en: "All Ingredients Needed", zh: "所需全部食材", ms: "Semua Bahan Diperlukan" },
   };
 
   const l = (key: keyof typeof labels) => labels[key][language];
 
-  // Get some crops for quick-add
-  const quickCrops = crops.slice(0, 6).filter((c) => !c.isBundle);
+  const quickCrops = crops.slice(0, 8).filter((c) => !c.isBundle);
 
   return (
     <div className="min-h-screen">
@@ -277,6 +202,7 @@ const MealPlannerPage = () => {
           <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-4">
             <ChefHat className="h-5 w-5 text-primary" />
             <Sparkles className="h-4 w-4 text-primary" />
+            <span className="text-xs font-medium text-primary">{l("ai_badge")}</span>
           </div>
           <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{l("title")}</h1>
           <p className="text-muted-foreground">{l("subtitle")}</p>
@@ -342,18 +268,46 @@ const MealPlannerPage = () => {
 
           <Button
             onClick={generateMeals}
-            disabled={selectedIngredients.length < 2}
+            disabled={selectedIngredients.length < 2 || isLoading}
             className="w-full rounded-full"
             size="lg"
           >
-            {selectedIngredients.length < 2 ? l("no_ingredients") : l("generate")}
+            {isLoading ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {l("generating")}</>
+            ) : selectedIngredients.length < 2 ? (
+              l("no_ingredients")
+            ) : (
+              l("generate")
+            )}
           </Button>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="farm-card p-10 text-center mb-6 animate-pulse">
+            <div className="inline-flex items-center gap-3">
+              <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              <div className="text-left">
+                <p className="font-heading font-bold text-foreground">{l("generating")}</p>
+                <p className="text-xs text-muted-foreground">
+                  {language === "en" ? "Analyzing your ingredients and finding the best recipes..." :
+                   language === "zh" ? "正在分析您的食材并寻找最佳食谱..." :
+                   "Menganalisis bahan anda dan mencari resipi terbaik..."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Results */}
-        {hasSearched && (
+        {hasSearched && !isLoading && (
           <div className="space-y-4">
-            <h2 className="font-heading font-bold text-foreground text-lg">{l("suggested_meals")}</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading font-bold text-foreground text-lg">{l("suggested_meals")}</h2>
+              <Badge variant="outline" className="text-xs gap-1">
+                <Sparkles className="h-3 w-3" /> {suggestedMeals.length} {language === "en" ? "meals" : language === "zh" ? "道菜" : "hidangan"}
+              </Badge>
+            </div>
 
             {suggestedMeals.length === 0 ? (
               <div className="farm-card p-8 text-center">
@@ -362,9 +316,10 @@ const MealPlannerPage = () => {
               </div>
             ) : (
               suggestedMeals.map((meal, idx) => {
-                const missing = getMissingIngredients(meal);
                 const isExpanded = expandedMeal === idx;
-                const matchedCount = meal.ingredients.filter((ing) => selectedIngredients.includes(ing)).length;
+                const matchedCount = meal.ingredients.filter((ing) =>
+                  selectedIngredients.some((si) => ing.toLowerCase().includes(si) || si.includes(ing.toLowerCase()))
+                ).length;
 
                 return (
                   <div key={idx} className="farm-card overflow-hidden">
@@ -374,7 +329,7 @@ const MealPlannerPage = () => {
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-heading font-bold text-foreground text-lg">{meal.name[language]}</h3>
+                          <h3 className="font-heading font-bold text-foreground text-lg">{meal.name}</h3>
                           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {meal.time} {l("minutes")}</span>
                             <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {meal.servings} {l("servings")}</span>
@@ -395,29 +350,31 @@ const MealPlannerPage = () => {
                         <div className="flex items-center gap-1.5 text-sm">
                           <Dumbbell className="h-4 w-4 text-primary" />
                           <span className="text-muted-foreground">{l("protein")}:</span>
-                          <span className="font-bold">{getNutritionLabel(meal.proteinKey)}</span>
+                          <span className="font-bold">{getProteinLabel(meal.protein)}</span>
                         </div>
                       </div>
 
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${getNutritionColor(meal.nutritionLevel)}`}>
                         <Leaf className="h-3 w-3" />
-                        {getNutritionLabel(meal.nutritionKey)}
+                        {getNutritionLabel(meal.nutritionLevel)}
                       </div>
 
                       {/* Missing ingredients */}
-                      {missing.length > 0 && (
+                      {meal.missingIngredients && meal.missingIngredients.length > 0 && (
                         <div className="mt-3 p-3 rounded-lg bg-destructive/5 border border-destructive/10">
                           <p className="text-xs font-medium text-destructive mb-1">{l("missing")}:</p>
                           <div className="flex flex-wrap gap-1.5">
-                            {missing.map((m) => (
-                              <span key={m} className="px-2 py-0.5 bg-destructive/10 text-destructive rounded-full text-xs capitalize">
+                            {meal.missingIngredients.map((m, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-destructive/10 text-destructive rounded-full text-xs capitalize">
                                 {m}
                               </span>
                             ))}
                           </div>
-                          {/* Check if any missing ingredient is available in the market */}
-                          {missing.some((m) => 
-                            crops.some((c) => normalizeIngredient(c.name) === m)
+                          {meal.missingIngredients.some((m) =>
+                            crops.some((c) => {
+                              const norm = normalizeIngredient(c.name);
+                              return norm && m.toLowerCase().includes(norm);
+                            })
                           ) && (
                             <p className="text-xs text-primary mt-2 flex items-center gap-1">
                               <ShoppingCart className="h-3 w-3" />
@@ -436,12 +393,36 @@ const MealPlannerPage = () => {
                     {/* Expanded cooking guide */}
                     {isExpanded && (
                       <div className="border-t border-border p-5 bg-secondary/20">
+                        {/* All ingredients needed */}
+                        <div className="mb-4">
+                          <h4 className="font-heading font-bold text-foreground text-sm mb-2">{l("all_ingredients")}:</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {meal.ingredients.map((ing, i) => {
+                              const isAvailable = selectedIngredients.some(
+                                (si) => ing.toLowerCase().includes(si) || si.includes(ing.toLowerCase())
+                              );
+                              return (
+                                <span
+                                  key={i}
+                                  className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
+                                    isAvailable
+                                      ? "bg-primary/10 text-primary"
+                                      : "bg-destructive/10 text-destructive"
+                                  }`}
+                                >
+                                  {isAvailable ? "✓" : "✗"} {ing}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+
                         <h4 className="font-heading font-bold text-foreground mb-3 flex items-center gap-2">
                           <Wheat className="h-4 w-4 text-primary" />
                           {l("cooking_guide")}
                         </h4>
                         <ol className="space-y-3">
-                          {meal.steps[language].map((step, sIdx) => (
+                          {meal.steps.map((step, sIdx) => (
                             <li key={sIdx} className="flex gap-3">
                               <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
                                 {sIdx + 1}
