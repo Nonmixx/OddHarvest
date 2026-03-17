@@ -46,6 +46,11 @@ const Navbar = () => {
               {t("nav.dashboard")}
             </Link>
           )}
+          {isAuthenticated && (
+            <Link to="/meal-planner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <ChefHat className="h-4 w-4" /> {t("nav.meal_planner")}
+            </Link>
+          )}
           {showCart && isAuthenticated && (
             <Link to="/cart" className="relative">
               <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
