@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
