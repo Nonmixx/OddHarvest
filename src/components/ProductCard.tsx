@@ -25,21 +25,23 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const tc = (text: string) => translateContent(text, language);
   const isBundle = crop.isBundle;
   const isMysteryBox = crop.isMysteryBox;
+  const unitLabel = getUnitLabel(language, isBundle ? "box" : "kg");
+  const priceUnitLabel = getPriceUnitLabel(language, isBundle ? "box" : "kg");
   const initQty = isBundle ? 1 : 0.5;
   const [qty, setQty] = useState(initQty);
   const [qtyInput, setQtyInput] = useState(String(initQty));
   const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
-  const freshness = getFreshnessInfo(crop.harvestDate);
+  const freshness = getFreshnessInfo(crop.harvestDate, language);
   const outOfStock = crop.quantity <= 0;
   const reasonInfo = IMPERFECT_REASONS.find((r) => r.value === crop.imperfectReason);
   const seller = mockSellers.find((s) => s.id === crop.sellerId);
-  const expiryInfo = getExpiryInfo(crop.expiryDate, t);
+  const expiryInfo = getExpiryInfo(crop.expiryDate, language);
 
   const handleAdd = () => {
     if (outOfStock || qty > crop.quantity) return;
     addToCart(crop, qty);
     updateStock(crop.id, qty);
-    toast.success(`${qty} ${isBundle ? "box" : "kg"} ${tc(crop.name)} ${t("product.added")} 🥕`);
+    toast.success(`${qty} ${unitLabel} ${tc(crop.name)} ${t("product.added")} 🥕`);
     const resetQty = isBundle ? 1 : 0.5;
     setQty(resetQty);
     setQtyInput(String(resetQty));
