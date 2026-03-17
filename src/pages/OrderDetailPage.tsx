@@ -125,8 +125,8 @@ const OrderDetailPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-heading font-bold text-foreground mb-4">{tc("Order not found")}</h1>
-          <Button onClick={() => navigate("/buyer-dashboard")}>{tc("Back to Dashboard")}</Button>
+          <h1 className="text-2xl font-heading font-bold text-foreground mb-4">{t("order.not_found")}</h1>
+          <Button onClick={() => navigate("/buyer-dashboard")}>{t("order.back_dashboard")}</Button>
         </div>
         <Footer />
       </div>
