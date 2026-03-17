@@ -48,14 +48,9 @@ const DriverDashboard = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("driver.title")}</h1>
-            <p className="text-muted-foreground text-sm">{t("driver.subtitle")}</p>
-          </div>
-          <Button variant="outline" className="rounded-full" onClick={() => navigate("/profile")}>
-            <User className="h-4 w-4 mr-1" /> {t("common.profile")}
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("driver.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("driver.subtitle")}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
