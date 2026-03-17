@@ -99,7 +99,7 @@ const Navbar = () => {
           {isAuthenticated && (
             <Link to={dashboardPath} className="block text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>{t("nav.dashboard")}</Link>
           )}
-          {isAuthenticated && (
+          {showMealPlanner && isAuthenticated && (
             <Link to="/meal-planner" className="flex items-center gap-1 text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
               <ChefHat className="h-4 w-4" /> {t("nav.meal_planner")}
             </Link>
