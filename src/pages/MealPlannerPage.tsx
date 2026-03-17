@@ -401,7 +401,7 @@ const MealPlannerPage = () => {
                           <div className="flex flex-wrap gap-1.5">
                             {meal.missingIngredients.map((m, i) => (
                               <span key={i} className="px-2 py-0.5 bg-destructive/10 text-destructive rounded-full text-xs capitalize">
-                                {m}
+                                {displayIngredient(normalizeIngredient(m) || m.toLowerCase(), language)}
                               </span>
                             ))}
                           </div>
