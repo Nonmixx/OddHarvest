@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
@@ -24,10 +22,8 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
-  const { isAuthenticated } = useAuth();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
-  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [maxDistance, setMaxDistance] = useState(999);
@@ -62,7 +58,7 @@ const MarketplacePage = () => {
     }, [] as { location: string; distance: number; farmerName: string }[])
     .sort((a, b) => a.distance - b.distance);
 
-  if (!isAuthenticated) return null;
+  
 
   return (
     <div className="min-h-screen">
