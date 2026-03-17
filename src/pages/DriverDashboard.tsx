@@ -90,6 +90,7 @@ const DriverDashboard = () => {
                     <div>
                       <p className="text-xs text-muted-foreground">{t("driver.dropoff")}</p>
                       <p className="font-medium">{tc(d.dropoff)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{t("driver.buyer")}: {d.buyer}</p>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">{t("driver.distance")}: {formatDistance(d.distance, language)}</p>
