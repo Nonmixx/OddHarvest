@@ -119,7 +119,7 @@ const CheckoutPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
-        {delivery === "delivery" ? (
+        {delivery === "delivery" && (
           <div className="farm-card p-4 mb-6">
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
               <Home className="h-4 w-4 text-primary" />
@@ -133,24 +133,6 @@ const CheckoutPage = () => {
                 <span>{t("checkout.no_address")}</span>
                 <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile")}>
                   {t("checkout.add_address")}
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="farm-card p-4 mb-6">
-            <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              {tc("Pickup Address")}
-            </h2>
-            {pickupArea ? (
-              <p className="text-sm text-muted-foreground">{pickupArea}</p>
-            ) : (
-              <div className="flex items-center gap-2 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{tc("No preferred pickup area set")}</span>
-                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile")}>
-                  {tc("Add pickup area")}
                 </Button>
               </div>
             )}
