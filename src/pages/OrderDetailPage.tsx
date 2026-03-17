@@ -146,7 +146,7 @@ const OrderDetailPage = () => {
 
   const handleSubmitRating = (key: string, sellerName: string) => {
     setSubmittedRatings((prev) => ({ ...prev, [key]: true }));
-    toast.success(`${tc("Rating submitted for")} ${sellerName}! ⭐`);
+    toast.success(`${t("order.rating_submitted")} ${sellerName}! ⭐`);
   };
 
   return (
