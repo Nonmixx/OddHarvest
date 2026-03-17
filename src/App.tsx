@@ -56,6 +56,7 @@ const App = () => (
                   <Route path="/add-bundle" element={<AddBundlePage />} />
                   <Route path="/add-mystery-box" element={<AddMysteryBoxPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/meal-planner" element={<MealPlannerPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
