@@ -19,6 +19,7 @@ interface User {
   vehicleType?: string;
   licenseNo?: string;
   profilePicture?: string;
+  preferredPickupArea?: string;
 }
 
 interface AuthContextType {

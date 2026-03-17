@@ -28,6 +28,7 @@ const ProfilePage = () => {
   const [vehicleType, setVehicleType] = useState(user?.vehicleType || "Motorcycle");
   const [licenseNo, setLicenseNo] = useState(user?.licenseNo || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
+  const [preferredPickupArea, setPreferredPickupArea] = useState(user?.preferredPickupArea || "");
 
   useEffect(() => {
     if (user) {
@@ -43,6 +44,7 @@ const ProfilePage = () => {
       setVehicleType(user.vehicleType || "Motorcycle");
       setLicenseNo(user.licenseNo || "");
       setProfilePicture(user.profilePicture || "");
+      setPreferredPickupArea(user.preferredPickupArea || "");
     }
   }, [user]);
 
@@ -68,7 +70,7 @@ const ProfilePage = () => {
     updateProfile({
       name, email, phone, location, address, state,
       farmName, yearsExp, cropsGrown,
-      vehicleType, licenseNo, profilePicture,
+      vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
   };
@@ -246,8 +248,8 @@ const ProfilePage = () => {
                 <div className="space-y-1.5">
                   <Label>{t("profile.preferred_area")}</Label>
                   <div className="flex gap-2">
-                    <Input placeholder={t("profile.area_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} />
-                    <VoiceInput onResult={(text) => setLocation(text)} />
+                    <Input placeholder={t("profile.area_placeholder")} value={preferredPickupArea} onChange={(e) => setPreferredPickupArea(e.target.value)} />
+                    <VoiceInput onResult={(text) => setPreferredPickupArea(text)} />
                   </div>
                 </div>
               </div>
