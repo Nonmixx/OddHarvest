@@ -26,9 +26,17 @@ const MarketplacePage = () => {
   const { crops } = useCropInventory();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const tc = (text: string) => translateContent(text, language);
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
+
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/auth", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
   const [maxDistance, setMaxDistance] = useState(999);
   const [sortBy, setSortBy] = useState<"default" | "price" | "freshness" | "distance">("default");
   const [sellerTypeFilter, setSellerTypeFilter] = useState<"all" | "farm" | "community">("all");
