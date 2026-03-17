@@ -61,6 +61,9 @@ const SellerProfilePage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
+        <Button variant="ghost" size="sm" className="mb-4" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("common.back") || "Back"}
+        </Button>
         <div className="farm-card p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="h-24 w-24 rounded-2xl bg-farm-green-light flex items-center justify-center shrink-0">
