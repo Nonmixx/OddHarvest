@@ -124,7 +124,7 @@ const Index = () => {
           {t("section.cta.desc")}
         </p>
         <Button asChild size="lg" className="rounded-full text-base px-10">
-          <Link to="/marketplace">{t("section.cta.btn")}</Link>
+          <Link to="/auth">{t("section.cta.btn")}</Link>
         </Button>
       </section>
 
