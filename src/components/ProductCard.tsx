@@ -101,12 +101,12 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         {isMysteryBox ? (
           <div className="text-xs text-muted-foreground bg-primary/10 rounded-lg p-2">
             <span className="font-medium text-foreground">🎁 {t("product.surprise")}</span>{" "}
-            {t("product.surprise_desc")} {crop.bundleWeight} kg {t("product.rescued_produce")}
+            {t("product.surprise_desc")} {crop.bundleWeight} {getUnitLabel(language, "kg")} {t("product.rescued_produce")}
           </div>
         ) : isBundle && crop.bundleContents ? (
           <div className="text-xs text-muted-foreground bg-secondary rounded-lg p-2">
             <span className="font-medium text-foreground">{t("product.includes")}:</span>{" "}
-            {translateContentArray(crop.bundleContents, language).join(", ")} ({crop.bundleWeight} kg)
+            {translateContentArray(crop.bundleContents, language).join(", ")} ({crop.bundleWeight} {getUnitLabel(language, "kg")})
           </div>
         ) : null}
 
