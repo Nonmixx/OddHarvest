@@ -38,6 +38,8 @@ const translations: Record<string, Record<Language, string>> = {
   "auth.signup_btn": { en: "Sign Up", zh: "注册", ms: "Daftar" },
   "auth.no_account": { en: "Don't have an account?", zh: "没有账户？", ms: "Tiada akaun?" },
   "auth.has_account": { en: "Already have an account?", zh: "已有账户？", ms: "Sudah ada akaun?" },
+  "auth.signup_success_title": { en: "Sign Up Successful!", zh: "注册成功！", ms: "Pendaftaran Berjaya!" },
+  "auth.signup_success_desc": { en: "Your account has been created. Please log in to continue.", zh: "您的账户已创建。请登录以继续。", ms: "Akaun anda telah dicipta. Sila log masuk untuk meneruskan." },
 
   // Index page
   "hero.title1": { en: "Perfectly Imperfect,", zh: "完美的不完美,", ms: "Sempurna Tidak Sempurna," },
