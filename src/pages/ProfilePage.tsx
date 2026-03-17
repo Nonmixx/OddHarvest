@@ -6,9 +6,11 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera } from "lucide-react";
+import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera, Home } from "lucide-react";
 import { toast } from "sonner";
 import VoiceInput from "@/components/VoiceInput";
+
+const STATES = ["Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 
 const ProfilePage = () => {
   const { user, updateProfile } = useAuth();
@@ -18,6 +20,7 @@ const ProfilePage = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
   const [location, setLocation] = useState(user?.location || "");
+  const [address, setAddress] = useState(user?.address || "");
   const [state, setState] = useState(user?.state || "Selangor");
   const [farmName, setFarmName] = useState(user?.farmName || "");
   const [yearsExp, setYearsExp] = useState(user?.yearsExp || "");
@@ -32,6 +35,7 @@ const ProfilePage = () => {
       setEmail(user.email || "");
       setPhone(user.phone || "");
       setLocation(user.location || "");
+      setAddress(user.address || "");
       setState(user.state || "Selangor");
       setFarmName(user.farmName || "");
       setYearsExp(user.yearsExp || "");
@@ -62,7 +66,7 @@ const ProfilePage = () => {
 
   const handleSave = () => {
     updateProfile({
-      name, email, phone, location, state,
+      name, email, phone, location, address, state,
       farmName, yearsExp, cropsGrown,
       vehicleType, licenseNo, profilePicture,
     });
@@ -114,6 +118,7 @@ const ProfilePage = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Basic Info */}
           <div className="farm-card p-6 space-y-4">
             <h2 className="font-heading font-bold text-foreground">{t("profile.basic_info")}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,6 +155,36 @@ const ProfilePage = () => {
             </div>
           </div>
 
+          {/* Address Section - ALL ROLES */}
+          <div className="farm-card p-6 space-y-4">
+            <h2 className="font-heading font-bold text-foreground flex items-center gap-2">
+              <Home className="h-4 w-4 text-primary" />
+              {t("profile.address_section")}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2 space-y-1.5">
+                <Label>{t("profile.address")}</Label>
+                <div className="flex gap-2">
+                  <Input placeholder={t("profile.address_placeholder")} value={address} onChange={(e) => setAddress(e.target.value)} />
+                  <VoiceInput onResult={(text) => setAddress((prev) => prev ? prev + " " + text : text)} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t("profile.state")}</Label>
+                <select
+                  className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                >
+                  {STATES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Seller Details */}
           {user?.role === "farmer" && (
             <div className="farm-card p-6 space-y-4">
               <h2 className="font-heading font-bold text-foreground">{t("profile.seller_details")}</h2>
@@ -174,17 +209,11 @@ const ProfilePage = () => {
                     <VoiceInput onResult={(text) => setCropsGrown((prev) => prev ? prev + ", " + text : text)} />
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>{t("profile.state")}</Label>
-                  <div className="flex gap-2">
-                    <Input value={state} onChange={(e) => setState(e.target.value)} />
-                    <VoiceInput onResult={(text) => setState(text)} />
-                  </div>
-                </div>
               </div>
             </div>
           )}
 
+          {/* Driver Details */}
           {user?.role === "driver" && (
             <div className="farm-card p-6 space-y-4">
               <h2 className="font-heading font-bold text-foreground">{t("profile.driver_details")}</h2>
@@ -209,6 +238,7 @@ const ProfilePage = () => {
             </div>
           )}
 
+          {/* Buyer Preferences */}
           {user?.role === "buyer" && (
             <div className="farm-card p-6 space-y-4">
               <h2 className="font-heading font-bold text-foreground">{t("profile.preferences")}</h2>
@@ -218,13 +248,6 @@ const ProfilePage = () => {
                   <div className="flex gap-2">
                     <Input placeholder={t("profile.area_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} />
                     <VoiceInput onResult={(text) => setLocation(text)} />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>{t("profile.state")}</Label>
-                  <div className="flex gap-2">
-                    <Input value={state} onChange={(e) => setState(e.target.value)} />
-                    <VoiceInput onResult={(text) => setState(text)} />
                   </div>
                 </div>
               </div>
