@@ -108,7 +108,7 @@ const DriverDeliveryDetail = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.dropoff_location")}</p>
-              <p className="font-medium text-foreground">{delivery.dropoff}</p>
+              <p className="font-medium text-foreground">{tc(delivery.dropoff)}</p>
               <p className="text-xs text-muted-foreground mt-1">{t("driver.buyer")}: {delivery.buyer}</p>
             </div>
           </div>
