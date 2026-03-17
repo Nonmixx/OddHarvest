@@ -4,7 +4,6 @@ import { Leaf, TrendingDown, Truck, ShoppingBag, Recycle } from "lucide-react";
 import heroFarm from "@/assets/hero-farm.jpg";
 import farmVeggies from "@/assets/farm-veggies.png";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
@@ -128,7 +127,7 @@ const Index = () => {
         </Button>
       </section>
 
-      <Footer />
+      
     </div>
   );
 };

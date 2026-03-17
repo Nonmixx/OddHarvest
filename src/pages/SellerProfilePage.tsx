@@ -1,6 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { mockSellers } from "@/data/mockSellers";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -32,7 +31,7 @@ const SellerProfilePage = () => {
           <h1 className="text-2xl font-heading font-bold text-foreground">{t("seller.not_found")}</h1>
           <Link to="/marketplace" className="text-primary hover:underline text-sm mt-2 block">{t("seller.back_marketplace")}</Link>
         </div>
-        <Footer />
+        
       </div>
     );
   }
@@ -170,7 +169,7 @@ const SellerProfilePage = () => {
           )}
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

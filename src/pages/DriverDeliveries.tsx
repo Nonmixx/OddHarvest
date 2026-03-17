@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, ChevronRight } from "lucide-react";
@@ -57,7 +56,7 @@ const DriverDeliveries = () => {
           ))}
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

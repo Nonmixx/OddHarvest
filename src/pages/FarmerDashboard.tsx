@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -194,7 +193,7 @@ const FarmerDashboard = () => {
           })}
         </div>
       </div>
-      <Footer />
+      
 
       <Dialog open={editCropId !== null} onOpenChange={(open) => { if (!open) { setEditCropId(null); setEditData(null); } }}>
         <DialogContent className="sm:max-w-md">
