@@ -84,9 +84,9 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <h3 className="font-heading font-bold text-foreground leading-tight">{tc(crop.name)}</h3>
 
         <div className="flex items-center gap-2">
-          <Link to={`/seller/${crop.sellerId}`} className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
+          <button onClick={() => isAuthenticated ? navigate(`/seller/${crop.sellerId}`) : navigate("/auth")} className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
             {crop.sellerType === "community" ? "🌱" : "🌾"} {tc(crop.farmerName)}
-          </Link>
+          </button>
           {seller && (
             <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
               <Star className="h-3 w-3 text-farm-orange fill-current" /> {seller.averageRating}
