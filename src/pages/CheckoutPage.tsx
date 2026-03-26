@@ -218,7 +218,7 @@ const CheckoutPage = () => {
             <div key={sid}>
               {idx > 0 && <div className="border-t border-border my-3" />}
               <p className="text-xs font-medium text-foreground flex items-center gap-1 mb-2">
-                <Store className="h-3 w-3 text-primary" />
+                <span>🏪</span>
                 {tc(group.sellerName)}
               </p>
               {group.items.map((item) => (
