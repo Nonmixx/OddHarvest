@@ -206,32 +206,37 @@ const CheckoutPage = () => {
           </div>
         )}
 
-        {/* Order Summary - now below delivery method */}
+        {/* Order Summary - grouped by seller */}
         <div className="farm-card p-4 mb-6">
           <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
-          {items.map((item) => (
-            <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
-              <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="border-t border-border mt-2 pt-2 flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span className="font-medium">RM{total.toFixed(2)}</span>
-          </div>
-          {delivery === "delivery" && (
-            <div className="mt-2 space-y-1">
-              {Object.entries(sellerGroups).map(([sid, group]) => (
-                <div key={sid} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    <Store className="h-3 w-3" />
-                    {t("checkout.delivery_fee")} — {tc(group.sellerName)} ({formatDistance(group.distance, language)})
-                  </span>
-                  <span className="font-medium">RM{group.deliveryFee.toFixed(2)}</span>
+          {Object.entries(sellerGroups).map(([sid, group], idx) => (
+            <div key={sid}>
+              {idx > 0 && <div className="border-t border-border my-3" />}
+              <p className="text-xs font-medium text-foreground flex items-center gap-1 mb-2">
+                <Store className="h-3 w-3 text-primary" />
+                {tc(group.sellerName)}
+              </p>
+              {group.items.map((item) => (
+                <div key={item.crop.id} className="flex justify-between text-sm py-1">
+                  <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
+                  <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
+              {delivery === "delivery" && (
+                <div className="flex justify-between text-sm py-1">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Truck className="h-3 w-3" />
+                    {t("checkout.delivery_fee")} ({formatDistance(group.distance, language)})
+                  </span>
+                  <span className="font-medium text-primary">RM{group.deliveryFee.toFixed(2)}</span>
+                </div>
+              )}
             </div>
-          )}
+          ))}
+          <div className="border-t border-border mt-3 pt-2 flex justify-between text-sm font-medium">
+            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
+            <span>RM{grandTotal.toFixed(2)}</span>
+          </div>
         </div>
 
         {/* Payment Method */}
