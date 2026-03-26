@@ -118,7 +118,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         ) : null}
 
         <div className="flex items-center gap-1 text-muted-foreground text-xs">
-          <MapPin className="h-3 w-3 shrink-0" />
+          <span>📍</span>
           <span className="truncate">{tc(crop.farmLocation)}</span>
         </div>
 
