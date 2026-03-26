@@ -38,7 +38,8 @@ const App = () => (
     <LanguageProvider>
       <AuthProvider>
         <CropInventoryProvider>
-          <CartProvider>
+          <ReviewProvider>
+            <CartProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
