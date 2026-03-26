@@ -3,22 +3,25 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle, History, ChevronRight } from "lucide-react";
+import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle, History, ChevronRight, Store } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
 
+// Delivery requests are now per-seller within each order
 export const deliveryRequests = [
-  { id: "DEL-101", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", farmer: "Pak Ali", buyer: "Lee Wei Ming" },
-  { id: "DEL-102", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Damansara, KL", distance: 8, fee: 8, date: "4 Mar 2026", farmer: "Mak Intan", buyer: "Farah Nadia" },
-  { id: "DEL-103", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", farmer: "Encik Zul", buyer: "Ravi Kumar" },
+  { id: "DEL-101", orderId: "ORD-007", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 15, fee: 15, date: "5 Mar 2026", seller: "Pak Ali", buyer: "Lee Wei Ming" },
+  { id: "DEL-102", orderId: "ORD-007", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", seller: "Mak Intan", buyer: "Lee Wei Ming" },
+  { id: "DEL-103", orderId: "ORD-008", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", seller: "Pak Murad", buyer: "Ravi Kumar" },
 ];
 
 export const completedDeliveries = [
-  { id: "DEL-050", crop: "Spinach (4kg)", pickup: "Ladang Hijau, Ipoh", dropoff: "Subang Jaya, Selangor", distance: 15, fee: 15, date: "2 Mar 2026", farmer: "Pak Hassan", buyer: "Siti Aminah" },
-  { id: "DEL-051", crop: "Tomatoes (8kg)", pickup: "Kebun Tomat, Cameron Highlands", dropoff: "Petaling Jaya, Selangor", distance: 20, fee: 20, date: "28 Feb 2026", farmer: "Mak Jah", buyer: "Ahmad Rizal" },
-  { id: "DEL-052", crop: "Chillies (2kg)", pickup: "Ladang Cili, Kota Bharu", dropoff: "Kuala Terengganu", distance: 10, fee: 10, date: "25 Feb 2026", farmer: "Encik Razak", buyer: "Noraini Bt Yusof" },
+  { id: "DEL-050", orderId: "ORD-004", crop: "Bananas (3kg)", pickup: "Ladang Pisang, Cameron Highlands", dropoff: "Subang Jaya, Selangor", distance: 7, fee: 7, date: "2 Mar 2026", seller: "Pak Ali", buyer: "Siti Aminah" },
+  { id: "DEL-051", orderId: "ORD-004", crop: "Spinach (2kg)", pickup: "Kebun Sayur, Serdang", dropoff: "Subang Jaya, Selangor", distance: 3, fee: 3, date: "2 Mar 2026", seller: "Encik Lim", buyer: "Siti Aminah" },
+  { id: "DEL-052", orderId: "ORD-001", crop: "Tomatoes (2kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Petaling Jaya, Selangor", distance: 15, fee: 15, date: "28 Feb 2026", seller: "Pak Ali", buyer: "Ahmad Rizal" },
+  { id: "DEL-053", orderId: "ORD-001", crop: "Carrots (1kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Petaling Jaya, Selangor", distance: 12, fee: 12, date: "28 Feb 2026", seller: "Mak Intan", buyer: "Ahmad Rizal" },
+  { id: "DEL-054", orderId: "ORD-006", crop: "Carrots (2kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Kuala Terengganu", distance: 12, fee: 12, date: "25 Feb 2026", seller: "Mak Intan", buyer: "Noraini Bt Yusof" },
 ];
 
 const DriverDashboard = () => {
@@ -67,6 +70,7 @@ const DriverDashboard = () => {
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="font-heading font-bold text-foreground">{d.id}</p>
+                    <p className="text-xs text-muted-foreground">{d.orderId}</p>
                     <p className="text-sm text-muted-foreground">{tc(d.crop)}</p>
                   </div>
                   <span className="font-bold text-primary text-lg">RM{d.fee.toFixed(2)}</span>
@@ -77,6 +81,7 @@ const DriverDashboard = () => {
                     <div>
                       <p className="text-xs text-muted-foreground">{t("driver.pickup")}</p>
                       <p className="font-medium">{tc(d.pickup)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><Store className="h-3 w-3" />{t("driver.seller") || tc("Seller")}: {d.seller}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
@@ -132,6 +137,7 @@ const DriverDashboard = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-heading font-bold text-foreground text-sm">{d.id}</p>
+                      <span className="text-xs text-muted-foreground">{d.orderId}</span>
                       <span className="farm-badge-green text-xs">{tc("Completed")}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">{tc(d.crop)} · {d.date}</p>
@@ -140,6 +146,7 @@ const DriverDashboard = () => {
                       <span>→</span>
                       <span className="flex items-center gap-1"><Navigation className="h-3 w-3 text-accent" />{tc(d.dropoff.split(",")[0])}</span>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><Store className="h-3 w-3" />{d.seller}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-primary text-sm">RM{d.fee.toFixed(2)}</span>
