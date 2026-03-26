@@ -271,7 +271,7 @@ const OrderDetailPage = () => {
                                     size="sm"
                                     variant="outline"
                                     className="h-7 text-xs rounded-full"
-                                    onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
+                                    onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
                                   >
                                     {t("order.submit")}
                                   </Button>
