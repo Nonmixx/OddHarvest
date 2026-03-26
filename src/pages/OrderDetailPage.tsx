@@ -281,7 +281,7 @@ const OrderDetailPage = () => {
                                     className="h-8 text-xs rounded-full px-5 bg-primary hover:bg-primary/90"
                                     onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
                                   >
-                                    ⭐ {t("order.submit")}
+                                    ⭐ {t("order.submit_review")}
                                   </Button>
                                 )}
                               </div>
