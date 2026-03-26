@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
@@ -8,9 +8,16 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import VoiceInput from "@/components/VoiceInput";
-import { ChefHat, Sparkles, Flame, Dumbbell, Wheat, Leaf, ShoppingCart, X, Plus, ArrowRight, Clock, Users, Loader2 } from "lucide-react";
+import {
+  ChefHat, Sparkles, Flame, Dumbbell, Wheat, Leaf, ShoppingCart, X, Plus,
+  ArrowRight, Clock, Users, Loader2, Snowflake, AlertTriangle, Lightbulb,
+  Timer, Wrench, GraduationCap,
+} from "lucide-react";
 import { toast } from "sonner";
+
+// ───────── Types ─────────
 
 interface AIMeal {
   name: string;
@@ -24,9 +31,38 @@ interface AIMeal {
   steps: string[];
 }
 
-// Ingredient aliases for matching user input
+interface PreservationMethod {
+  name: string;
+  type: string;
+  difficulty: string;
+  timeNeeded: string;
+  shelfLife: string;
+  ingredientsNeeded: string[];
+  toolsNeeded: string[];
+  steps: string[];
+  tips: string;
+}
+
+interface UpcycleIdea {
+  name: string;
+  description: string;
+  emoji: string;
+}
+
+interface PreservationResult {
+  foodItem: string;
+  spoilageRisk: "low" | "medium" | "high";
+  spoilageTimeframe: string;
+  methods: PreservationMethod[];
+  upcycleIdeas: UpcycleIdea[];
+}
+
+type Mode = "meal" | "preservation";
+
+// ───────── Ingredient data ─────────
+
 const INGREDIENT_ALIASES: Record<string, string[]> = {
-  "tomato": ["tomato", "tomatoes", "番茄", "tomato"],
+  "tomato": ["tomato", "tomatoes", "番茄"],
   "carrot": ["carrot", "carrots", "胡萝卜", "lobak merah", "lobak"],
   "cucumber": ["cucumber", "cucumbers", "黄瓜", "timun"],
   "apple": ["apple", "apples", "苹果", "epal"],
@@ -45,8 +81,8 @@ const INGREDIENT_ALIASES: Record<string, string[]> = {
   "soy sauce": ["soy sauce", "酱油", "kicap"],
   "milk": ["milk", "牛奶", "susu"],
   "honey": ["honey", "蜂蜜", "madu"],
-  "pasta": ["pasta", "noodle", "noodles", "意面", "pasta"],
-  "lemon": ["lemon", "柠檬", "lemon"],
+  "pasta": ["pasta", "noodle", "noodles", "意面"],
+  "lemon": ["lemon", "柠檬"],
   "rice": ["rice", "米饭", "nasi"],
   "tofu": ["tofu", "豆腐", "tauhu"],
   "prawn": ["prawn", "prawns", "shrimp", "虾", "udang"],
@@ -57,7 +93,6 @@ const INGREDIENT_ALIASES: Record<string, string[]> = {
   "coconut milk": ["coconut milk", "santan", "椰奶"],
 };
 
-// Display names for ingredients per language
 const INGREDIENT_DISPLAY: Record<string, Record<string, string>> = {
   "tomato": { en: "Tomato", zh: "番茄", ms: "Tomato" },
   "carrot": { en: "Carrot", zh: "胡萝卜", ms: "Lobak Merah" },
@@ -102,16 +137,108 @@ function normalizeIngredient(input: string): string | null {
   return null;
 }
 
+// ───────── Labels ─────────
+
+const labels = {
+  // shared
+  title: { en: "AI Smart Meal Planner 🍳", zh: "AI 智能膳食规划师 🍳", ms: "Perancang Hidangan Pintar AI 🍳" },
+  subtitle: { en: "Turn your rescued ingredients into delicious, nutritious meals — powered by AI!", zh: "用 AI 将您拯救的食材变成美味又营养的膳食！", ms: "Tukar bahan yang diselamatkan menjadi hidangan lazat dan berkhasiat — dikuasakan oleh AI!" },
+  input_label: { en: "What ingredients do you have?", zh: "您有什么食材？", ms: "Apakah bahan yang anda ada?" },
+  input_placeholder: { en: "Type an ingredient (e.g., tomato, chicken, rice)...", zh: "输入食材（例如：番茄、鸡肉、米饭）...", ms: "Taip bahan (cth: tomato, ayam, nasi)..." },
+  add: { en: "Add", zh: "添加", ms: "Tambah" },
+  quick_add: { en: "Quick add from your rescued crops:", zh: "从您拯救的农产品中快速添加：", ms: "Tambah pantas dari tanaman yang diselamatkan:" },
+  your_ingredients: { en: "Your Ingredients", zh: "您的食材", ms: "Bahan Anda" },
+  ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
+  error: { en: "Failed to generate results. Please try again.", zh: "生成结果失败。请再试一次。", ms: "Gagal menjana keputusan. Sila cuba lagi." },
+  no_ingredients: { en: "Add at least 2 ingredients to get started", zh: "添加至少2种食材以开始", ms: "Tambah sekurang-kurangnya 2 bahan untuk bermula" },
+
+  // mode toggle
+  meal_mode: { en: "🍽️ Meal Mode", zh: "🍽️ 膳食模式", ms: "🍽️ Mod Hidangan" },
+  preservation_mode: { en: "❄️ Preservation Mode", zh: "❄️ 保鲜模式", ms: "❄️ Mod Pengawetan" },
+
+  // meal mode
+  generate: { en: "🍽️ Generate Meal Ideas with AI", zh: "🍽️ 用 AI 生成膳食建议", ms: "🍽️ Jana Idea Hidangan dengan AI" },
+  generating: { en: "🤖 AI is cooking up ideas...", zh: "🤖 AI 正在构思菜谱...", ms: "🤖 AI sedang menjana idea..." },
+  suggested_meals: { en: "AI Suggested Meals", zh: "AI 建议膳食", ms: "Hidangan Dicadangkan AI" },
+  calories: { en: "Calories", zh: "卡路里", ms: "Kalori" },
+  protein: { en: "Protein", zh: "蛋白质", ms: "Protein" },
+  missing: { en: "Missing Ingredients", zh: "缺少食材", ms: "Bahan yang Tiada" },
+  nearby_surplus: { en: "Available nearby as surplus!", zh: "附近有剩余的可用！", ms: "Tersedia berdekatan sebagai lebihan!" },
+  cooking_guide: { en: "Cooking Guide", zh: "烹饪指南", ms: "Panduan Memasak" },
+  step: { en: "Step", zh: "步骤", ms: "Langkah" },
+  no_meals: { en: "No meals found. Try different ingredients!", zh: "未找到匹配的膳食。尝试不同的食材！", ms: "Tiada hidangan ditemui. Cuba bahan lain!" },
+  servings: { en: "servings", zh: "份", ms: "hidangan" },
+  minutes: { en: "min", zh: "分钟", ms: "minit" },
+  all_ingredients: { en: "All Ingredients Needed", zh: "所需全部食材", ms: "Semua Bahan Diperlukan" },
+  analyzing: { en: "Analyzing your ingredients and finding the best recipes...", zh: "正在分析您的食材并寻找最佳食谱...", ms: "Menganalisis bahan anda dan mencari resipi terbaik..." },
+  meals_count: { en: "meals", zh: "道菜", ms: "hidangan" },
+
+  // preservation mode
+  pres_title: { en: "AI Preservation Mode 🧊", zh: "AI 保鲜模式 🧊", ms: "Mod Pengawetan AI 🧊" },
+  pres_subtitle: { en: "Don't waste it. Preserve it. Transform it.", zh: "别浪费。保存它。转化它。", ms: "Jangan bazir. Awetkan. Ubahkan." },
+  pres_generate: { en: "🧊 Get Preservation Guide", zh: "🧊 获取保鲜指南", ms: "🧊 Dapatkan Panduan Pengawetan" },
+  pres_generating: { en: "🤖 AI is analyzing preservation options...", zh: "🤖 AI 正在分析保鲜方案...", ms: "🤖 AI sedang menganalisis pilihan pengawetan..." },
+  pres_analyzing: { en: "Evaluating spoilage risks and best preservation methods...", zh: "评估变质风险和最佳保鲜方法...", ms: "Menilai risiko kerosakan dan kaedah pengawetan terbaik..." },
+  pres_results: { en: "Preservation Guide", zh: "保鲜指南", ms: "Panduan Pengawetan" },
+  pres_no_results: { en: "No preservation suggestions found. Try different items!", zh: "未找到保鲜建议。尝试不同的食材！", ms: "Tiada cadangan pengawetan ditemui. Cuba bahan lain!" },
+  spoilage_risk: { en: "Spoilage Risk", zh: "变质风险", ms: "Risiko Kerosakan" },
+  spoilage_high: { en: "High", zh: "高", ms: "Tinggi" },
+  spoilage_medium: { en: "Medium", zh: "中等", ms: "Sederhana" },
+  spoilage_low: { en: "Low", zh: "低", ms: "Rendah" },
+  shelf_life: { en: "Shelf Life", zh: "保质期", ms: "Jangka Hayat" },
+  tools_needed: { en: "Tools Needed", zh: "所需工具", ms: "Alatan Diperlukan" },
+  extra_ingredients: { en: "Extra Ingredients", zh: "额外食材", ms: "Bahan Tambahan" },
+  pro_tip: { en: "Pro Tip", zh: "专业提示", ms: "Tip Pro" },
+  upcycle_ideas: { en: "🔄 Upcycling Ideas", zh: "🔄 升级改造创意", ms: "🔄 Idea Kitar Semula" },
+  view_steps: { en: "View Steps", zh: "查看步骤", ms: "Lihat Langkah" },
+  items_count: { en: "items", zh: "项", ms: "item" },
+
+  // preferences
+  your_tools: { en: "What tools do you have?", zh: "您有什么工具？", ms: "Apakah alatan yang anda ada?" },
+  skill_level: { en: "Your cooking level", zh: "您的烹饪水平", ms: "Tahap masakan anda" },
+  time_available: { en: "How much time do you have?", zh: "您有多少时间？", ms: "Berapa banyak masa anda ada?" },
+  beginner: { en: "Beginner", zh: "初学者", ms: "Pemula" },
+  intermediate: { en: "Intermediate", zh: "中级", ms: "Pertengahan" },
+  advanced: { en: "Advanced", zh: "高级", ms: "Lanjutan" },
+  time_10: { en: "10 minutes", zh: "10 分钟", ms: "10 minit" },
+  time_30: { en: "30 minutes", zh: "30 分钟", ms: "30 minit" },
+  time_60: { en: "1 hour+", zh: "1 小时+", ms: "1 jam+" },
+  tool_refrigerator: { en: "Refrigerator", zh: "冰箱", ms: "Peti Sejuk" },
+  tool_freezer: { en: "Freezer", zh: "冷冻柜", ms: "Peti Beku" },
+  tool_blender: { en: "Blender", zh: "搅拌机", ms: "Pengisar" },
+  tool_dehydrator: { en: "Dehydrator", zh: "脱水机", ms: "Mesin Pengering" },
+  tool_glass_jars: { en: "Glass Jars", zh: "玻璃罐", ms: "Balang Kaca" },
+  tool_oven: { en: "Oven", zh: "烤箱", ms: "Ketuhar" },
+};
+
+// ───────── Component ─────────
+
 const MealPlannerPage = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const { isAuthenticated } = useAuth();
   const { crops } = useCropInventory();
+
+  const [mode, setMode] = useState<Mode>("meal");
   const [inputText, setInputText] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Meal mode state
   const [suggestedMeals, setSuggestedMeals] = useState<AIMeal[]>([]);
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Preservation mode state
+  const [preservationResults, setPreservationResults] = useState<PreservationResult[]>([]);
+  const [expandedPres, setExpandedPres] = useState<number | null>(null);
+  const [expandedMethod, setExpandedMethod] = useState<string | null>(null);
+
+  // Preservation preferences
+  const [selectedTools, setSelectedTools] = useState<string[]>(["refrigerator", "freezer"]);
+  const [skillLevel, setSkillLevel] = useState<string>("beginner");
+  const [timeAvailable, setTimeAvailable] = useState<string>("30 minutes");
+
+  const l = (key: keyof typeof labels) => labels[key][language];
 
   const addIngredient = () => {
     const trimmed = inputText.trim();
@@ -124,9 +251,7 @@ const MealPlannerPage = () => {
     setInputText("");
   };
 
-  const removeIngredient = (ing: string) => {
-    setSelectedIngredients((prev) => prev.filter((i) => i !== ing));
-  };
+  const removeIngredient = (ing: string) => setSelectedIngredients((prev) => prev.filter((i) => i !== ing));
 
   const quickAddFromMarket = (cropName: string) => {
     const normalized = normalizeIngredient(cropName);
@@ -135,42 +260,68 @@ const MealPlannerPage = () => {
     }
   };
 
+  const toggleTool = (tool: string) => {
+    setSelectedTools((prev) =>
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+    );
+  };
+
+  // ── Meal generation ──
   const generateMeals = async () => {
     setIsLoading(true);
     setHasSearched(true);
     setExpandedMeal(null);
     setSuggestedMeals([]);
-
     try {
       const { data, error } = await supabase.functions.invoke("meal-planner", {
         body: { ingredients: selectedIngredients, language },
       });
-
-      if (error) {
-        console.error("Edge function error:", error);
-        toast.error(labels.error[language]);
-        return;
-      }
-
-      if (data?.error) {
-        toast.error(data.error);
-        return;
-      }
-
+      if (error) { toast.error(l("error")); return; }
+      if (data?.error) { toast.error(data.error); return; }
       const meals = data?.meals || [];
       setSuggestedMeals(meals);
-
-      if (meals.length === 0) {
-        toast.info(labels.no_meals[language]);
-      }
-    } catch (err) {
-      console.error("Failed to generate meals:", err);
-      toast.error(labels.error[language]);
-    } finally {
-      setIsLoading(false);
-    }
+      if (meals.length === 0) toast.info(l("no_meals"));
+    } catch { toast.error(l("error")); } finally { setIsLoading(false); }
   };
 
+  // ── Preservation generation ──
+  const generatePreservation = async () => {
+    setIsLoading(true);
+    setHasSearched(true);
+    setExpandedPres(null);
+    setExpandedMethod(null);
+    setPreservationResults([]);
+    try {
+      const { data, error } = await supabase.functions.invoke("food-preservation", {
+        body: {
+          ingredients: selectedIngredients,
+          language,
+          tools: selectedTools,
+          skillLevel,
+          timeAvailable,
+        },
+      });
+      if (error) { toast.error(l("error")); return; }
+      if (data?.error) { toast.error(data.error); return; }
+      const results = data?.preservations || [];
+      setPreservationResults(results);
+      if (results.length === 0) toast.info(l("pres_no_results"));
+    } catch { toast.error(l("error")); } finally { setIsLoading(false); }
+  };
+
+  const handleGenerate = () => (mode === "meal" ? generateMeals() : generatePreservation());
+
+  const switchMode = (newMode: Mode) => {
+    setMode(newMode);
+    setHasSearched(false);
+    setSuggestedMeals([]);
+    setPreservationResults([]);
+    setExpandedMeal(null);
+    setExpandedPres(null);
+    setExpandedMethod(null);
+  };
+
+  // helpers
   const getNutritionColor = (level: string) => {
     switch (level) {
       case "balanced": return "bg-primary/10 text-primary";
@@ -179,7 +330,6 @@ const MealPlannerPage = () => {
       default: return "bg-muted text-muted-foreground";
     }
   };
-
   const getNutritionLabel = (level: string) => {
     const map: Record<string, Record<string, string>> = {
       "balanced": { en: "Balanced Meal ✅", zh: "均衡膳食 ✅", ms: "Hidangan Seimbang ✅" },
@@ -188,7 +338,6 @@ const MealPlannerPage = () => {
     };
     return map[level]?.[language] ?? level;
   };
-
   const getProteinLabel = (protein: string) => {
     const map: Record<string, Record<string, string>> = {
       "High": { en: "High", zh: "高", ms: "Tinggi" },
@@ -197,56 +346,87 @@ const MealPlannerPage = () => {
     };
     return map[protein]?.[language] ?? protein;
   };
-
-  const labels = {
-    title: { en: "AI Smart Meal Planner 🍳", zh: "AI 智能膳食规划师 🍳", ms: "Perancang Hidangan Pintar AI 🍳" },
-    subtitle: { en: "Turn your rescued ingredients into delicious, nutritious meals — powered by AI!", zh: "用 AI 将您拯救的食材变成美味又营养的膳食！", ms: "Tukar bahan yang diselamatkan menjadi hidangan lazat dan berkhasiat — dikuasakan oleh AI!" },
-    input_label: { en: "What ingredients do you have?", zh: "您有什么食材？", ms: "Apakah bahan yang anda ada?" },
-    input_placeholder: { en: "Type an ingredient (e.g., tomato, chicken, rice)...", zh: "输入食材（例如：番茄、鸡肉、米饭）...", ms: "Taip bahan (cth: tomato, ayam, nasi)..." },
-    add: { en: "Add", zh: "添加", ms: "Tambah" },
-    quick_add: { en: "Quick add from your rescued crops:", zh: "从您拯救的农产品中快速添加：", ms: "Tambah pantas dari tanaman yang diselamatkan:" },
-    generate: { en: "🍽️ Generate Meal Ideas with AI", zh: "🍽️ 用 AI 生成膳食建议", ms: "🍽️ Jana Idea Hidangan dengan AI" },
-    generating: { en: "🤖 AI is cooking up ideas...", zh: "🤖 AI 正在构思菜谱...", ms: "🤖 AI sedang menjana idea..." },
-    your_ingredients: { en: "Your Ingredients", zh: "您的食材", ms: "Bahan Anda" },
-    suggested_meals: { en: "AI Suggested Meals", zh: "AI 建议膳食", ms: "Hidangan Dicadangkan AI" },
-    calories: { en: "Calories", zh: "卡路里", ms: "Kalori" },
-    protein: { en: "Protein", zh: "蛋白质", ms: "Protein" },
-    nutrition: { en: "Nutrition Level", zh: "营养等级", ms: "Tahap Pemakanan" },
-    missing: { en: "Missing Ingredients", zh: "缺少食材", ms: "Bahan yang Tiada" },
-    nearby_surplus: { en: "Available nearby as surplus!", zh: "附近有剩余的可用！", ms: "Tersedia berdekatan sebagai lebihan!" },
-    cooking_guide: { en: "Cooking Guide", zh: "烹饪指南", ms: "Panduan Memasak" },
-    step: { en: "Step", zh: "步骤", ms: "Langkah" },
-    no_meals: { en: "No meals found. Try different ingredients!", zh: "未找到匹配的膳食。尝试不同的食材！", ms: "Tiada hidangan ditemui. Cuba bahan lain!" },
-    servings: { en: "servings", zh: "份", ms: "hidangan" },
-    minutes: { en: "min", zh: "分钟", ms: "minit" },
-    no_ingredients: { en: "Add at least 2 ingredients to generate meal ideas", zh: "添加至少2种食材以生成膳食建议", ms: "Tambah sekurang-kurangnya 2 bahan untuk menjana idea hidangan" },
-    error: { en: "Failed to generate meals. Please try again.", zh: "生成膳食失败。请再试一次。", ms: "Gagal menjana hidangan. Sila cuba lagi." },
-    ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
-    all_ingredients: { en: "All Ingredients Needed", zh: "所需全部食材", ms: "Semua Bahan Diperlukan" },
-    analyzing: { en: "Analyzing your ingredients and finding the best recipes...", zh: "正在分析您的食材并寻找最佳食谱...", ms: "Menganalisis bahan anda dan mencari resipi terbaik..." },
-    meals_count: { en: "meals", zh: "道菜", ms: "hidangan" },
+  const getSpoilageColor = (risk: string) => {
+    switch (risk) {
+      case "high": return "bg-destructive/10 text-destructive border-destructive/20";
+      case "medium": return "bg-farm-orange/10 text-farm-orange border-farm-orange/20";
+      case "low": return "bg-primary/10 text-primary border-primary/20";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+  const getSpoilageLabel = (risk: string) => {
+    const map: Record<string, keyof typeof labels> = { high: "spoilage_high", medium: "spoilage_medium", low: "spoilage_low" };
+    return l(map[risk] || "spoilage_low");
+  };
+  const getDifficultyEmoji = (d: string) => {
+    switch (d) { case "easy": return "🟢"; case "medium": return "🟡"; case "hard": return "🔴"; default: return "⚪"; }
   };
 
-  const l = (key: keyof typeof labels) => labels[key][language];
-
   const quickCrops = crops.slice(0, 8).filter((c) => !c.isBundle);
+
+  const toolOptions = [
+    { id: "refrigerator", label: l("tool_refrigerator"), icon: "🧊" },
+    { id: "freezer", label: l("tool_freezer"), icon: "❄️" },
+    { id: "blender", label: l("tool_blender"), icon: "🔌" },
+    { id: "dehydrator", label: l("tool_dehydrator"), icon: "🌡️" },
+    { id: "glass_jars", label: l("tool_glass_jars"), icon: "🫙" },
+    { id: "oven", label: l("tool_oven"), icon: "🔥" },
+  ];
+
+  const skillOptions = [
+    { id: "beginner", label: l("beginner"), icon: "🌱" },
+    { id: "intermediate", label: l("intermediate"), icon: "👨‍🍳" },
+    { id: "advanced", label: l("advanced"), icon: "⭐" },
+  ];
+
+  const timeOptions = [
+    { id: "10 minutes", label: l("time_10"), icon: "⚡" },
+    { id: "30 minutes", label: l("time_30"), icon: "⏱️" },
+    { id: "1 hour+", label: l("time_60"), icon: "🕐" },
+  ];
 
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 mb-4">
-            <ChefHat className="h-5 w-5 text-primary" />
+            {mode === "meal" ? <ChefHat className="h-5 w-5 text-primary" /> : <Snowflake className="h-5 w-5 text-primary" />}
             <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-xs font-medium text-primary">{l("ai_badge")}</span>
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{l("title")}</h1>
-          <p className="text-muted-foreground">{l("subtitle")}</p>
+          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
+            {mode === "meal" ? l("title") : l("pres_title")}
+          </h1>
+          <p className="text-muted-foreground">
+            {mode === "meal" ? l("subtitle") : l("pres_subtitle")}
+          </p>
         </div>
 
-        {/* Input Section */}
+        {/* Mode Toggle */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex bg-muted rounded-full p-1 gap-1">
+            <button
+              onClick={() => switchMode("meal")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                mode === "meal" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {l("meal_mode")}
+            </button>
+            <button
+              onClick={() => switchMode("preservation")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                mode === "preservation" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {l("preservation_mode")}
+            </button>
+          </div>
+        </div>
+
+        {/* Ingredient Input */}
         <div className="farm-card p-6 mb-6 space-y-4">
           <label className="font-heading font-bold text-foreground">{l("input_label")}</label>
           <div className="flex gap-2">
@@ -257,13 +437,12 @@ const MealPlannerPage = () => {
               onKeyDown={(e) => e.key === "Enter" && addIngredient()}
               className="flex-1"
             />
-            <VoiceInput onResult={(text) => setInputText((prev) => prev ? prev + " " + text : text)} />
+            <VoiceInput onResult={(text) => setInputText((prev) => (prev ? prev + " " + text : text))} />
             <Button onClick={addIngredient} size="sm">
               <Plus className="h-4 w-4 mr-1" /> {l("add")}
             </Button>
           </div>
 
-          {/* Selected ingredients */}
           {selectedIngredients.length > 0 && (
             <div>
               <p className="text-xs text-muted-foreground mb-2">{l("your_ingredients")}:</p>
@@ -271,16 +450,13 @@ const MealPlannerPage = () => {
                 {selectedIngredients.map((ing) => (
                   <Badge key={ing} variant="secondary" className="gap-1 px-3 py-1.5 text-sm">
                     {displayIngredient(ing, language)}
-                    <button onClick={() => removeIngredient(ing)}>
-                      <X className="h-3 w-3" />
-                    </button>
+                    <button onClick={() => removeIngredient(ing)}><X className="h-3 w-3" /></button>
                   </Badge>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Quick add from marketplace */}
           {quickCrops.length > 0 && (
             <div>
               <p className="text-xs text-muted-foreground mb-2">{l("quick_add")}</p>
@@ -297,38 +473,123 @@ const MealPlannerPage = () => {
               </div>
             </div>
           )}
-
-          <Button
-            onClick={generateMeals}
-            disabled={selectedIngredients.length < 2 || isLoading}
-            className="w-full rounded-full"
-            size="lg"
-          >
-            {isLoading ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {l("generating")}</>
-            ) : selectedIngredients.length < 2 ? (
-              l("no_ingredients")
-            ) : (
-              l("generate")
-            )}
-          </Button>
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="farm-card p-10 text-center mb-6 animate-pulse">
-            <div className="inline-flex items-center gap-3">
-              <Loader2 className="h-8 w-8 text-primary animate-spin" />
-              <div className="text-left">
-                <p className="font-heading font-bold text-foreground">{l("generating")}</p>
-                <p className="text-xs text-muted-foreground">{l("analyzing")}</p>
+        {/* Preservation Preferences */}
+        {mode === "preservation" && (
+          <div className="farm-card p-6 mb-6 space-y-5">
+            {/* Tools */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Wrench className="h-4 w-4 text-primary" />
+                <span className="font-heading font-bold text-foreground text-sm">{l("your_tools")}</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {toolOptions.map((tool) => (
+                  <button
+                    key={tool.id}
+                    onClick={() => toggleTool(tool.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                      selectedTools.includes(tool.id)
+                        ? "bg-primary/10 border-primary text-primary"
+                        : "bg-background border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    <span>{tool.icon}</span>
+                    {tool.label}
+                    {selectedTools.includes(tool.id) && <span className="text-xs">✓</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Skill Level */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <GraduationCap className="h-4 w-4 text-primary" />
+                <span className="font-heading font-bold text-foreground text-sm">{l("skill_level")}</span>
+              </div>
+              <div className="flex gap-2">
+                {skillOptions.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setSkillLevel(opt.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                      skillLevel === opt.id
+                        ? "bg-primary/10 border-primary text-primary"
+                        : "bg-background border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    <span>{opt.icon}</span> {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Time */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Timer className="h-4 w-4 text-primary" />
+                <span className="font-heading font-bold text-foreground text-sm">{l("time_available")}</span>
+              </div>
+              <div className="flex gap-2">
+                {timeOptions.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setTimeAvailable(opt.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                      timeAvailable === opt.id
+                        ? "bg-primary/10 border-primary text-primary"
+                        : "bg-background border-border text-muted-foreground hover:border-primary/50"
+                    }`}
+                  >
+                    <span>{opt.icon}</span> {opt.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         )}
 
-        {/* Results */}
-        {hasSearched && !isLoading && (
+        {/* Generate Button */}
+        <div className="mb-6">
+          <Button
+            onClick={handleGenerate}
+            disabled={selectedIngredients.length < 2 || isLoading}
+            className="w-full rounded-full"
+            size="lg"
+          >
+            {isLoading ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {mode === "meal" ? l("generating") : l("pres_generating")}</>
+            ) : selectedIngredients.length < 2 ? (
+              l("no_ingredients")
+            ) : mode === "meal" ? (
+              l("generate")
+            ) : (
+              l("pres_generate")
+            )}
+          </Button>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="farm-card p-10 text-center mb-6 animate-pulse">
+            <div className="inline-flex items-center gap-3">
+              <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              <div className="text-left">
+                <p className="font-heading font-bold text-foreground">
+                  {mode === "meal" ? l("generating") : l("pres_generating")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {mode === "meal" ? l("analyzing") : l("pres_analyzing")}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ MEAL RESULTS ═══ */}
+        {mode === "meal" && hasSearched && !isLoading && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-heading font-bold text-foreground text-lg">{l("suggested_meals")}</h2>
@@ -348,13 +609,9 @@ const MealPlannerPage = () => {
                 const matchedCount = meal.ingredients.filter((ing) =>
                   selectedIngredients.some((si) => ing.toLowerCase().includes(si) || si.includes(ing.toLowerCase()))
                 ).length;
-
                 return (
                   <div key={idx} className="farm-card overflow-hidden">
-                    <div
-                      className="p-5 cursor-pointer hover:bg-secondary/30 transition-colors"
-                      onClick={() => setExpandedMeal(isExpanded ? null : idx)}
-                    >
+                    <div className="p-5 cursor-pointer hover:bg-secondary/30 transition-colors" onClick={() => setExpandedMeal(isExpanded ? null : idx)}>
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h3 className="font-heading font-bold text-foreground text-lg">{meal.name}</h3>
@@ -363,12 +620,8 @@ const MealPlannerPage = () => {
                             <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {meal.servings} {l("servings")}</span>
                           </div>
                         </div>
-                        <Badge className="bg-primary/10 text-primary border-0">
-                          {matchedCount}/{meal.ingredients.length} ✓
-                        </Badge>
+                        <Badge className="bg-primary/10 text-primary border-0">{matchedCount}/{meal.ingredients.length} ✓</Badge>
                       </div>
-
-                      {/* Nutrition */}
                       <div className="flex flex-wrap gap-3 mb-3">
                         <div className="flex items-center gap-1.5 text-sm">
                           <Flame className="h-4 w-4 text-farm-orange" />
@@ -381,13 +634,9 @@ const MealPlannerPage = () => {
                           <span className="font-bold">{getProteinLabel(meal.protein)}</span>
                         </div>
                       </div>
-
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${getNutritionColor(meal.nutritionLevel)}`}>
-                        <Leaf className="h-3 w-3" />
-                        {getNutritionLabel(meal.nutritionLevel)}
+                        <Leaf className="h-3 w-3" /> {getNutritionLabel(meal.nutritionLevel)}
                       </div>
-
-                      {/* Missing ingredients */}
                       {meal.missingIngredients && meal.missingIngredients.length > 0 && (
                         <div className="mt-3 p-3 rounded-lg bg-destructive/5 border border-destructive/10">
                           <p className="text-xs font-medium text-destructive mb-1">{l("missing")}:</p>
@@ -399,62 +648,41 @@ const MealPlannerPage = () => {
                             ))}
                           </div>
                           {meal.missingIngredients.some((m) =>
-                            crops.some((c) => {
-                              const norm = normalizeIngredient(c.name);
-                              return norm && m.toLowerCase().includes(norm);
-                            })
+                            crops.some((c) => { const norm = normalizeIngredient(c.name); return norm && m.toLowerCase().includes(norm); })
                           ) && (
                             <p className="text-xs text-primary mt-2 flex items-center gap-1">
-                              <ShoppingCart className="h-3 w-3" />
-                              {l("nearby_surplus")}
+                              <ShoppingCart className="h-3 w-3" /> {l("nearby_surplus")}
                             </p>
                           )}
                         </div>
                       )}
-
                       <div className="flex items-center gap-1 mt-3 text-xs text-primary font-medium">
                         <ArrowRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                         {l("cooking_guide")}
                       </div>
                     </div>
-
-                    {/* Expanded cooking guide */}
                     {isExpanded && (
                       <div className="border-t border-border p-5 bg-secondary/20">
-                        {/* All ingredients needed */}
                         <div className="mb-4">
                           <h4 className="font-heading font-bold text-foreground text-sm mb-2">{l("all_ingredients")}:</h4>
                           <div className="flex flex-wrap gap-1.5">
                             {meal.ingredients.map((ing, i) => {
-                              const isAvailable = selectedIngredients.some(
-                                (si) => ing.toLowerCase().includes(si) || si.includes(ing.toLowerCase())
-                              );
+                              const isAvailable = selectedIngredients.some((si) => ing.toLowerCase().includes(si) || si.includes(ing.toLowerCase()));
                               return (
-                                <span
-                                  key={i}
-                                  className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                                    isAvailable
-                                      ? "bg-primary/10 text-primary"
-                                      : "bg-destructive/10 text-destructive"
-                                  }`}
-                                >
+                                <span key={i} className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${isAvailable ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
                                   {isAvailable ? "✓" : "✗"} {displayIngredient(normalizeIngredient(ing) || ing.toLowerCase(), language)}
                                 </span>
                               );
                             })}
                           </div>
                         </div>
-
                         <h4 className="font-heading font-bold text-foreground mb-3 flex items-center gap-2">
-                          <Wheat className="h-4 w-4 text-primary" />
-                          {l("cooking_guide")}
+                          <Wheat className="h-4 w-4 text-primary" /> {l("cooking_guide")}
                         </h4>
                         <ol className="space-y-3">
                           {meal.steps.map((step, sIdx) => (
                             <li key={sIdx} className="flex gap-3">
-                              <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-                                {sIdx + 1}
-                              </span>
+                              <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
                               <p className="text-sm text-foreground pt-0.5">{step}</p>
                             </li>
                           ))}
@@ -467,8 +695,167 @@ const MealPlannerPage = () => {
             )}
           </div>
         )}
+
+        {/* ═══ PRESERVATION RESULTS ═══ */}
+        {mode === "preservation" && hasSearched && !isLoading && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading font-bold text-foreground text-lg">{l("pres_results")}</h2>
+              <Badge variant="outline" className="text-xs gap-1">
+                <Snowflake className="h-3 w-3" /> {preservationResults.length} {l("items_count")}
+              </Badge>
+            </div>
+
+            {preservationResults.length === 0 ? (
+              <div className="farm-card p-8 text-center">
+                <span className="text-4xl mb-4 block">🤔</span>
+                <p className="text-muted-foreground">{l("pres_no_results")}</p>
+              </div>
+            ) : (
+              preservationResults.map((item, idx) => {
+                const isExpanded = expandedPres === idx;
+                return (
+                  <div key={idx} className="farm-card overflow-hidden">
+                    <div
+                      className="p-5 cursor-pointer hover:bg-secondary/30 transition-colors"
+                      onClick={() => setExpandedPres(isExpanded ? null : idx)}
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-heading font-bold text-foreground text-lg capitalize">{item.foodItem}</h3>
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${getSpoilageColor(item.spoilageRisk)}`}>
+                          <AlertTriangle className="h-3 w-3" />
+                          {l("spoilage_risk")}: {getSpoilageLabel(item.spoilageRisk)}
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">⏳ {item.spoilageTimeframe}</p>
+
+                      {/* Method summary badges */}
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {item.methods.map((method, mIdx) => (
+                          <span key={mIdx} className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                            {getDifficultyEmoji(method.difficulty)} {method.name}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-1 mt-2 text-xs text-primary font-medium">
+                        <ArrowRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                        {l("view_steps")}
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="border-t border-border bg-secondary/20">
+                        {/* Methods */}
+                        {item.methods.map((method, mIdx) => {
+                          const methodKey = `${idx}-${mIdx}`;
+                          const isMethodExpanded = expandedMethod === methodKey;
+                          return (
+                            <div key={mIdx} className="border-b border-border/50 last:border-b-0">
+                              <div
+                                className="px-5 py-4 cursor-pointer hover:bg-secondary/40 transition-colors"
+                                onClick={(e) => { e.stopPropagation(); setExpandedMethod(isMethodExpanded ? null : methodKey); }}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-lg">{getDifficultyEmoji(method.difficulty)}</span>
+                                    <div>
+                                      <h4 className="font-heading font-bold text-foreground">{method.name}</h4>
+                                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {method.timeNeeded}</span>
+                                        <span className="flex items-center gap-1"><Snowflake className="h-3 w-3" /> {l("shelf_life")}: {method.shelfLife}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <ArrowRight className={`h-4 w-4 text-primary transition-transform ${isMethodExpanded ? "rotate-90" : ""}`} />
+                                </div>
+                              </div>
+
+                              {isMethodExpanded && (
+                                <div className="px-5 pb-5 space-y-4">
+                                  {/* Tools needed */}
+                                  {method.toolsNeeded.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1">
+                                        <Wrench className="h-3 w-3" /> {l("tools_needed")}:
+                                      </p>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {method.toolsNeeded.map((t, i) => (
+                                          <span key={i} className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs">{t}</span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Extra ingredients */}
+                                  {method.ingredientsNeeded.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-muted-foreground mb-1.5">{l("extra_ingredients")}:</p>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {method.ingredientsNeeded.map((ing, i) => (
+                                          <span key={i} className="px-2.5 py-1 rounded-full bg-farm-orange/10 text-farm-orange text-xs capitalize">{ing}</span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Steps */}
+                                  <div>
+                                    <h5 className="font-heading font-bold text-foreground text-sm mb-3 flex items-center gap-2">
+                                      <Wheat className="h-4 w-4 text-primary" /> {l("cooking_guide")}
+                                    </h5>
+                                    <ol className="space-y-3">
+                                      {method.steps.map((step, sIdx) => (
+                                        <li key={sIdx} className="flex gap-3">
+                                          <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
+                                          <p className="text-sm text-foreground pt-0.5">{step}</p>
+                                        </li>
+                                      ))}
+                                    </ol>
+                                  </div>
+
+                                  {/* Tip */}
+                                  {method.tips && (
+                                    <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
+                                      <Lightbulb className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                                      <div>
+                                        <p className="text-xs font-medium text-primary mb-0.5">{l("pro_tip")}</p>
+                                        <p className="text-sm text-foreground">{method.tips}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {/* Upcycle Ideas */}
+                        {item.upcycleIdeas && item.upcycleIdeas.length > 0 && (
+                          <div className="px-5 py-4 bg-accent/5">
+                            <h4 className="font-heading font-bold text-foreground text-sm mb-3">{l("upcycle_ideas")}</h4>
+                            <div className="grid gap-2">
+                              {item.upcycleIdeas.map((idea, uIdx) => (
+                                <div key={uIdx} className="flex items-start gap-3 p-3 rounded-lg bg-background border border-border">
+                                  <span className="text-xl">{idea.emoji}</span>
+                                  <div>
+                                    <p className="font-medium text-foreground text-sm">{idea.name}</p>
+                                    <p className="text-xs text-muted-foreground">{idea.description}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
-      
     </div>
   );
 };
