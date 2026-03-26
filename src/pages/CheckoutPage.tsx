@@ -96,7 +96,7 @@ const CheckoutPage = () => {
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {delivery === "delivery" && fullAddress && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
-                <Home className="h-4 w-4 shrink-0" />
+                <span>🏠</span>
                 <span>{t("checkout.deliver_to")}: <span className="font-medium text-foreground">{fullAddress}</span></span>
               </div>
             )}
