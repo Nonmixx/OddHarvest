@@ -102,7 +102,7 @@ const CheckoutPage = () => {
             )}
             {delivery === "pickup" && pickupArea && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
-                <MapPin className="h-4 w-4 shrink-0" />
+                <span>📍</span>
                 <span>{tc("Pickup at")}: <span className="font-medium text-foreground">{pickupArea}</span></span>
               </div>
             )}
