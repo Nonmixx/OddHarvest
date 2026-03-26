@@ -116,8 +116,8 @@ const FarmerDashboard = () => {
 
         <div className="farm-card p-6 mb-8 bg-farm-green-light border-primary/20">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Recycle className="h-8 w-8 text-primary" />
+            <div className="h-16 w-16 rounded-[40%_60%_55%_45%/60%_40%_60%_40%] bg-farm-mint flex items-center justify-center shrink-0">
+              <span className="text-3xl">♻️</span>
             </div>
             <div>
               <h2 className="font-heading font-bold text-foreground text-lg">{t("farmer.impact")}</h2>
