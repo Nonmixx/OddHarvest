@@ -8,6 +8,8 @@ import { ArrowLeft, Star, Store, MapPin, CheckCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { toast } from "sonner";
+import { useReviews } from "@/contexts/ReviewContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OrderCrop {
   name: string;
