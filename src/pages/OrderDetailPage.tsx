@@ -118,6 +118,7 @@ const OrderDetailPage = () => {
 
   // Ratings state: keyed by `sellerId-cropName`
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [reviewTexts, setReviewTexts] = useState<Record<string, string>>({});
   const [submittedRatings, setSubmittedRatings] = useState<Record<string, boolean>>({});
 
   if (!order) {
