@@ -137,6 +137,9 @@ const CheckoutPage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <Button variant="ghost" className="mb-4 rounded-full" onClick={() => navigate("/cart")}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("common.back")}
+        </Button>
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
         {/* Delivery Method - moved above order summary */}
