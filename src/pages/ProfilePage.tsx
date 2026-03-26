@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera, Home } from "lucide-react";
+import { User, Phone, Save, Camera } from "lucide-react";
 import { toast } from "sonner";
 import VoiceInput from "@/components/VoiceInput";
 
