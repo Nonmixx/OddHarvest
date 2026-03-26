@@ -34,6 +34,7 @@ const DriverDeliveries = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-heading font-bold text-foreground">{d.id}</p>
+                    <span className="text-xs text-muted-foreground">{d.orderId}</span>
                     <Badge variant="secondary">{d.date}</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">{d.crop}</p>
@@ -46,6 +47,7 @@ const DriverDeliveries = () => {
                       <Navigation className="h-3 w-3 text-accent" /> {d.dropoff.split(",")[0]}
                     </span>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><Store className="h-3 w-3" />{d.seller}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-bold text-primary">RM{d.fee.toFixed(2)}</span>
