@@ -160,7 +160,7 @@ const CheckoutPage = () => {
               onClick={() => setDelivery("delivery")}
               className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "delivery" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
-              <Truck className={`h-6 w-6 mx-auto ${delivery === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className="text-2xl">🚚</span>
               <p className="text-sm font-medium">{t("checkout.delivery")}</p>
               <p className="text-xs text-muted-foreground">{t("checkout.rate_per_km")}</p>
             </button>
