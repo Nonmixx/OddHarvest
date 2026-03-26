@@ -194,7 +194,7 @@ const CheckoutPage = () => {
         {delivery === "delivery" && (
           <div className="farm-card p-4 mb-6">
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
-              <Home className="h-4 w-4 text-primary" />
+              <span>🏠</span>
               {t("checkout.your_address")}
             </h2>
             {fullAddress ? (
