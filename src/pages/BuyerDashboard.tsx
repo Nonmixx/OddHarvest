@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Package, Recycle, TreePine, Droplets } from "lucide-react";
+import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 
@@ -28,24 +28,24 @@ const BuyerDashboard = () => {
 
         <div className="farm-card p-6 mb-8 bg-farm-green-light border-primary/20">
           <div className="text-center space-y-4">
-            <span className="text-5xl block">🌿</span>
+            <Leaf className="h-12 w-12 text-primary mx-auto" />
             <h2 className="font-heading font-bold text-foreground text-xl">{t("buyer.impact_title")}</h2>
             <p className="text-muted-foreground">
               {t("buyer.impact_desc1")} <span className="text-primary font-bold text-2xl">25 kg</span> {t("buyer.impact_desc2")}
             </p>
             <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center">
-                <span className="text-2xl block mb-1">💧</span>
+                <Droplets className="h-6 w-6 text-primary mx-auto mb-1" />
                 <p className="text-lg font-heading font-bold text-foreground">12,500L</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.water_saved")}</p>
               </div>
               <div className="text-center">
-                <span className="text-2xl block mb-1">🌳</span>
+                <TreePine className="h-6 w-6 text-primary mx-auto mb-1" />
                 <p className="text-lg font-heading font-bold text-foreground">50 kg</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.co2_prevented")}</p>
               </div>
               <div className="text-center">
-                <span className="text-2xl block mb-1">🍽️</span>
+                <ShoppingBag className="h-6 w-6 text-primary mx-auto mb-1" />
                 <p className="text-lg font-heading font-bold text-foreground">50</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.meals_saved")}</p>
               </div>

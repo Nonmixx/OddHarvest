@@ -6,14 +6,15 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Leaf, Sprout, ShoppingBag, Truck, Home } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 import Navbar from "@/components/Navbar";
 import { toast } from "@/hooks/use-toast";
 
-const roles: { value: UserRole; labelKey: string; emoji: string; descKey: string }[] = [
-  { value: "farmer", labelKey: "auth.farmer", emoji: "🌾", descKey: "auth.farmer_desc" },
-  { value: "buyer", labelKey: "auth.buyer", emoji: "🛒", descKey: "auth.buyer_desc" },
-  { value: "driver", labelKey: "auth.driver", emoji: "🚚", descKey: "auth.driver_desc" },
+const roles: { value: UserRole; labelKey: string; icon: typeof Sprout; descKey: string }[] = [
+  { value: "farmer", labelKey: "auth.farmer", icon: Sprout, descKey: "auth.farmer_desc" },
+  { value: "buyer", labelKey: "auth.buyer", icon: ShoppingBag, descKey: "auth.buyer_desc" },
+  { value: "driver", labelKey: "auth.driver", icon: Truck, descKey: "auth.driver_desc" },
 ];
 
 const AuthPage = () => {
@@ -40,6 +41,7 @@ const AuthPage = () => {
         title: t("auth.signup_success_title"),
         description: t("auth.signup_success_desc"),
       });
+      // Reset to login mode so user can log in
       setIsLogin(true);
       setPassword("");
     }
@@ -50,7 +52,7 @@ const AuthPage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-16 max-w-md">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🌿</div>
+          <Leaf className="h-10 w-10 text-primary mx-auto mb-3" />
           <h1 className="text-3xl font-heading font-bold text-foreground">
             {isLogin ? t("auth.welcome") : t("auth.join")}
           </h1>
@@ -70,11 +72,11 @@ const AuthPage = () => {
                   onClick={() => setRole(r.value)}
                   className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${
                     role === r.value
-                      ? "border-primary bg-farm-green-light shadow-sm"
+                      ? "border-primary bg-farm-green-light"
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  <span className="text-2xl block">{r.emoji}</span>
+                  <r.icon className={`h-5 w-5 mx-auto ${role === r.value ? "text-primary" : "text-muted-foreground"}`} />
                   <p className="text-xs font-medium">{t(r.labelKey)}</p>
                 </button>
               ))}
@@ -90,23 +92,23 @@ const AuthPage = () => {
                   onClick={() => setSellerType("farm")}
                   className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${
                     sellerType === "farm"
-                      ? "border-primary bg-farm-green-light shadow-sm"
+                      ? "border-primary bg-farm-green-light"
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  <span className="text-2xl block">🌾</span>
-                  <p className="text-xs font-medium">{t("seller.farm")}</p>
+                  <Sprout className={`h-5 w-5 mx-auto ${sellerType === "farm" ? "text-primary" : "text-muted-foreground"}`} />
+                  <p className="text-xs font-medium">🌾 {t("seller.farm")}</p>
                 </button>
                 <button
                   onClick={() => setSellerType("community")}
                   className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${
                     sellerType === "community"
-                      ? "border-primary bg-farm-green-light shadow-sm"
+                      ? "border-primary bg-farm-green-light"
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  <span className="text-2xl block">🌱</span>
-                  <p className="text-xs font-medium">{t("seller.community")}</p>
+                  <Home className={`h-5 w-5 mx-auto ${sellerType === "community" ? "text-primary" : "text-muted-foreground"}`} />
+                  <p className="text-xs font-medium">🌱 {t("seller.community")}</p>
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -155,7 +157,7 @@ const AuthPage = () => {
                 </div>
               )}
             </div>
-            <Button type="submit" className="w-full rounded-full btn-glow" size="lg">
+            <Button type="submit" className="w-full rounded-full" size="lg">
               {isLogin ? t("auth.login_btn") : t("auth.signup_btn")}
             </Button>
           </form>

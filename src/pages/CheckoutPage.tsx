@@ -7,7 +7,7 @@ import { formatDistance, getUnitLabel } from "@/lib/freshness";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Truck, Wallet, Building, Banknote, Plus, AlertCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle, Store, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
@@ -85,7 +85,7 @@ const CheckoutPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-20 text-center max-w-md">
-          <span className="text-6xl block mb-4">✅</span>
+          <CheckCircle className="h-20 w-20 text-primary mx-auto mb-6" />
           <h1 className="text-3xl font-heading font-bold text-foreground mb-3">{t("checkout.confirmed")}</h1>
           <p className="text-muted-foreground mb-2">{t("checkout.thank_you")}</p>
           <p className="text-sm text-muted-foreground mb-8">
@@ -96,13 +96,13 @@ const CheckoutPage = () => {
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {delivery === "delivery" && fullAddress && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
-                <span>🏠</span>
+                <Home className="h-4 w-4 shrink-0" />
                 <span>{t("checkout.deliver_to")}: <span className="font-medium text-foreground">{fullAddress}</span></span>
               </div>
             )}
             {delivery === "pickup" && pickupArea && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground pb-2 border-b border-border">
-                <span>📍</span>
+                <MapPin className="h-4 w-4 shrink-0" />
                 <span>{tc("Pickup at")}: <span className="font-medium text-foreground">{pickupArea}</span></span>
               </div>
             )}
@@ -152,7 +152,7 @@ const CheckoutPage = () => {
               onClick={() => setDelivery("pickup")}
               className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "pickup" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
-              <span className="text-2xl">📦</span>
+              <PackageCheck className={`h-6 w-6 mx-auto ${delivery === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
               <p className="text-sm font-medium">{t("checkout.self_pickup")}</p>
               <p className="text-xs text-muted-foreground">{t("checkout.free")}</p>
             </button>
@@ -160,7 +160,7 @@ const CheckoutPage = () => {
               onClick={() => setDelivery("delivery")}
               className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "delivery" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
-              <span className="text-2xl">🚚</span>
+              <Truck className={`h-6 w-6 mx-auto ${delivery === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
               <p className="text-sm font-medium">{t("checkout.delivery")}</p>
               <p className="text-xs text-muted-foreground">{t("checkout.rate_per_km")}</p>
             </button>
@@ -194,7 +194,7 @@ const CheckoutPage = () => {
         {delivery === "delivery" && (
           <div className="farm-card p-4 mb-6">
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
-              <span>🏠</span>
+              <Home className="h-4 w-4 text-primary" />
               {t("checkout.your_address")}
             </h2>
             {fullAddress ? (
@@ -218,7 +218,7 @@ const CheckoutPage = () => {
             <div key={sid}>
               {idx > 0 && <div className="border-t border-border my-3" />}
               <p className="text-xs font-medium text-foreground flex items-center gap-1 mb-2">
-                <span>🏪</span>
+                <Store className="h-3 w-3 text-primary" />
                 {tc(group.sellerName)}
               </p>
               {group.items.map((item) => (
@@ -230,7 +230,7 @@ const CheckoutPage = () => {
               {delivery === "delivery" && (
                 <div className="flex justify-between text-sm py-1">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    🚛
+                    <Truck className="h-3 w-3" />
                     {t("checkout.delivery_fee")} ({formatDistance(group.distance, language)})
                   </span>
                   <span className="font-medium text-primary">RM{group.deliveryFee.toFixed(2)}</span>
@@ -249,16 +249,16 @@ const CheckoutPage = () => {
           <h2 className="font-heading font-bold text-foreground">{t("checkout.payment_method")}</h2>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { value: "cash" as const, label: t("checkout.cash"), emoji: "💵" },
-              { value: "ewallet" as const, label: t("checkout.ewallet"), emoji: "📱" },
-              { value: "bank" as const, label: t("checkout.bank"), emoji: "🏦" },
+              { value: "cash" as const, label: t("checkout.cash"), icon: Banknote },
+              { value: "ewallet" as const, label: t("checkout.ewallet"), icon: Wallet },
+              { value: "bank" as const, label: t("checkout.bank"), icon: Building },
             ].map((p) => (
               <button
                 key={p.value}
                 onClick={() => setPayment(p.value)}
-                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${payment === p.value ? "border-primary bg-farm-green-light shadow-sm" : "border-border"}`}
+                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${payment === p.value ? "border-primary bg-farm-green-light" : "border-border"}`}
               >
-                <span className="text-2xl block">{p.emoji}</span>
+                <p.icon className={`h-5 w-5 mx-auto ${payment === p.value ? "text-primary" : "text-muted-foreground"}`} />
                 <p className="text-xs font-medium">{p.label}</p>
               </button>
             ))}
