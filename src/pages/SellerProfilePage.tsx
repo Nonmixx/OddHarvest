@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { Star, MapPin, Calendar, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useReviews } from "@/contexts/ReviewContext";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,10 @@ const SellerProfilePage = () => {
   const { crops } = useCropInventory();
   const { t } = useLanguage();
   const seller = mockSellers.find((s) => s.id === id);
-  const reviews = seller?.reviews ?? [];
+  const { getReviewsForSeller } = useReviews();
+  const mockReviews = seller?.reviews ?? [];
+  const userReviews = seller ? getReviewsForSeller(seller.id) : [];
+  const reviews = [...userReviews, ...mockReviews];
 
   if (!seller) {
     return (

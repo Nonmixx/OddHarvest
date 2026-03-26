@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CropInventoryProvider } from "@/contexts/CropInventoryContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ReviewProvider } from "@/contexts/ReviewContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
@@ -37,7 +38,8 @@ const App = () => (
     <LanguageProvider>
       <AuthProvider>
         <CropInventoryProvider>
-          <CartProvider>
+          <ReviewProvider>
+            <CartProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -67,7 +69,8 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
-          </CartProvider>
+            </CartProvider>
+          </ReviewProvider>
         </CropInventoryProvider>
       </AuthProvider>
     </LanguageProvider>
