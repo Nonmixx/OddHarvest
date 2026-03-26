@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { Star, MapPin, Calendar, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useReviews } from "@/contexts/ReviewContext";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
