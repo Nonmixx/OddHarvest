@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
@@ -239,6 +239,20 @@ const MealPlannerPage = () => {
   const [timeAvailable, setTimeAvailable] = useState<string>("30 minutes");
 
   const l = (key: keyof typeof labels) => labels[key][language];
+
+  // Clear AI-generated results when language changes so user re-generates in new language
+  const prevLangRef = useRef(language);
+  useEffect(() => {
+    if (prevLangRef.current !== language) {
+      prevLangRef.current = language;
+      setSuggestedMeals([]);
+      setPreservationResults([]);
+      setHasSearched(false);
+      setExpandedMeal(null);
+      setExpandedPres(null);
+      setExpandedMethod(null);
+    }
+  }, [language]);
 
   const addIngredient = () => {
     const trimmed = inputText.trim();
