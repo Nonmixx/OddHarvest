@@ -154,7 +154,7 @@ const ProfilePage = () => {
               <div className="space-y-1.5">
                 <Label>{t("profile.location")}</Label>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span>📍</span>
                   <Input placeholder={t("profile.location_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} />
                   <VoiceInput onResult={(text) => setLocation(text)} />
                 </div>
