@@ -48,7 +48,7 @@ const ProfilePage = () => {
     }
   }, [user]);
 
-  const roleIcon = user?.role === "farmer" ? Sprout : user?.role === "driver" ? Truck : ShoppingBag;
+  const roleEmoji = user?.role === "farmer" ? "🌾" : user?.role === "driver" ? "🚚" : "🛒";
   const roleLabel = user?.role === "farmer" ? t("profile.seller") : user?.role === "driver" ? t("profile.driver") : t("profile.buyer");
 
   const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
