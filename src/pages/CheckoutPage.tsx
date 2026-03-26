@@ -231,12 +231,10 @@ const CheckoutPage = () => {
                   <span className="font-medium text-primary">RM{group.deliveryFee.toFixed(2)}</span>
                 </div>
               )}
-            </div>
-          ))}
-          <div className="border-t border-border mt-3 pt-2 flex justify-between text-sm font-medium">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span>RM{grandTotal.toFixed(2)}</span>
-          </div>
+              <div className="flex justify-between text-sm py-1 mt-1 border-t border-border/50 pt-1">
+                <span className="text-muted-foreground font-medium">{t("checkout.subtotal")}</span>
+                <span className="font-medium">RM{(group.items.reduce((s, i) => s + i.crop.discountPrice * i.quantity, 0) + (delivery === "delivery" ? group.deliveryFee : 0)).toFixed(2)}</span>
+              </div>
         </div>
 
         {/* Payment Method */}
