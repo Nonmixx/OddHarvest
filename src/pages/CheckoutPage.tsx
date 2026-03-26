@@ -230,7 +230,7 @@ const CheckoutPage = () => {
               {delivery === "delivery" && (
                 <div className="flex justify-between text-sm py-1">
                   <span className="text-muted-foreground flex items-center gap-1">
-                    <Truck className="h-3 w-3" />
+                    🚛
                     {t("checkout.delivery_fee")} ({formatDistance(group.distance, language)})
                   </span>
                   <span className="font-medium text-primary">RM{group.deliveryFee.toFixed(2)}</span>
