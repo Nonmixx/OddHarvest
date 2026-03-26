@@ -15,7 +15,10 @@ const SellerProfilePage = () => {
   const { crops } = useCropInventory();
   const { t } = useLanguage();
   const seller = mockSellers.find((s) => s.id === id);
-  const reviews = seller?.reviews ?? [];
+  const { getReviewsForSeller } = useReviews();
+  const mockReviews = seller?.reviews ?? [];
+  const userReviews = seller ? getReviewsForSeller(seller.id) : [];
+  const reviews = [...userReviews, ...mockReviews];
 
   if (!seller) {
     return (
