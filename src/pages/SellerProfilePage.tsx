@@ -117,21 +117,6 @@ const SellerProfilePage = () => {
 
         <h2 className="text-xl font-heading font-bold text-foreground mb-4">{t("seller.reviews_title")}</h2>
         
-        <div className="farm-card p-5 mb-6 space-y-3">
-          <p className="font-medium text-sm text-foreground">{t("seller.leave_review")}</p>
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button key={star} onClick={() => setReviewRating(star)}>
-                <Star className={`h-6 w-6 transition-colors ${star <= reviewRating ? "text-farm-orange fill-current" : "text-muted-foreground"}`} />
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input placeholder={t("seller.review_placeholder")} value={reviewText} onChange={(e) => setReviewText(e.target.value)} className="flex-1" />
-            <VoiceInput onResult={(text) => setReviewText(text)} />
-            <Button onClick={handleSubmitReview} className="rounded-full" size="sm">{t("seller.submit")}</Button>
-          </div>
-        </div>
 
         <div className="space-y-3">
           {reviews.map((review) => (
