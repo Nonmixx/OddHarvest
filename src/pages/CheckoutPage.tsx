@@ -249,16 +249,16 @@ const CheckoutPage = () => {
           <h2 className="font-heading font-bold text-foreground">{t("checkout.payment_method")}</h2>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { value: "cash" as const, label: t("checkout.cash"), icon: Banknote },
-              { value: "ewallet" as const, label: t("checkout.ewallet"), icon: Wallet },
-              { value: "bank" as const, label: t("checkout.bank"), icon: Building },
+              { value: "cash" as const, label: t("checkout.cash"), emoji: "💵" },
+              { value: "ewallet" as const, label: t("checkout.ewallet"), emoji: "📱" },
+              { value: "bank" as const, label: t("checkout.bank"), emoji: "🏦" },
             ].map((p) => (
               <button
                 key={p.value}
                 onClick={() => setPayment(p.value)}
-                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${payment === p.value ? "border-primary bg-farm-green-light" : "border-border"}`}
+                className={`p-3 rounded-xl border-2 transition-all text-center space-y-1 ${payment === p.value ? "border-primary bg-farm-green-light shadow-sm" : "border-border"}`}
               >
-                <p.icon className={`h-5 w-5 mx-auto ${payment === p.value ? "text-primary" : "text-muted-foreground"}`} />
+                <span className="text-2xl block">{p.emoji}</span>
                 <p className="text-xs font-medium">{p.label}</p>
               </button>
             ))}
