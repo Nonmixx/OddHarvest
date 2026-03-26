@@ -240,6 +240,20 @@ const MealPlannerPage = () => {
 
   const l = (key: keyof typeof labels) => labels[key][language];
 
+  // Clear AI-generated results when language changes so user re-generates in new language
+  const prevLangRef = useRef(language);
+  useEffect(() => {
+    if (prevLangRef.current !== language) {
+      prevLangRef.current = language;
+      setSuggestedMeals([]);
+      setPreservationResults([]);
+      setHasSearched(false);
+      setExpandedMeal(null);
+      setExpandedPres(null);
+      setExpandedMethod(null);
+    }
+  }, [language]);
+
   const addIngredient = () => {
     const trimmed = inputText.trim();
     if (!trimmed) return;
