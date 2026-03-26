@@ -28,7 +28,7 @@ const BuyerDashboard = () => {
 
         <div className="farm-card p-6 mb-8 bg-farm-green-light border-primary/20">
           <div className="text-center space-y-4">
-            <Leaf className="h-12 w-12 text-primary mx-auto" />
+            <span className="text-5xl block">🌿</span>
             <h2 className="font-heading font-bold text-foreground text-xl">{t("buyer.impact_title")}</h2>
             <p className="text-muted-foreground">
               {t("buyer.impact_desc1")} <span className="text-primary font-bold text-2xl">25 kg</span> {t("buyer.impact_desc2")}
