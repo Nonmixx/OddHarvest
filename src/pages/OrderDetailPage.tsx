@@ -239,21 +239,25 @@ const OrderDetailPage = () => {
                                 {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
                               </div>
                             ) : (
-                              <div className="space-y-1.5">
+                              <div className="space-y-2">
                                 <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
-                                <div className="flex items-center gap-2">
-                                  <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
-                                  {currentRating > 0 && (
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-7 text-xs rounded-full"
-                                      onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
-                                    >
-                                      {t("order.submit")}
-                                    </Button>
-                                  )}
-                                </div>
+                                <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
+                                <Input
+                                  placeholder={t("order.review_placeholder") || "Write your review..."}
+                                  value={reviewTexts[ratingKey] || ""}
+                                  onChange={(e) => setReviewTexts((prev) => ({ ...prev, [ratingKey]: e.target.value }))}
+                                  className="text-sm"
+                                />
+                                {currentRating > 0 && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs rounded-full"
+                                    onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
+                                  >
+                                    {t("order.submit")}
+                                  </Button>
+                                )}
                               </div>
                             )}
                           </div>
