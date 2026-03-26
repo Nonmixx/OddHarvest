@@ -229,20 +229,21 @@ const OrderDetailPage = () => {
                     const isSubmitted = submittedRatings[ratingKey] || false;
 
                     return (
-                      <div key={ratingKey} className="flex gap-3">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-foreground text-sm truncate">{tc(item.name)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            x{item.qty} · RM{item.price.toFixed(2)}/{tc("kg")}
-                          </p>
-                          <p className="text-xs font-semibold text-primary">
-                            RM{(item.qty * item.price).toFixed(2)}
-                          </p>
+                      <div key={ratingKey}>
+                        <div className="flex gap-3 items-center">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground text-sm truncate">{tc(item.name)}</p>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <p className="text-sm font-semibold text-primary">RM{(item.qty * item.price).toFixed(2)}</p>
+                            <p className="text-xs text-muted-foreground">x{item.qty}</p>
+                          </div>
+                        </div>
 
                           {/* Rating & Review section */}
                           <div className="mt-3 p-3 rounded-xl bg-muted/50 border border-border/50">
