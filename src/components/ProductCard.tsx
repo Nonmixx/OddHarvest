@@ -125,7 +125,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <div className="flex items-center gap-3 text-xs">
           <span className="farm-badge-green text-[11px]">{tc(crop.state)}</span>
           <span className={`flex items-center gap-1 ${outOfStock ? "text-destructive font-bold" : "text-muted-foreground"}`}>
-            <Sprout className="h-3 w-3" />
+            🌱
             {outOfStock ? t("product.out_of_stock") : `${crop.quantity} ${isBundle ? t("product.boxes_left") : t("product.left")}`}
           </span>
         </div>

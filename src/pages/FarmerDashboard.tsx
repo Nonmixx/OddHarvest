@@ -103,8 +103,8 @@ const FarmerDashboard = () => {
           onClick={() => navigate("/farmer-sold-crops")}
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center">
-              <Package className="h-5 w-5 text-accent" />
+            <div className="h-10 w-10 rounded-[40%_60%_55%_45%/60%_40%_60%_40%] bg-farm-peach flex items-center justify-center">
+              <span className="text-xl">📦</span>
             </div>
             <div>
               <p className="font-heading font-bold text-foreground text-sm">{t("farmer.view_sold")}</p>
