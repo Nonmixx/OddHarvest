@@ -75,7 +75,7 @@ const MarketplacePage = () => {
         {nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
-              <MapPin className="h-5 w-5 text-primary" />
+              <span className="text-xl">📍</span>
               {t("market.nearby")}
             </h2>
             <div className="flex flex-wrap gap-3">

@@ -35,17 +35,17 @@ const BuyerDashboard = () => {
             </p>
             <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center">
-                <Droplets className="h-6 w-6 text-primary mx-auto mb-1" />
+                <span className="text-2xl block mb-1">💧</span>
                 <p className="text-lg font-heading font-bold text-foreground">12,500L</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.water_saved")}</p>
               </div>
               <div className="text-center">
-                <TreePine className="h-6 w-6 text-primary mx-auto mb-1" />
+                <span className="text-2xl block mb-1">🌳</span>
                 <p className="text-lg font-heading font-bold text-foreground">50 kg</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.co2_prevented")}</p>
               </div>
               <div className="text-center">
-                <ShoppingBag className="h-6 w-6 text-primary mx-auto mb-1" />
+                <span className="text-2xl block mb-1">🍽️</span>
                 <p className="text-lg font-heading font-bold text-foreground">50</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.meals_saved")}</p>
               </div>
