@@ -4,13 +4,9 @@ import { mockSellers } from "@/data/mockSellers";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
-import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award, ArrowLeft } from "lucide-react";
+import { Star, MapPin, Calendar, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import VoiceInput from "@/components/VoiceInput";
-import { toast } from "sonner";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
