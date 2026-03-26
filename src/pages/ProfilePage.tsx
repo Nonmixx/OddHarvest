@@ -113,7 +113,7 @@ const ProfilePage = () => {
           <div>
             <h1 className="text-2xl font-heading font-bold text-foreground">{t("profile.title")}</h1>
             <div className="flex items-center gap-2 mt-1">
-              {React.createElement(roleIcon, { className: "h-4 w-4 text-primary" })}
+              <span>{roleEmoji}</span>
               <span className="text-sm text-muted-foreground">{roleLabel}</span>
               {user?.role === "farmer" && user?.sellerType && (
                 <span className="text-xs bg-farm-green-light text-primary px-2 py-0.5 rounded-full">
