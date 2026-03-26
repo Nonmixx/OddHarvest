@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle, Store } from "lucide-react";
 import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
@@ -31,7 +31,6 @@ const DriverDeliveryDetail = () => {
             {t("common.back_dashboard")}
           </Button>
         </div>
-        
       </div>
     );
   }
@@ -56,7 +55,6 @@ const DriverDeliveryDetail = () => {
             {t("common.back_dashboard")}
           </Button>
         </div>
-        
       </div>
     );
   }
@@ -86,6 +84,7 @@ const DriverDeliveryDetail = () => {
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.item")}</p>
               <p className="font-heading font-bold text-foreground text-lg">{tc(delivery.crop)}</p>
+              <p className="text-xs text-muted-foreground">{delivery.orderId}</p>
             </div>
           </div>
 
@@ -98,7 +97,7 @@ const DriverDeliveryDetail = () => {
             <div>
               <p className="text-sm text-muted-foreground">{t("driver.pickup_location")}</p>
               <p className="font-medium text-foreground">{tc(delivery.pickup)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t("driver.farmer")}: {delivery.farmer}</p>
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Store className="h-3 w-3" />{t("driver.seller") || tc("Seller")}: {delivery.seller}</p>
             </div>
           </div>
 

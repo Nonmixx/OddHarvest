@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,7 +7,7 @@ import { formatDistance, getUnitLabel } from "@/lib/freshness";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle } from "lucide-react";
+import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle, Store } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
@@ -25,17 +25,37 @@ const CheckoutPage = () => {
   const tc = (text: string) => translateContent(text, language);
   const navigate = useNavigate();
   const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
-  const [distance, setDistance] = useState(5);
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
   const [pickupSlot, setPickupSlot] = useState(DEFAULT_PICKUP_SLOTS[2]);
   const [confirmed, setConfirmed] = useState(false);
   const [customSlot, setCustomSlot] = useState("");
   const [pickupSlots, setPickupSlots] = useState(DEFAULT_PICKUP_SLOTS);
 
-  const savedRef = useRef({ total: 0, deliveryFee: 0, grandTotal: 0, items: [] as typeof items });
+  // Group items by seller and calculate per-seller delivery fees
+  const sellerGroups = useMemo(() => {
+    const groups: Record<string, { sellerName: string; sellerLocation: string; items: typeof items; distance: number; deliveryFee: number }> = {};
+    items.forEach((item) => {
+      const sid = item.crop.sellerId;
+      if (!groups[sid]) {
+        groups[sid] = {
+          sellerName: item.crop.farmerName,
+          sellerLocation: item.crop.farmLocation,
+          items: [],
+          distance: item.crop.distanceKm,
+          deliveryFee: Math.max(1, item.crop.distanceKm * 1),
+        };
+      }
+      groups[sid].items.push(item);
+    });
+    return groups;
+  }, [items]);
 
-  const deliveryFee = delivery === "delivery" ? Math.max(1, distance * 1) : 0;
-  const grandTotal = total + deliveryFee;
+  const totalDeliveryFee = delivery === "delivery"
+    ? Object.values(sellerGroups).reduce((sum, g) => sum + g.deliveryFee, 0)
+    : 0;
+  const grandTotal = total + totalDeliveryFee;
+
+  const savedRef = useRef({ total: 0, totalDeliveryFee: 0, grandTotal: 0, items: [] as typeof items, sellerGroups: {} as typeof sellerGroups });
 
   const userAddress = user?.address || "";
   const userLocation = user?.location || "";
@@ -44,7 +64,7 @@ const CheckoutPage = () => {
   const pickupArea = user?.preferredPickupArea || "";
 
   const handleConfirm = () => {
-    savedRef.current = { total, deliveryFee, grandTotal, items: [...items] };
+    savedRef.current = { total, totalDeliveryFee, grandTotal, items: [...items], sellerGroups: { ...sellerGroups } };
     setConfirmed(true);
     clearCart();
   };
@@ -71,7 +91,7 @@ const CheckoutPage = () => {
           <p className="text-sm text-muted-foreground mb-8">
             {delivery === "pickup"
               ? `${tc("Please head to")} ${pickupArea || tc("the farm")} ${tc("for pickup.")} Slot: ${pickupSlot}`
-              : `${t("checkout.delivery_msg")} (${formatDistance(distance, language)}).`}
+              : t("checkout.delivery_msg")}
           </p>
           <div className="farm-card p-4 mb-6 text-left space-y-2">
             {delivery === "delivery" && fullAddress && (
@@ -97,12 +117,12 @@ const CheckoutPage = () => {
                 <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
                 <span>RM{saved.total.toFixed(2)}</span>
               </div>
-              {delivery === "delivery" && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{t("checkout.delivery_fee")}</span>
-                  <span>RM{saved.deliveryFee.toFixed(2)}</span>
+              {delivery === "delivery" && Object.entries(saved.sellerGroups).map(([sid, group]) => (
+                <div key={sid} className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({tc(group.sellerName)} · {formatDistance(group.distance, language)})</span>
+                  <span>RM{group.deliveryFee.toFixed(2)}</span>
                 </div>
-              )}
+              ))}
               <p className="text-sm text-muted-foreground">{t("checkout.payment")}: <span className="font-medium text-foreground capitalize">{paymentLabel}</span></p>
               <p className="text-sm font-bold">{t("cart.total")}: <span className="text-primary">RM{saved.grandTotal.toFixed(2)}</span></p>
             </div>
@@ -119,40 +139,7 @@ const CheckoutPage = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-heading font-bold text-foreground mb-6">{t("checkout.title")}</h1>
 
-        {delivery === "delivery" && (
-          <div className="farm-card p-4 mb-6">
-            <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
-              <Home className="h-4 w-4 text-primary" />
-              {t("checkout.your_address")}
-            </h2>
-            {fullAddress ? (
-              <p className="text-sm text-muted-foreground">{fullAddress}</p>
-            ) : (
-              <div className="flex items-center gap-2 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{t("checkout.no_address")}</span>
-                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile")}>
-                  {t("checkout.add_address")}
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="farm-card p-4 mb-6">
-          <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
-          {items.map((item) => (
-            <div key={item.crop.id} className="flex justify-between text-sm py-1">
-              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
-              <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="border-t border-border mt-2 pt-2 flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span className="font-medium">RM{total.toFixed(2)}</span>
-          </div>
-        </div>
-
+        {/* Delivery Method - moved above order summary */}
         <div className="farm-card p-4 mb-6 space-y-4">
           <h2 className="font-heading font-bold text-foreground">{t("checkout.delivery_method")}</h2>
           <div className="grid grid-cols-2 gap-3">
@@ -196,19 +183,58 @@ const CheckoutPage = () => {
               </div>
             </div>
           )}
+        </div>
 
-          {delivery === "delivery" && (
-            <div className="space-y-2">
-              <Label className="text-sm">{t("checkout.distance")}</Label>
-              <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <Input type="number" min={1} value={distance} onChange={(e) => setDistance(Math.max(1, Number(e.target.value)))} className="w-24" />
-                <span className="text-sm text-muted-foreground">{formatDistance(distance, language)} → {t("checkout.delivery_fee")}: <span className="font-bold text-primary">RM{deliveryFee.toFixed(2)}</span></span>
+        {/* Delivery Address */}
+        {delivery === "delivery" && (
+          <div className="farm-card p-4 mb-6">
+            <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
+              <Home className="h-4 w-4 text-primary" />
+              {t("checkout.your_address")}
+            </h2>
+            {fullAddress ? (
+              <p className="text-sm text-muted-foreground">{fullAddress}</p>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-destructive">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{t("checkout.no_address")}</span>
+                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile")}>
+                  {t("checkout.add_address")}
+                </Button>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Order Summary - now below delivery method */}
+        <div className="farm-card p-4 mb-6">
+          <h2 className="font-heading font-bold text-foreground mb-3">{t("checkout.order_summary")}</h2>
+          {items.map((item) => (
+            <div key={item.crop.id} className="flex justify-between text-sm py-1">
+              <span className="text-muted-foreground">{tc(item.crop.name)} × {item.quantity} {getUnitLabel(language, item.crop.isBundle ? "box" : "kg")}</span>
+              <span className="font-medium">RM{(item.crop.discountPrice * item.quantity).toFixed(2)}</span>
+            </div>
+          ))}
+          <div className="border-t border-border mt-2 pt-2 flex justify-between text-sm">
+            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
+            <span className="font-medium">RM{total.toFixed(2)}</span>
+          </div>
+          {delivery === "delivery" && (
+            <div className="mt-2 space-y-1">
+              {Object.entries(sellerGroups).map(([sid, group]) => (
+                <div key={sid} className="flex justify-between text-sm">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Store className="h-3 w-3" />
+                    {t("checkout.delivery_fee")} — {tc(group.sellerName)} ({formatDistance(group.distance, language)})
+                  </span>
+                  <span className="font-medium">RM{group.deliveryFee.toFixed(2)}</span>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
+        {/* Payment Method */}
         <div className="farm-card p-4 mb-6 space-y-4">
           <h2 className="font-heading font-bold text-foreground">{t("checkout.payment_method")}</h2>
           <div className="grid grid-cols-3 gap-3">
@@ -229,17 +255,18 @@ const CheckoutPage = () => {
           </div>
         </div>
 
+        {/* Total */}
         <div className="farm-card p-6 space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
             <span>RM{total.toFixed(2)}</span>
           </div>
-          {delivery === "delivery" && (
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({formatDistance(distance, language)})</span>
-              <span>RM{deliveryFee.toFixed(2)}</span>
+          {delivery === "delivery" && Object.entries(sellerGroups).map(([sid, group]) => (
+            <div key={sid} className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({tc(group.sellerName)})</span>
+              <span>RM{group.deliveryFee.toFixed(2)}</span>
             </div>
-          )}
+          ))}
           <div className="border-t border-border pt-3 flex justify-between">
             <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
