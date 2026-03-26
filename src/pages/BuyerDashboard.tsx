@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
+import { ShoppingBag, Package, Recycle, TreePine, Droplets } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 
