@@ -39,20 +39,6 @@ const SellerProfilePage = () => {
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : seller.averageRating.toFixed(1);
 
-  const handleSubmitReview = () => {
-    if (!reviewText.trim()) return;
-    const newReview = {
-      id: crypto.randomUUID(),
-      buyerName: "You",
-      rating: reviewRating,
-      comment: reviewText,
-      date: new Date().toISOString().split("T")[0],
-    };
-    setReviews((prev) => [newReview, ...prev]);
-    setReviewText("");
-    setReviewRating(5);
-    toast.success(t("seller.review_submitted"));
-  };
 
   return (
     <div className="min-h-screen">
