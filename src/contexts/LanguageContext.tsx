@@ -407,7 +407,7 @@ const translations: Record<string, Record<Language, string>> = {
   "order.thank_you": { en: "Thank you!", zh: "谢谢！", ms: "Terima kasih!" },
   "order.submit": { en: "Submit", zh: "提交", ms: "Hantar" },
   "order.rating_submitted": { en: "Rating submitted for", zh: "已为以下提交评分：", ms: "Penilaian dihantar untuk" },
-  "order.review_placeholder": { en: "Share your experience with this product...", zh: "分享您对此产品的体验...", ms: "Kongsi pengalaman anda dengan produk ini..." },
+  "order.review_placeholder": { en: "Share your feedback on this product...", zh: "分享您对此产品的反馈...", ms: "Kongsi maklum balas anda tentang produk ini..." },
   "order.submit_review": { en: "Submit Review", zh: "提交评价", ms: "Hantar Ulasan" },
 };
 
