@@ -152,7 +152,7 @@ const CheckoutPage = () => {
               onClick={() => setDelivery("pickup")}
               className={`p-4 rounded-xl border-2 transition-all text-center space-y-2 ${delivery === "pickup" ? "border-primary bg-farm-green-light" : "border-border"}`}
             >
-              <PackageCheck className={`h-6 w-6 mx-auto ${delivery === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className="text-2xl">📦</span>
               <p className="text-sm font-medium">{t("checkout.self_pickup")}</p>
               <p className="text-xs text-muted-foreground">{t("checkout.free")}</p>
             </button>
