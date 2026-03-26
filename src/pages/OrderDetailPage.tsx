@@ -241,7 +241,7 @@ const OrderDetailPage = () => {
                           </div>
                           <div className="text-right flex-shrink-0">
                             <p className="text-sm font-semibold text-primary">RM{(item.qty * item.price).toFixed(2)}</p>
-                            <p className="text-xs text-muted-foreground">x{item.qty}</p>
+                            <p className="text-xs text-muted-foreground">{item.qty} kg</p>
                           </div>
                         </div>
 
