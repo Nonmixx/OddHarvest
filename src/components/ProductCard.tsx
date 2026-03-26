@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
+import { ShoppingCart, Clock, Package, Star, Timer, Gift } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistance, getExpiryInfo, getFreshnessInfo, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
@@ -118,14 +118,14 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         ) : null}
 
         <div className="flex items-center gap-1 text-muted-foreground text-xs">
-          <MapPin className="h-3 w-3 shrink-0" />
+          <span>📍</span>
           <span className="truncate">{tc(crop.farmLocation)}</span>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
           <span className="farm-badge-green text-[11px]">{tc(crop.state)}</span>
           <span className={`flex items-center gap-1 ${outOfStock ? "text-destructive font-bold" : "text-muted-foreground"}`}>
-            <Sprout className="h-3 w-3" />
+            🌱
             {outOfStock ? t("product.out_of_stock") : `${crop.quantity} ${isBundle ? t("product.boxes_left") : t("product.left")}`}
           </span>
         </div>

@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera, Home } from "lucide-react";
+import { User, Phone, Save, Camera } from "lucide-react";
 import { toast } from "sonner";
 import VoiceInput from "@/components/VoiceInput";
 
@@ -48,7 +48,7 @@ const ProfilePage = () => {
     }
   }, [user]);
 
-  const roleIcon = user?.role === "farmer" ? Sprout : user?.role === "driver" ? Truck : ShoppingBag;
+  const roleEmoji = user?.role === "farmer" ? "🌾" : user?.role === "driver" ? "🚚" : "🛒";
   const roleLabel = user?.role === "farmer" ? t("profile.seller") : user?.role === "driver" ? t("profile.driver") : t("profile.buyer");
 
   const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +113,7 @@ const ProfilePage = () => {
           <div>
             <h1 className="text-2xl font-heading font-bold text-foreground">{t("profile.title")}</h1>
             <div className="flex items-center gap-2 mt-1">
-              {React.createElement(roleIcon, { className: "h-4 w-4 text-primary" })}
+              <span>{roleEmoji}</span>
               <span className="text-sm text-muted-foreground">{roleLabel}</span>
               {user?.role === "farmer" && user?.sellerType && (
                 <span className="text-xs bg-farm-green-light text-primary px-2 py-0.5 rounded-full">
@@ -154,7 +154,7 @@ const ProfilePage = () => {
               <div className="space-y-1.5">
                 <Label>{t("profile.location")}</Label>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span>📍</span>
                   <Input placeholder={t("profile.location_placeholder")} value={location} onChange={(e) => setLocation(e.target.value)} />
                   <VoiceInput onResult={(text) => setLocation(text)} />
                 </div>
@@ -165,7 +165,7 @@ const ProfilePage = () => {
           {/* Address Section - ALL ROLES */}
           <div className="farm-card p-6 space-y-4">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2">
-              <Home className="h-4 w-4 text-primary" />
+              <span>🏠</span>
               {t("profile.address_section")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -8,7 +8,7 @@ import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
@@ -75,7 +75,7 @@ const MarketplacePage = () => {
         {nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
-              <MapPin className="h-5 w-5 text-primary" />
+              <span className="text-xl">📍</span>
               {t("market.nearby")}
             </h2>
             <div className="flex flex-wrap gap-3">

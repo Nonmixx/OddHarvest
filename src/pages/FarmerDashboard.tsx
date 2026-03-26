@@ -103,8 +103,8 @@ const FarmerDashboard = () => {
           onClick={() => navigate("/farmer-sold-crops")}
         >
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center">
-              <Package className="h-5 w-5 text-accent" />
+            <div className="h-10 w-10 rounded-[40%_60%_55%_45%/60%_40%_60%_40%] bg-farm-peach flex items-center justify-center">
+              <span className="text-xl">📦</span>
             </div>
             <div>
               <p className="font-heading font-bold text-foreground text-sm">{t("farmer.view_sold")}</p>
@@ -116,8 +116,8 @@ const FarmerDashboard = () => {
 
         <div className="farm-card p-6 mb-8 bg-farm-green-light border-primary/20">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Recycle className="h-8 w-8 text-primary" />
+            <div className="h-16 w-16 rounded-[40%_60%_55%_45%/60%_40%_60%_40%] bg-farm-mint flex items-center justify-center shrink-0">
+              <span className="text-3xl">♻️</span>
             </div>
             <div>
               <h2 className="font-heading font-bold text-foreground text-lg">{t("farmer.impact")}</h2>
