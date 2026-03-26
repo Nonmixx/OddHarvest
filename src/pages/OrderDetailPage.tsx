@@ -147,8 +147,19 @@ const OrderDetailPage = () => {
     setRatings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmitRating = (key: string, sellerName: string) => {
+  const { addReview } = useReviews();
+  const { user } = useAuth();
+
+  const handleSubmitRating = (key: string, sellerName: string, sellerId: string) => {
     setSubmittedRatings((prev) => ({ ...prev, [key]: true }));
+    addReview({
+      id: crypto.randomUUID(),
+      buyerName: user?.name || "Anonymous",
+      rating: ratings[key] || 5,
+      comment: reviewTexts[key] || "",
+      date: new Date().toISOString().split("T")[0],
+      sellerId,
+    });
     toast.success(`${t("order.rating_submitted")} ${sellerName}! ⭐`);
   };
 
