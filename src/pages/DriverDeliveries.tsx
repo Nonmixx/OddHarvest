@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Navigation, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation, ChevronRight, Store } from "lucide-react";
 import { completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
 
