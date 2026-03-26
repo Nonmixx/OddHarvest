@@ -99,11 +99,11 @@ const mockOrders: Record<string, OrderData> = {
 };
 
 const RatingStars = ({ rating, onRate }: { rating: number; onRate: (r: number) => void }) => (
-  <div className="flex gap-1">
+  <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map((star) => (
-      <button key={star} onClick={() => onRate(star)} className="transition-transform hover:scale-110">
+      <button key={star} onClick={() => onRate(star)} className="transition-transform hover:scale-125">
         <Star
-          className={`h-6 w-6 ${star <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`}
+          className={`h-5 w-5 ${star <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30 hover:text-yellow-300"}`}
         />
       </button>
     ))}
