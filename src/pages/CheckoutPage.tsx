@@ -260,17 +260,7 @@ const CheckoutPage = () => {
 
         {/* Total */}
         <div className="farm-card p-6 space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span>RM{total.toFixed(2)}</span>
-          </div>
-          {delivery === "delivery" && Object.entries(sellerGroups).map(([sid, group]) => (
-            <div key={sid} className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({tc(group.sellerName)})</span>
-              <span>RM{group.deliveryFee.toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="border-t border-border pt-3 flex justify-between">
+          <div className="flex justify-between">
             <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
           </div>
