@@ -69,7 +69,8 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
-          </CartProvider>
+            </CartProvider>
+          </ReviewProvider>
         </CropInventoryProvider>
       </AuthProvider>
     </LanguageProvider>
