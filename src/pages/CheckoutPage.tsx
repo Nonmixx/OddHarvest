@@ -85,7 +85,7 @@ const CheckoutPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-20 text-center max-w-md">
-          <CheckCircle className="h-20 w-20 text-primary mx-auto mb-6" />
+          <span className="text-6xl block mb-4">✅</span>
           <h1 className="text-3xl font-heading font-bold text-foreground mb-3">{t("checkout.confirmed")}</h1>
           <p className="text-muted-foreground mb-2">{t("checkout.thank_you")}</p>
           <p className="text-sm text-muted-foreground mb-8">
