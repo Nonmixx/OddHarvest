@@ -4,13 +4,9 @@ import { mockSellers } from "@/data/mockSellers";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCard from "@/components/ProductCard";
-import { Star, MapPin, Calendar, Sprout, Package, Recycle, Award, ArrowLeft } from "lucide-react";
+import { Star, MapPin, Calendar, Package, Recycle, Award, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import VoiceInput from "@/components/VoiceInput";
-import { toast } from "sonner";
 
 const SellerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,9 +14,7 @@ const SellerProfilePage = () => {
   const { crops } = useCropInventory();
   const { t } = useLanguage();
   const seller = mockSellers.find((s) => s.id === id);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviews, setReviews] = useState(seller?.reviews ?? []);
+  const reviews = seller?.reviews ?? [];
 
   if (!seller) {
     return (
@@ -41,20 +35,6 @@ const SellerProfilePage = () => {
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : seller.averageRating.toFixed(1);
 
-  const handleSubmitReview = () => {
-    if (!reviewText.trim()) return;
-    const newReview = {
-      id: crypto.randomUUID(),
-      buyerName: "You",
-      rating: reviewRating,
-      comment: reviewText,
-      date: new Date().toISOString().split("T")[0],
-    };
-    setReviews((prev) => [newReview, ...prev]);
-    setReviewText("");
-    setReviewRating(5);
-    toast.success(t("seller.review_submitted"));
-  };
 
   return (
     <div className="min-h-screen">
@@ -133,21 +113,6 @@ const SellerProfilePage = () => {
 
         <h2 className="text-xl font-heading font-bold text-foreground mb-4">{t("seller.reviews_title")}</h2>
         
-        <div className="farm-card p-5 mb-6 space-y-3">
-          <p className="font-medium text-sm text-foreground">{t("seller.leave_review")}</p>
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button key={star} onClick={() => setReviewRating(star)}>
-                <Star className={`h-6 w-6 transition-colors ${star <= reviewRating ? "text-farm-orange fill-current" : "text-muted-foreground"}`} />
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input placeholder={t("seller.review_placeholder")} value={reviewText} onChange={(e) => setReviewText(e.target.value)} className="flex-1" />
-            <VoiceInput onResult={(text) => setReviewText(text)} />
-            <Button onClick={handleSubmitReview} className="rounded-full" size="sm">{t("seller.submit")}</Button>
-          </div>
-        </div>
 
         <div className="space-y-3">
           {reviews.map((review) => (
