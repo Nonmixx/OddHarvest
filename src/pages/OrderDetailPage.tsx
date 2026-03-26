@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -117,6 +118,7 @@ const OrderDetailPage = () => {
 
   // Ratings state: keyed by `sellerId-cropName`
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [reviewTexts, setReviewTexts] = useState<Record<string, string>>({});
   const [submittedRatings, setSubmittedRatings] = useState<Record<string, boolean>>({});
 
   if (!order) {
@@ -232,26 +234,35 @@ const OrderDetailPage = () => {
                           {/* Rating section */}
                           <div className="mt-2">
                             {isSubmitted ? (
-                              <div className="flex items-center gap-1.5 text-xs text-primary">
-                                <CheckCircle className="h-4 w-4" />
-                                {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
-                              </div>
-                            ) : (
-                              <div className="space-y-1.5">
-                                <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
-                                <div className="flex items-center gap-2">
-                                  <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
-                                  {currentRating > 0 && (
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-7 text-xs rounded-full"
-                                      onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
-                                    >
-                                      {t("order.submit")}
-                                    </Button>
-                                  )}
+                              <>
+                                <div className="flex items-center gap-1.5 text-xs text-primary">
+                                  <CheckCircle className="h-4 w-4" />
+                                  {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
                                 </div>
+                                {reviewTexts[ratingKey] && (
+                                  <p className="text-xs text-muted-foreground italic mt-1">"{reviewTexts[ratingKey]}"</p>
+                                )}
+                              </>
+                            ) : (
+                              <div className="space-y-2">
+                                <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
+                                <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
+                                <Input
+                                  placeholder={t("order.review_placeholder") || "Write your review..."}
+                                  value={reviewTexts[ratingKey] || ""}
+                                  onChange={(e) => setReviewTexts((prev) => ({ ...prev, [ratingKey]: e.target.value }))}
+                                  className="text-sm"
+                                />
+                                {currentRating > 0 && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs rounded-full"
+                                    onClick={() => handleSubmitRating(ratingKey, seller.sellerName)}
+                                  >
+                                    {t("order.submit")}
+                                  </Button>
+                                )}
                               </div>
                             )}
                           </div>
