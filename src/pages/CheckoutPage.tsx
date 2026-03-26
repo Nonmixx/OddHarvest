@@ -231,12 +231,12 @@ const CheckoutPage = () => {
                   <span className="font-medium text-primary">RM{group.deliveryFee.toFixed(2)}</span>
                 </div>
               )}
+              <div className="flex justify-between text-sm py-1 mt-1 border-t border-border/50 pt-1">
+                <span className="text-muted-foreground font-medium">{t("checkout.subtotal")}</span>
+                <span className="font-medium">RM{(group.items.reduce((s, i) => s + i.crop.discountPrice * i.quantity, 0) + (delivery === "delivery" ? group.deliveryFee : 0)).toFixed(2)}</span>
+              </div>
             </div>
           ))}
-          <div className="border-t border-border mt-3 pt-2 flex justify-between text-sm font-medium">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span>RM{grandTotal.toFixed(2)}</span>
-          </div>
         </div>
 
         {/* Payment Method */}
@@ -262,17 +262,7 @@ const CheckoutPage = () => {
 
         {/* Total */}
         <div className="farm-card p-6 space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
-            <span>RM{total.toFixed(2)}</span>
-          </div>
-          {delivery === "delivery" && Object.entries(sellerGroups).map(([sid, group]) => (
-            <div key={sid} className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("checkout.delivery_fee")} ({tc(group.sellerName)})</span>
-              <span>RM{group.deliveryFee.toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="border-t border-border pt-3 flex justify-between">
+          <div className="flex justify-between">
             <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
           </div>
