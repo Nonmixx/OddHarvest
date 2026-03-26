@@ -235,6 +235,8 @@ const CheckoutPage = () => {
                 <span className="text-muted-foreground font-medium">{t("checkout.subtotal")}</span>
                 <span className="font-medium">RM{(group.items.reduce((s, i) => s + i.crop.discountPrice * i.quantity, 0) + (delivery === "delivery" ? group.deliveryFee : 0)).toFixed(2)}</span>
               </div>
+            </div>
+          ))}
         </div>
 
         {/* Payment Method */}
