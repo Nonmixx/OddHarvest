@@ -238,6 +238,9 @@ const OrderDetailPage = () => {
                                 <CheckCircle className="h-4 w-4" />
                                 {t("order.rated")} {currentRating}/5 — {t("order.thank_you")}
                               </div>
+                              {reviewTexts[ratingKey] && (
+                                <p className="text-xs text-muted-foreground italic mt-1">"{reviewTexts[ratingKey]}"</p>
+                              )}
                             ) : (
                               <div className="space-y-2">
                                 <p className="text-xs text-muted-foreground">{t("order.rate_crop")}:</p>
