@@ -245,49 +245,48 @@ const OrderDetailPage = () => {
                           </div>
                         </div>
 
-                          {/* Rating & Review section */}
-                          <div className="mt-3 p-3 rounded-xl bg-muted/50 border border-border/50">
-                            {isSubmitted ? (
-                              <div className="space-y-1.5">
-                                <div className="flex items-center gap-2">
-                                  <CheckCircle className="h-4 w-4 text-primary" />
-                                  <span className="text-sm font-medium text-primary">{t("order.thank_you")}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <Star key={star} className={`h-3.5 w-3.5 ${star <= currentRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
-                                  ))}
-                                  <span className="text-xs text-muted-foreground ml-1">{currentRating}/5</span>
-                                </div>
-                                {reviewTexts[ratingKey] && (
-                                  <p className="text-xs text-muted-foreground italic">"{reviewTexts[ratingKey]}"</p>
-                                )}
+                        {/* Rating & Review section */}
+                        <div className="mt-3 p-3 rounded-xl bg-muted/50 border border-border/50">
+                          {isSubmitted ? (
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-primary" />
+                                <span className="text-sm font-medium text-primary">{t("order.thank_you")}</span>
                               </div>
-                            ) : (
-                              <div className="space-y-2.5">
-                                <div className="flex items-center justify-between">
-                                  <p className="text-xs font-medium text-foreground">{t("order.rate_crop")}</p>
-                                  <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
-                                </div>
-                                <textarea
-                                  placeholder={t("order.review_placeholder") || "Share your experience with this product..."}
-                                  value={reviewTexts[ratingKey] || ""}
-                                  onChange={(e) => setReviewTexts((prev) => ({ ...prev, [ratingKey]: e.target.value }))}
-                                  rows={2}
-                                  className="w-full text-sm rounded-lg border border-border bg-background px-3 py-2 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
-                                />
-                                {currentRating > 0 && (
-                                  <Button
-                                    size="sm"
-                                    className="h-8 text-xs rounded-full px-5 bg-primary hover:bg-primary/90"
-                                    onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
-                                  >
-                                    ⭐ {t("order.submit_review")}
-                                  </Button>
-                                )}
+                              <div className="flex items-center gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star key={star} className={`h-3.5 w-3.5 ${star <= currentRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
+                                ))}
+                                <span className="text-xs text-muted-foreground ml-1">{currentRating}/5</span>
                               </div>
-                            )}
-                          </div>
+                              {reviewTexts[ratingKey] && (
+                                <p className="text-xs text-muted-foreground italic">"{reviewTexts[ratingKey]}"</p>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-2.5">
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-medium text-foreground">{t("order.rate_crop")}</p>
+                                <RatingStars rating={currentRating} onRate={(r) => handleRate(ratingKey, r)} />
+                              </div>
+                              <textarea
+                                placeholder={t("order.review_placeholder") || "Share your experience with this product..."}
+                                value={reviewTexts[ratingKey] || ""}
+                                onChange={(e) => setReviewTexts((prev) => ({ ...prev, [ratingKey]: e.target.value }))}
+                                rows={2}
+                                className="w-full text-sm rounded-lg border border-border bg-background px-3 py-2 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+                              />
+                              {currentRating > 0 && (
+                                <Button
+                                  size="sm"
+                                  className="h-8 text-xs rounded-full px-5 bg-primary hover:bg-primary/90"
+                                  onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
+                                >
+                                  ⭐ {t("order.submit_review")}
+                                </Button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
