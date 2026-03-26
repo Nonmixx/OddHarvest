@@ -7,7 +7,7 @@ import { formatDistance, getUnitLabel } from "@/lib/freshness";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle, Store, ArrowLeft } from "lucide-react";
+import { CheckCircle, Truck, Wallet, Building, Banknote, Plus, AlertCircle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
