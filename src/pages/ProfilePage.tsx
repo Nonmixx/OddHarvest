@@ -165,7 +165,7 @@ const ProfilePage = () => {
           {/* Address Section - ALL ROLES */}
           <div className="farm-card p-6 space-y-4">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2">
-              <Home className="h-4 w-4 text-primary" />
+              <span>🏠</span>
               {t("profile.address_section")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -17,7 +17,7 @@ const CartPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container mx-auto px-4 py-20 text-center">
-          <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <span className="text-5xl block mb-4">🛒</span>
           <h1 className="text-2xl font-heading font-bold text-foreground mb-2">{t("cart.empty")}</h1>
           <p className="text-muted-foreground mb-6">{t("cart.empty.desc")}</p>
           <Link to="/marketplace">
