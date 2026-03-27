@@ -67,6 +67,8 @@ const ProfilePage = () => {
   };
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   const handleSave = () => {
     updateProfile({
@@ -75,7 +77,9 @@ const ProfilePage = () => {
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
-    if (user?.role === "buyer") {
+    if (redirectTo) {
+      navigate(redirectTo);
+    } else if (user?.role === "buyer") {
       navigate("/marketplace");
     }
   };
