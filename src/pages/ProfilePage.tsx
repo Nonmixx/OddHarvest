@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -67,6 +67,8 @@ const ProfilePage = () => {
   };
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   const handleSave = () => {
     updateProfile({
@@ -75,7 +77,9 @@ const ProfilePage = () => {
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
     });
     toast.success(t("profile.updated") + " ✅");
-    if (user?.role === "buyer") {
+    if (redirectTo) {
+      navigate(redirectTo);
+    } else if (user?.role === "buyer") {
       navigate("/marketplace");
     }
   };
