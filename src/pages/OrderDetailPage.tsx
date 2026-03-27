@@ -276,15 +276,14 @@ const OrderDetailPage = () => {
                                 rows={2}
                                 className="w-full text-sm rounded-lg border border-border bg-background px-3 py-2 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
                               />
-                              {currentRating > 0 && (
-                                <Button
-                                  size="sm"
-                                  className="h-8 text-xs rounded-full px-5 bg-primary hover:bg-primary/90"
-                                  onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
-                                >
-                                  ⭐ {t("order.submit_review")}
-                                </Button>
-                              )}
+                              <Button
+                                size="sm"
+                                className="h-8 text-xs rounded-full px-5 bg-primary hover:bg-primary/90"
+                                disabled={currentRating === 0 && !reviewTexts[ratingKey]}
+                                onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
+                              >
+                                ⭐ {t("order.submit_review")}
+                              </Button>
                             </div>
                           )}
                         </div>
