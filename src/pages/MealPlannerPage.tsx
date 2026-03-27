@@ -539,8 +539,7 @@ const MealPlannerPage = () => {
 
             {/* Time */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Timer className="h-4 w-4 text-primary" />
+              <div className="mb-3">
                 <span className="font-heading font-bold text-foreground text-sm">{l("time_available")}</span>
               </div>
               <div className="flex gap-2">
