@@ -494,8 +494,7 @@ const MealPlannerPage = () => {
           <div className="farm-card p-6 mb-6 space-y-5">
             {/* Tools */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Wrench className="h-4 w-4 text-primary" />
+              <div className="mb-3">
                 <span className="font-heading font-bold text-foreground text-sm">{l("your_tools")}</span>
               </div>
               <div className="flex flex-wrap gap-2">
