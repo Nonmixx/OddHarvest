@@ -379,18 +379,18 @@ const MealPlannerPage = () => {
   const quickCrops = crops.slice(0, 8).filter((c) => !c.isBundle);
 
   const toolOptions = [
-    { id: "refrigerator", label: l("tool_refrigerator"), icon: "🧊" },
-    { id: "freezer", label: l("tool_freezer"), icon: "❄️" },
-    { id: "blender", label: l("tool_blender"), icon: "🔌" },
-    { id: "dehydrator", label: l("tool_dehydrator"), icon: "🌡️" },
-    { id: "glass_jars", label: l("tool_glass_jars"), icon: "🫙" },
-    { id: "oven", label: l("tool_oven"), icon: "🔥" },
+    { id: "refrigerator", label: l("tool_refrigerator") },
+    { id: "freezer", label: l("tool_freezer") },
+    { id: "blender", label: l("tool_blender") },
+    { id: "dehydrator", label: l("tool_dehydrator") },
+    { id: "glass_jars", label: l("tool_glass_jars") },
+    { id: "oven", label: l("tool_oven") },
   ];
 
   const skillOptions = [
-    { id: "beginner", label: l("beginner"), icon: "🌱" },
-    { id: "intermediate", label: l("intermediate"), icon: "👨‍🍳" },
-    { id: "advanced", label: l("advanced"), icon: "⭐" },
+    { id: "beginner", label: l("beginner") },
+    { id: "intermediate", label: l("intermediate") },
+    { id: "advanced", label: l("advanced") },
   ];
 
   const timeOptions = [
