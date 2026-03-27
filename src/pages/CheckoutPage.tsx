@@ -56,6 +56,8 @@ const CheckoutPage = () => {
   const grandTotal = total + totalDeliveryFee;
 
   const savedRef = useRef({ total: 0, totalDeliveryFee: 0, grandTotal: 0, items: [] as typeof items, sellerGroups: {} as typeof sellerGroups });
+  const addressRef = useRef<HTMLDivElement>(null);
+  const [addressShake, setAddressShake] = useState(false);
 
   const userAddress = user?.address || "";
   const userLocation = user?.location || "";
@@ -63,11 +65,19 @@ const CheckoutPage = () => {
   const fullAddress = [userAddress, userLocation, userState].filter(Boolean).join(", ");
   const pickupArea = user?.preferredPickupArea || "";
 
-  const handleConfirm = () => {
+  const needsAddress = delivery === "delivery" && !fullAddress;
+
+  const handleConfirm = useCallback(() => {
+    if (needsAddress) {
+      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setAddressShake(true);
+      setTimeout(() => setAddressShake(false), 800);
+      return;
+    }
     savedRef.current = { total, totalDeliveryFee, grandTotal, items: [...items], sellerGroups: { ...sellerGroups } };
     setConfirmed(true);
     clearCart();
-  };
+  }, [needsAddress, total, totalDeliveryFee, grandTotal, items, sellerGroups, clearCart]);
 
   const addCustomSlot = () => {
     if (customSlot.trim() && !pickupSlots.includes(customSlot.trim())) {
