@@ -12,7 +12,10 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
 
   const dashboardPath = user
     ? user.role === "farmer"
