@@ -394,9 +394,9 @@ const MealPlannerPage = () => {
   ];
 
   const timeOptions = [
-    { id: "10 minutes", label: l("time_10"), icon: "⚡" },
-    { id: "30 minutes", label: l("time_30"), icon: "⏱️" },
-    { id: "1 hour+", label: l("time_60"), icon: "🕐" },
+    { id: "10 minutes", label: l("time_10") },
+    { id: "30 minutes", label: l("time_30") },
+    { id: "1 hour+", label: l("time_60") },
   ];
 
   return (
