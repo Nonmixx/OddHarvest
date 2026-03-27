@@ -284,7 +284,7 @@ const CheckoutPage = () => {
             <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
           </div>
-          <Button className="w-full rounded-full mt-2" size="lg" onClick={handleConfirm}>{t("checkout.confirm")}</Button>
+          <Button className={`w-full rounded-full mt-2 ${needsAddress ? "opacity-70" : ""}`} size="lg" onClick={handleConfirm}>{t("checkout.confirm")}</Button>
         </div>
       </div>
     </div>
