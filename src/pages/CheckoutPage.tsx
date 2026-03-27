@@ -24,7 +24,8 @@ const CheckoutPage = () => {
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const navigate = useNavigate();
-  const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
+  const [searchParams] = useSearchParams();
+  const [delivery, setDelivery] = useState<"pickup" | "delivery">(searchParams.get("delivery") === "true" ? "delivery" : "pickup");
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
   const [pickupSlot, setPickupSlot] = useState(DEFAULT_PICKUP_SLOTS[2]);
   const [confirmed, setConfirmed] = useState(false);
