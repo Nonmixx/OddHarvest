@@ -508,7 +508,6 @@ const MealPlannerPage = () => {
                         : "bg-background border-border text-muted-foreground hover:border-primary/50"
                     }`}
                   >
-                    <span>{tool.icon}</span>
                     {tool.label}
                     {selectedTools.includes(tool.id) && <span className="text-xs">✓</span>}
                   </button>
