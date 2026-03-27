@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, MapPin, Truck, PackageCheck, Wallet, Building, Banknote, Plus, Home, AlertCircle, Store, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
 const DEFAULT_PICKUP_SLOTS: string[] = [
@@ -24,7 +24,8 @@ const CheckoutPage = () => {
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const navigate = useNavigate();
-  const [delivery, setDelivery] = useState<"pickup" | "delivery">("pickup");
+  const [searchParams] = useSearchParams();
+  const [delivery, setDelivery] = useState<"pickup" | "delivery">(searchParams.get("delivery") === "true" ? "delivery" : "pickup");
   const [payment, setPayment] = useState<"cash" | "ewallet" | "bank">("ewallet");
   const [pickupSlot, setPickupSlot] = useState(DEFAULT_PICKUP_SLOTS[2]);
   const [confirmed, setConfirmed] = useState(false);
@@ -216,7 +217,7 @@ const CheckoutPage = () => {
               <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{t("checkout.no_address")}</span>
-                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile?redirect=/checkout")}>
+                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile?redirect=" + encodeURIComponent("/checkout?delivery=true"))}>
                   {t("checkout.add_address")}
                 </Button>
               </div>
