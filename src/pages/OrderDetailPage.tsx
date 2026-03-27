@@ -282,7 +282,7 @@ const OrderDetailPage = () => {
                                 disabled={currentRating === 0 && !reviewTexts[ratingKey]}
                                 onClick={() => handleSubmitRating(ratingKey, seller.sellerName, sellerId)}
                               >
-                                ⭐ {t("order.submit_review")}
+                                {t("order.submit_review")}
                               </Button>
                             </div>
                           )}
