@@ -9,7 +9,7 @@ const translations: Record<string, Record<Language, string>> = {
   "nav.cart": { en: "Cart", zh: "购物车", ms: "Troli" },
   "nav.login": { en: "Login", zh: "登录", ms: "Log Masuk" },
   "nav.logout": { en: "Logout", zh: "登出", ms: "Log Keluar" },
-  "nav.meal_planner": { en: "Meal Planner", zh: "膳食规划", ms: "Perancang Hidangan" },
+  "nav.meal_planner": { en: "Smart Kitchen", zh: "智能厨房", ms: "Dapur Pintar" },
 
   // Auth
   "auth.welcome": { en: "Welcome Back!", zh: "欢迎回来！", ms: "Selamat Kembali!" },
