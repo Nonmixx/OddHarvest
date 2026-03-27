@@ -531,7 +531,7 @@ const MealPlannerPage = () => {
                         : "bg-background border-border text-muted-foreground hover:border-primary/50"
                     }`}
                   >
-                    <span>{opt.icon}</span> {opt.label}
+                    {opt.label}
                   </button>
                 ))}
               </div>
