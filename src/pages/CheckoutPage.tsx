@@ -202,7 +202,10 @@ const CheckoutPage = () => {
 
         {/* Delivery Address */}
         {delivery === "delivery" && (
-          <div className="farm-card p-4 mb-6">
+          <div
+            ref={addressRef}
+            className={`farm-card p-4 mb-6 transition-all ${!fullAddress ? "border-2 border-destructive/50" : ""} ${addressShake ? "animate-pulse ring-2 ring-destructive/40" : ""}`}
+          >
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
               <Home className="h-4 w-4 text-primary" />
               {t("checkout.your_address")}
