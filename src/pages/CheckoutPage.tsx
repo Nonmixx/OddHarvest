@@ -217,7 +217,7 @@ const CheckoutPage = () => {
               <div className="flex items-center gap-2 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{t("checkout.no_address")}</span>
-                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile?redirect=/checkout?delivery=true")}>
+                <Button variant="link" size="sm" className="text-primary p-0 h-auto" onClick={() => navigate("/profile?redirect=" + encodeURIComponent("/checkout?delivery=true"))}>
                   {t("checkout.add_address")}
                 </Button>
               </div>
