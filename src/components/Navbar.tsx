@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, Leaf, LogOut, User, ChefHat } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +12,10 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
 
   const dashboardPath = user
     ? user.role === "farmer"
@@ -38,22 +41,22 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-6">
           <LanguageSelector />
           {showMarketplace && isAuthenticated && (
-            <Link to="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-w-[80px] text-center">
+            <Link to="/marketplace" className={`text-sm font-medium transition-colors min-w-[80px] text-center ${isActive("/marketplace") ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
               {t("nav.marketplace")}
             </Link>
           )}
           {isAuthenticated && (
-            <Link to={dashboardPath} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-w-[80px] text-center">
+            <Link to={dashboardPath} className={`text-sm font-medium transition-colors min-w-[80px] text-center ${isActive(dashboardPath) ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
               {t("nav.dashboard")}
             </Link>
           )}
           {showMealPlanner && isAuthenticated && (
-            <Link to="/meal-planner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-              <ChefHat className="h-4 w-4" /> {t("nav.meal_planner")}
+            <Link to="/meal-planner" className={`text-sm font-medium transition-colors flex items-center gap-1 ${isActive("/meal-planner") ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+              {t("nav.meal_planner")}
             </Link>
           )}
           {showCart && isAuthenticated && (
-            <Link to="/cart" className="relative">
+            <Link to="/cart" className={`relative ${isActive("/cart") ? "text-foreground" : ""}`}>
               <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
               {itemCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
