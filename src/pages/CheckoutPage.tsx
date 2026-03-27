@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -56,6 +56,8 @@ const CheckoutPage = () => {
   const grandTotal = total + totalDeliveryFee;
 
   const savedRef = useRef({ total: 0, totalDeliveryFee: 0, grandTotal: 0, items: [] as typeof items, sellerGroups: {} as typeof sellerGroups });
+  const addressRef = useRef<HTMLDivElement>(null);
+  const [addressShake, setAddressShake] = useState(false);
 
   const userAddress = user?.address || "";
   const userLocation = user?.location || "";
@@ -63,11 +65,19 @@ const CheckoutPage = () => {
   const fullAddress = [userAddress, userLocation, userState].filter(Boolean).join(", ");
   const pickupArea = user?.preferredPickupArea || "";
 
-  const handleConfirm = () => {
+  const needsAddress = delivery === "delivery" && !fullAddress;
+
+  const handleConfirm = useCallback(() => {
+    if (needsAddress) {
+      addressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setAddressShake(true);
+      setTimeout(() => setAddressShake(false), 800);
+      return;
+    }
     savedRef.current = { total, totalDeliveryFee, grandTotal, items: [...items], sellerGroups: { ...sellerGroups } };
     setConfirmed(true);
     clearCart();
-  };
+  }, [needsAddress, total, totalDeliveryFee, grandTotal, items, sellerGroups, clearCart]);
 
   const addCustomSlot = () => {
     if (customSlot.trim() && !pickupSlots.includes(customSlot.trim())) {
@@ -192,7 +202,10 @@ const CheckoutPage = () => {
 
         {/* Delivery Address */}
         {delivery === "delivery" && (
-          <div className="farm-card p-4 mb-6">
+          <div
+            ref={addressRef}
+            className={`farm-card p-4 mb-6 transition-all ${!fullAddress ? "border-2 border-destructive/50" : ""} ${addressShake ? "animate-pulse ring-2 ring-destructive/40" : ""}`}
+          >
             <h2 className="font-heading font-bold text-foreground mb-2 flex items-center gap-2">
               <Home className="h-4 w-4 text-primary" />
               {t("checkout.your_address")}
@@ -271,7 +284,7 @@ const CheckoutPage = () => {
             <span className="font-heading font-bold text-lg">{t("cart.total")}</span>
             <span className="font-heading font-bold text-lg text-primary">RM{grandTotal.toFixed(2)}</span>
           </div>
-          <Button className="w-full rounded-full mt-2" size="lg" onClick={handleConfirm}>{t("checkout.confirm")}</Button>
+          <Button className={`w-full rounded-full mt-2 ${needsAddress ? "opacity-70" : ""}`} size="lg" onClick={handleConfirm}>{t("checkout.confirm")}</Button>
         </div>
       </div>
     </div>
