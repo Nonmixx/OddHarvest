@@ -131,6 +131,8 @@ const translations: Record<string, Record<Language, string>> = {
   "product.from_you": { en: "km from you", zh: "公里", ms: "km dari anda" },
   "product.add": { en: "Add", zh: "添加", ms: "Tambah" },
   "product.added": { en: "added to cart!", zh: "已加入购物车！", ms: "ditambah ke troli!" },
+  "product.urgent_rescue": { en: "Urgent Rescue", zh: "紧急拯救", ms: "Penyelamatan Segera" },
+  "product.help_prevent": { en: "Help prevent this crop from going to waste", zh: "帮助防止这些农产品被浪费", ms: "Bantu elakkan tanaman ini daripada membazir" },
   "product.qty": { en: "kg", zh: "公斤", ms: "kg" },
   "product.out_of_stock": { en: "Out of Stock", zh: "缺货", ms: "Habis Stok" },
   "product.bundle": { en: "Bundle", zh: "套装", ms: "Bundle" },
