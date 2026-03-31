@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle, History, ChevronRight, Store } from "lucide-react";
+import { Truck, MapPin, Navigation, DollarSign, CheckCircle, User, XCircle, History, ChevronRight, Store, Map } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
