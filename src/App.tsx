@@ -20,6 +20,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
 import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
+import DriverNavigationPage from "./pages/DriverNavigationPage";
 import SellerProfilePage from "./pages/SellerProfilePage";
 import AddCropPage from "./pages/AddCropPage";
 import AddBundlePage from "./pages/AddBundlePage";
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/driver-dashboard" element={<DriverDashboard />} />
                   <Route path="/driver-deliveries" element={<DriverDeliveries />} />
                   <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
+                  <Route path="/driver-navigate/:id" element={<DriverNavigationPage />} />
                   <Route path="/seller/:id" element={<SellerProfilePage />} />
                   <Route path="/add-crop" element={<AddCropPage />} />
                   <Route path="/add-bundle" element={<AddBundlePage />} />
