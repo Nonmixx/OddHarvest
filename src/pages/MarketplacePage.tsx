@@ -63,9 +63,46 @@ const MarketplacePage = () => {
     }, [] as { location: string; distance: number; farmerName: string; sellerId: string }[])
     .sort((a, b) => a.distance - b.distance);
 
-  
+  // Smart recommendations
+  const recommendations = useMemo(() => {
+    const tagged: { crop: CropListing; tag: string }[] = [];
+    const usedIds = new Set<string>();
 
-  return (
+    // Near you (distance <= 10km)
+    const nearby = [...crops]
+      .filter((c) => c.distanceKm <= 10 && c.quantity > 0)
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+    for (const c of nearby) {
+      if (tagged.length >= 2 || usedIds.has(c.id)) continue;
+      tagged.push({ crop: c, tag: "market.near_you" });
+      usedIds.add(c.id);
+    }
+
+    // Best deal (highest discount %)
+    const deals = [...crops]
+      .filter((c) => !c.isBundle && !c.isMysteryBox && c.quantity > 0)
+      .map((c) => ({ crop: c, discount: Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100) }))
+      .sort((a, b) => b.discount - a.discount);
+    for (const d of deals) {
+      if (tagged.length >= 4 || usedIds.has(d.crop.id) || d.discount < 10) continue;
+      tagged.push({ crop: d.crop, tag: "market.best_deal" });
+      usedIds.add(d.crop.id);
+    }
+
+    // Popular / recently added
+    const recent = [...crops]
+      .filter((c) => c.quantity > 0)
+      .sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
+    for (const c of recent) {
+      if (tagged.length >= 6 || usedIds.has(c.id)) continue;
+      tagged.push({ crop: c, tag: "market.popular" });
+      usedIds.add(c.id);
+    }
+
+    return tagged;
+  }, [crops]);
+
+  
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
