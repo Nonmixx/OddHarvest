@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift, ChevronDown, ChevronUp, Sparkles, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistance, getExpiryInfo, getFreshnessInfo, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
