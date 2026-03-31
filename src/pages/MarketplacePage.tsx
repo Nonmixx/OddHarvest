@@ -134,7 +134,7 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {recommendations.length > 0 && (
+        {user && recommendations.length > 0 && (
           <div className="mb-8">
             <h2 className="font-heading font-bold text-foreground text-lg flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
