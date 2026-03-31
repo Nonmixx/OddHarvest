@@ -153,6 +153,7 @@ const FarmerDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {crops.map((c) => {
             const expiryLabel = getExpiryLabel(c.expiryDate);
+            const rescueReasons = getRescueAlert(c);
             return (
               <div key={c.id} className="farm-card p-4 space-y-2">
                 <div className="flex justify-between items-start">
@@ -207,6 +208,47 @@ const FarmerDashboard = () => {
                   <div className="flex items-center gap-1 text-xs font-medium text-farm-orange">
                     <Timer className="h-3 w-3" />
                     <span>{t("farmer.expiry")}: {expiryLabel}</span>
+                  </div>
+                )}
+
+                {/* Rescue Opportunity Alert */}
+                {rescueReasons && c.quantity > 0 && (
+                  <div className="mt-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                      <span className="text-xs font-semibold text-destructive">{t("farmer.rescue_alert")}</span>
+                    </div>
+                    <div className="space-y-1 pl-6">
+                      {rescueReasons.map((reason) => (
+                        <p key={reason} className="text-[11px] text-muted-foreground">• {t(reason)}</p>
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pl-6 pt-1">
+                      <button
+                        onClick={() => openEdit(c)}
+                        className="text-[11px] font-medium text-primary bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                      >
+                        <ArrowDown className="h-3 w-3" /> {t("farmer.rescue_tip_price")}
+                      </button>
+                      {!c.isBundle && !c.isMysteryBox && (
+                        <button
+                          onClick={() => navigate("/add-bundle")}
+                          className="text-[11px] font-medium text-accent-foreground bg-accent/10 hover:bg-accent/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                        >
+                          <Package className="h-3 w-3" /> {t("farmer.rescue_tip_bundle")}
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          const newDiscount = Math.round(c.discountPrice * 0.8 * 100) / 100;
+                          updateCrop(c.id, { discountPrice: newDiscount });
+                          toast.success(t("farmer.listing_updated") + " ⚡");
+                        }}
+                        className="text-[11px] font-medium text-destructive bg-destructive/10 hover:bg-destructive/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                      >
+                        <Zap className="h-3 w-3" /> {t("farmer.rescue_tip_urgent")}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
