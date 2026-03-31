@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -24,6 +25,7 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
@@ -132,7 +134,7 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {recommendations.length > 0 && (
+        {user && recommendations.length > 0 && (
           <div className="mb-8">
             <h2 className="font-heading font-bold text-foreground text-lg flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
