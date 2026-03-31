@@ -67,7 +67,27 @@ const FarmerDashboard = () => {
     return `${diffDays}d`;
   };
 
-  return (
+  const getRescueAlert = (crop: any) => {
+    const reasons: string[] = [];
+    const daysSinceListed = Math.floor((Date.now() - new Date(crop.harvestDate).getTime()) / (1000 * 60 * 60 * 24));
+    // Low stock movement (high quantity remaining after several days)
+    if (daysSinceListed >= 3 && crop.quantity > 5 && !crop.isBundle && !crop.isMysteryBox) {
+      reasons.push("farmer.rescue_low_stock_move");
+    }
+    // Listed for a long time
+    if (daysSinceListed >= 5) {
+      reasons.push("farmer.rescue_listed_long");
+    }
+    // Low discount (less than 20%)
+    if (!crop.isBundle && !crop.isMysteryBox && crop.usualPrice > 0) {
+      const discount = ((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100;
+      if (discount < 20 && daysSinceListed >= 2) {
+        reasons.push("farmer.rescue_tip_price");
+      }
+    }
+    return reasons.length > 0 ? reasons : null;
+  };
+
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
