@@ -20,6 +20,7 @@ import BuyerDashboard from "./pages/BuyerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverDeliveries from "./pages/DriverDeliveries";
 import DriverDeliveryDetail from "./pages/DriverDeliveryDetail";
+import DriverNavigationPage from "./pages/DriverNavigationPage";
 import SellerProfilePage from "./pages/SellerProfilePage";
 import AddCropPage from "./pages/AddCropPage";
 import AddBundlePage from "./pages/AddBundlePage";
