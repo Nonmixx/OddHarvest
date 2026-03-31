@@ -132,6 +132,34 @@ const MarketplacePage = () => {
           </div>
         )}
 
+        {recommendations.length > 0 && (
+          <div className="mb-8">
+            <h2 className="font-heading font-bold text-foreground text-lg flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-primary" />
+              {t("market.recommended")}
+            </h2>
+            <ScrollArea className="w-full">
+              <div className="flex gap-4 pb-4">
+                {recommendations.map(({ crop, tag }) => (
+                  <div key={crop.id} className="min-w-[280px] max-w-[300px] flex-shrink-0">
+                    <Badge
+                      variant="secondary"
+                      className="mb-2 text-[10px] font-semibold"
+                    >
+                      {tag === "market.near_you" && "📍"} 
+                      {tag === "market.best_deal" && "🔥"} 
+                      {tag === "market.popular" && "⭐"} 
+                      {t(tag)}
+                    </Badge>
+                    <ProductCard crop={crop} />
+                  </div>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+        )}
+
         <div className="space-y-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1 max-w-md flex gap-2">
