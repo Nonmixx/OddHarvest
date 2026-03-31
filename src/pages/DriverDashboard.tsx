@@ -98,6 +98,9 @@ const DriverDashboard = () => {
                   {isAccepted ? (
                     <div className="flex items-center gap-2">
                       <span className="farm-badge-green">✓ {t("driver.accepted")}</span>
+                      <Button size="sm" className="rounded-full" onClick={() => navigate(`/driver-navigate/${d.id}`)}>
+                        <Map className="h-4 w-4 mr-1" /> {t("driver.navigate")}
+                      </Button>
                       <Button variant="outline" size="sm" className="rounded-full text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => handleCancel(d.id)}>
                         <XCircle className="h-4 w-4 mr-1" /> {tc("Cancel")}
                       </Button>
