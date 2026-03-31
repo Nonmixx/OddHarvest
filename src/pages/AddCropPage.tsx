@@ -4,13 +4,16 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, ImagePlus, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, ImagePlus, X, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import VoiceInput from "@/components/VoiceInput";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka", "Negeri Sembilan", "Perlis", "Sarawak", "Kuala Lumpur", "Putrajaya", "Labuan"];
 
@@ -30,6 +33,8 @@ const AddCropPage = () => {
   const [state, setState] = useState("");
   const [reason, setReason] = useState<ImperfectReason>("irregular_shape");
   const [desc, setDesc] = useState("");
+  const [isAiDesc, setIsAiDesc] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -48,6 +53,30 @@ const AddCropPage = () => {
 
   const removeImage = (idx: number) => {
     setImages((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleGenerateDescription = async () => {
+    if (!name) {
+      toast.error("Please enter a crop name first");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-description", {
+        body: { name, imperfectReason: reason, harvestDate, isBundle: false, language },
+      });
+      if (error) throw error;
+      if (data?.description) {
+        setDesc(data.description);
+        setIsAiDesc(true);
+        toast.success("Description generated! ✨");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate description");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -70,6 +99,7 @@ const AddCropPage = () => {
       expiryDate: expiryDate ? new Date(expiryDate).toISOString() : undefined,
       distanceKm: Math.floor(Math.random() * 50) + 1,
       imperfectReason: reason,
+      isAiDescription: isAiDesc && desc.length > 0,
     });
     toast.success(t("farmer.crop_added") + " 🌽");
     navigate("/farmer-dashboard");
@@ -124,11 +154,34 @@ const AddCropPage = () => {
           </div>
 
           <div className="space-y-1.5">
-            <Label>{t("farmer.description")}</Label>
-            <div className="flex gap-2">
-              <Input placeholder={t("common.describe_crop")} value={desc} onChange={(e) => setDesc(e.target.value)} />
-              <VoiceInput onResult={(text) => setDesc((prev) => prev ? prev + " " + text : text)} />
+            <div className="flex items-center justify-between">
+              <Label>{t("common.description")}</Label>
+              {isAiDesc && desc && (
+                <Badge variant="secondary" className="text-[10px] gap-1">
+                  <Sparkles className="h-3 w-3" /> {t("common.ai_generated")}
+                </Badge>
+              )}
             </div>
+            <Textarea
+              placeholder={t("common.describe_crop")}
+              value={desc}
+              onChange={(e) => {
+                setDesc(e.target.value);
+                if (isAiDesc) setIsAiDesc(false);
+              }}
+              rows={3}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-1.5 gap-1.5"
+              onClick={handleGenerateDescription}
+              disabled={generating}
+            >
+              {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+              {generating ? t("common.generating") : t("common.generate_ai")}
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

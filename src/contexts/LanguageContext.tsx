@@ -267,7 +267,14 @@ const translations: Record<string, Record<Language, string>> = {
   "common.photos_max": { en: "Photos (max 5)", zh: "照片（最多5张）", ms: "Foto (maks 5)" },
   "common.add": { en: "Add", zh: "添加", ms: "Tambah" },
   "common.select_state": { en: "Select state", zh: "选择州", ms: "Pilih negeri" },
-  "common.describe_crop": { en: "Describe the crop...", zh: "描述农产品...", ms: "Huraikan tanaman..." },
+  "common.describe_crop": { en: "Describe your crop or click 'Generate with AI'", zh: "描述您的农产品或点击 AI 生成", ms: "Huraikan tanaman anda atau klik 'Jana dengan AI'" },
+  "common.generate_ai": { en: "Generate with AI", zh: "AI 生成", ms: "Jana dengan AI" },
+  "common.generating": { en: "Generating...", zh: "生成中...", ms: "Menjana..." },
+  "common.ai_generated": { en: "AI Generated", zh: "AI 生成", ms: "Dijana AI" },
+  "common.view_details": { en: "View Details", zh: "查看详情", ms: "Lihat Butiran" },
+  "common.hide_details": { en: "Hide Details", zh: "隐藏详情", ms: "Sembunyikan Butiran" },
+  "common.description": { en: "Description", zh: "描述", ms: "Penerangan" },
+  "common.describe_bundle": { en: "Describe your bundle or click 'Generate with AI'", zh: "描述您的套装或点击 AI 生成", ms: "Huraikan bundle anda atau klik 'Jana dengan AI'" },
 
   // Bundle page
   "bundle.price": { en: "Bundle Price (RM/box)", zh: "套装价格（RM/盒）", ms: "Harga Bundle (RM/kotak)" },
