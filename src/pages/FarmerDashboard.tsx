@@ -88,6 +88,7 @@ const FarmerDashboard = () => {
     return reasons.length > 0 ? reasons : null;
   };
 
+  return (
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
