@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
-import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
+import { IMPERFECT_REASONS, ImperfectReason, CropListing } from "@/contexts/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search, MapPin, Filter, Sparkles } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 const DISTANCE_OPTIONS_KEYS = [
@@ -61,7 +63,44 @@ const MarketplacePage = () => {
     }, [] as { location: string; distance: number; farmerName: string; sellerId: string }[])
     .sort((a, b) => a.distance - b.distance);
 
-  
+  // Smart recommendations
+  const recommendations = useMemo(() => {
+    const tagged: { crop: CropListing; tag: string }[] = [];
+    const usedIds = new Set<string>();
+
+    // Near you (distance <= 10km)
+    const nearby = [...crops]
+      .filter((c) => c.distanceKm <= 10 && c.quantity > 0)
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+    for (const c of nearby) {
+      if (tagged.length >= 2 || usedIds.has(c.id)) continue;
+      tagged.push({ crop: c, tag: "market.near_you" });
+      usedIds.add(c.id);
+    }
+
+    // Best deal (highest discount %)
+    const deals = [...crops]
+      .filter((c) => !c.isBundle && !c.isMysteryBox && c.quantity > 0)
+      .map((c) => ({ crop: c, discount: Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100) }))
+      .sort((a, b) => b.discount - a.discount);
+    for (const d of deals) {
+      if (tagged.length >= 4 || usedIds.has(d.crop.id) || d.discount < 10) continue;
+      tagged.push({ crop: d.crop, tag: "market.best_deal" });
+      usedIds.add(d.crop.id);
+    }
+
+    // Popular / recently added
+    const recent = [...crops]
+      .filter((c) => c.quantity > 0)
+      .sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
+    for (const c of recent) {
+      if (tagged.length >= 6 || usedIds.has(c.id)) continue;
+      tagged.push({ crop: c, tag: "market.popular" });
+      usedIds.add(c.id);
+    }
+
+    return tagged;
+  }, [crops]);
 
   return (
     <div className="min-h-screen">
@@ -90,6 +129,34 @@ const MarketplacePage = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {recommendations.length > 0 && (
+          <div className="mb-8">
+            <h2 className="font-heading font-bold text-foreground text-lg flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-primary" />
+              {t("market.recommended")}
+            </h2>
+            <ScrollArea className="w-full">
+              <div className="flex gap-4 pb-4">
+                {recommendations.map(({ crop, tag }) => (
+                  <div key={crop.id} className="min-w-[280px] max-w-[300px] flex-shrink-0">
+                    <Badge
+                      variant="secondary"
+                      className="mb-2 text-[10px] font-semibold"
+                    >
+                      {tag === "market.near_you" && "📍"} 
+                      {tag === "market.best_deal" && "🔥"} 
+                      {tag === "market.popular" && "⭐"} 
+                      {t(tag)}
+                    </Badge>
+                    <ProductCard crop={crop} />
+                  </div>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
         )}
 
