@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift } from "lucide-react";
+import { MapPin, ShoppingCart, Clock, Sprout, Package, Star, Timer, Gift, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistance, getExpiryInfo, getFreshnessInfo, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
 import { mockSellers } from "@/data/mockSellers";
@@ -17,7 +17,6 @@ import mysteryBoxImg from "@/assets/mystery-box.png";
 interface ProductCardProps {
   crop: CropListing;
 }
-
 
 const ProductCard = ({ crop }: ProductCardProps) => {
   const { addToCart } = useCart();
@@ -33,6 +32,7 @@ const ProductCard = ({ crop }: ProductCardProps) => {
   const initQty = isBundle ? 1 : 0.5;
   const [qty, setQty] = useState(initQty);
   const [qtyInput, setQtyInput] = useState(String(initQty));
+  const [expanded, setExpanded] = useState(false);
   const discount = isBundle ? 0 : Math.round(((crop.usualPrice - crop.discountPrice) / crop.usualPrice) * 100);
   const freshness = getFreshnessInfo(crop.harvestDate, language);
   const outOfStock = crop.quantity <= 0;
@@ -53,6 +53,8 @@ const ProductCard = ({ crop }: ProductCardProps) => {
     setQty(resetQty);
     setQtyInput(String(resetQty));
   };
+
+  const hasDescription = crop.description && crop.description.trim().length > 0;
 
   return (
     <div className="farm-card overflow-hidden group animate-fade-in-up">
@@ -145,6 +147,48 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         {crop.distanceKm && (
           <div className="text-xs text-muted-foreground">
             📍 {formatDistance(crop.distanceKm, language)} {language === "zh" ? "距离您" : t("product.from_you")}
+          </div>
+        )}
+
+        {/* Expandable Description */}
+        {hasDescription && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors py-1"
+            >
+              {expanded ? (
+                <>
+                  {t("common.hide_details")} <ChevronUp className="h-3.5 w-3.5" />
+                </>
+              ) : (
+                <>
+                  {t("common.view_details")} <ChevronDown className="h-3.5 w-3.5" />
+                </>
+              )}
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expanded ? "max-h-40 opacity-100 mt-1.5" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="bg-muted/50 rounded-lg p-3 border border-border/50">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+                    {t("common.description")}
+                  </span>
+                  {crop.isAiDescription && (
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 gap-0.5 border-primary/30 text-primary">
+                      <Sparkles className="h-2.5 w-2.5" /> {t("common.ai_generated")}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-foreground/80 leading-relaxed line-clamp-4 overflow-y-auto max-h-24">
+                  {crop.description}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
