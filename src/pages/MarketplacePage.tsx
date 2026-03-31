@@ -137,29 +137,36 @@ const MarketplacePage = () => {
 
         {user && recommendations.length > 0 && (
           <div className="mb-8">
-            <h2 className="font-heading font-bold text-foreground text-lg flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-primary" />
-              {t("market.recommended")}
-            </h2>
-            <ScrollArea className="w-full">
-              <div className="flex gap-4 pb-4">
-                {recommendations.map(({ crop, tag }) => (
-                  <div key={crop.id} className="min-w-[280px] max-w-[300px] flex-shrink-0">
-                    <Badge
-                      variant="secondary"
-                      className="mb-2 text-[10px] font-semibold"
-                    >
-                      {tag === "market.near_you" && "📍"} 
-                      {tag === "market.best_deal" && "🔥"} 
-                      {tag === "market.popular" && "⭐"} 
-                      {t(tag)}
-                    </Badge>
-                    <ProductCard crop={crop} />
+            <button
+              onClick={() => setShowRecommendations(!showRecommendations)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-input bg-background text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              {showRecommendations ? t("market.hide_recommendations") || "Hide Recommendations" : t("market.show_recommendations") || "✨ Show Recommendations"}
+            </button>
+            {showRecommendations && (
+              <div className="mt-4">
+                <ScrollArea className="w-full">
+                  <div className="flex gap-4 pb-4">
+                    {recommendations.map(({ crop, tag }) => (
+                      <div key={crop.id} className="min-w-[260px] max-w-[280px] flex-shrink-0">
+                        <Badge
+                          variant="secondary"
+                          className="mb-2 text-[10px] font-semibold"
+                        >
+                          {tag === "market.near_you" && "📍"} 
+                          {tag === "market.best_deal" && "🔥"} 
+                          {tag === "market.popular" && "⭐"} 
+                          {t(tag)}
+                        </Badge>
+                        <ProductCard crop={crop} />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
               </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            )}
           </div>
         )}
 
