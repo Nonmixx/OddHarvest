@@ -103,6 +103,8 @@ const translations: Record<string, Record<Language, string>> = {
   "market.search": { en: "Search crops...", zh: "搜索农产品...", ms: "Cari tanaman..." },
   "market.nearby": { en: "Nearby Farms", zh: "附近农场", ms: "Ladang Berdekatan" },
   "market.recommended": { en: "Recommended for You", zh: "为您推荐", ms: "Disyorkan untuk Anda" },
+  "market.show_recommendations": { en: "Show Recommendations", zh: "显示推荐", ms: "Tunjukkan Cadangan" },
+  "market.hide_recommendations": { en: "Hide Recommendations", zh: "隐藏推荐", ms: "Sembunyikan Cadangan" },
   "market.near_you": { en: "Near you", zh: "在您附近", ms: "Dekat anda" },
   "market.popular": { en: "Popular", zh: "热门", ms: "Popular" },
   "market.best_deal": { en: "Best deal", zh: "最佳优惠", ms: "Tawaran terbaik" },

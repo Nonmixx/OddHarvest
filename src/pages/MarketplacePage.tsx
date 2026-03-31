@@ -142,7 +142,7 @@ const MarketplacePage = () => {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-input bg-background text-sm font-medium text-foreground hover:bg-secondary transition-colors"
             >
               <Sparkles className="h-4 w-4 text-primary" />
-              {showRecommendations ? t("market.hide_recommendations") || "Hide Recommendations" : t("market.show_recommendations") || "✨ Show Recommendations"}
+              {showRecommendations ? t("market.hide_recommendations") : t("market.show_recommendations")}
             </button>
             {showRecommendations && (
               <div className="mt-4">
