@@ -59,6 +59,7 @@ const App = () => (
                   <Route path="/driver-dashboard" element={<DriverDashboard />} />
                   <Route path="/driver-deliveries" element={<DriverDeliveries />} />
                   <Route path="/driver-delivery/:id" element={<DriverDeliveryDetail />} />
+                  <Route path="/driver-navigate/:id" element={<DriverNavigationPage />} />
                   <Route path="/seller/:id" element={<SellerProfilePage />} />
                   <Route path="/add-crop" element={<AddCropPage />} />
                   <Route path="/add-bundle" element={<AddBundlePage />} />

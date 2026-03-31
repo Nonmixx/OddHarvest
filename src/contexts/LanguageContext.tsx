@@ -379,6 +379,17 @@ const translations: Record<string, Record<Language, string>> = {
   "driver.buyer": { en: "Buyer", zh: "买家", ms: "Pembeli" },
   "driver.delivery_fee": { en: "Delivery Fee", zh: "配送费", ms: "Yuran Penghantaran" },
   "driver.date": { en: "Date", zh: "日期", ms: "Tarikh" },
+  "driver.navigation": { en: "Navigation", zh: "导航", ms: "Navigasi" },
+  "driver.you": { en: "You", zh: "你", ms: "Anda" },
+  "driver.go_to_pickup": { en: "Go to Pickup Location", zh: "前往取货地点", ms: "Pergi ke Lokasi Pengambilan" },
+  "driver.go_to_dropoff": { en: "Go to Drop-off Location", zh: "前往送达地点", ms: "Pergi ke Lokasi Penghantaran" },
+  "driver.minutes": { en: "min", zh: "分钟", ms: "min" },
+  "driver.pickup_done": { en: "Picked Up", zh: "已取货", ms: "Telah Diambil" },
+  "driver.delivery_done": { en: "Delivered", zh: "已送达", ms: "Telah Dihantar" },
+  "driver.est_distance": { en: "Estimated Distance", zh: "预计距离", ms: "Anggaran Jarak" },
+  "driver.est_time": { en: "Estimated Time", zh: "预计时间", ms: "Anggaran Masa" },
+  "driver.navigate": { en: "Navigate", zh: "导航", ms: "Navigasi" },
+  "driver.seller": { en: "Seller", zh: "卖家", ms: "Penjual" },
 
   // Seller profile
   "seller.farm": { en: "Farm Seller", zh: "农场卖家", ms: "Penjual Ladang" },
