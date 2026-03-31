@@ -233,7 +233,7 @@ const FarmerDashboard = () => {
                       {!c.isBundle && !c.isMysteryBox && (
                         <button
                           onClick={() => navigate("/add-bundle")}
-                          className="text-[11px] font-medium text-accent-foreground bg-accent/10 hover:bg-accent/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                          className="text-[11px] font-medium text-primary bg-primary/15 hover:bg-primary/25 border border-primary/30 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
                         >
                           <Package className="h-3 w-3" /> {t("farmer.rescue_tip_bundle")}
                         </button>
