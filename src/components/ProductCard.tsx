@@ -56,8 +56,16 @@ const ProductCard = ({ crop }: ProductCardProps) => {
 
   const hasDescription = crop.description && crop.description.trim().length > 0;
 
+  // Urgent rescue: listed 5+ days, high stock, not bundle/mystery
+  const daysSinceListed = Math.floor((Date.now() - new Date(crop.harvestDate).getTime()) / (1000 * 60 * 60 * 24));
+  const isUrgentRescue = !isMysteryBox && crop.quantity > 0 && (
+    (daysSinceListed >= 5) ||
+    (daysSinceListed >= 3 && crop.quantity > 5 && !isBundle) ||
+    (crop.expiryDate && Math.floor((new Date(crop.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) <= 2)
+  );
+
   return (
-    <div className="farm-card overflow-hidden group animate-fade-in-up">
+    <div className={`farm-card overflow-hidden group animate-fade-in-up ${isUrgentRescue ? "ring-1 ring-destructive/30" : ""}`}>
       <div className="relative overflow-hidden">
         <img
           src={isMysteryBox ? mysteryBoxImg : crop.image}
@@ -72,6 +80,11 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         <span className="absolute top-3 right-3 bg-card/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
           {freshness.emoji} {freshness.label}
         </span>
+        {isUrgentRescue && (
+          <span className="absolute bottom-3 right-3 bg-destructive/90 text-destructive-foreground text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
+            <AlertTriangle className="h-3 w-3" /> {t("product.urgent_rescue")}
+          </span>
+        )}
         {isMysteryBox ? (
           <span className="absolute bottom-3 left-3 bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
             <Gift className="h-3 w-3" /> {t("product.mystery_box")}
@@ -83,6 +96,11 @@ const ProductCard = ({ crop }: ProductCardProps) => {
         ) : null}
       </div>
       <div className="p-4 space-y-2.5">
+        {isUrgentRescue && (
+          <p className="text-[11px] text-destructive/80 italic">
+            ⚠️ {t("product.help_prevent")}
+          </p>
+        )}
         <h3 className="font-heading font-bold text-foreground leading-tight">{tc(crop.name)}</h3>
 
         <div className="flex items-center gap-2">
