@@ -25,6 +25,7 @@ const DISTANCE_OPTIONS_KEYS = [
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
