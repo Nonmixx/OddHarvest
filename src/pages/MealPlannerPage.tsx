@@ -15,6 +15,7 @@ import {
   ArrowRight, Clock, Users, Loader2, Snowflake, AlertTriangle, Lightbulb,
   Timer, Wrench, GraduationCap,
 } from "lucide-react";
+import StepImage from "@/components/StepImage";
 import { toast } from "sonner";
 
 // ───────── Types ─────────
