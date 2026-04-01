@@ -324,7 +324,15 @@ const MealPlannerPage = () => {
           timeAvailable,
         },
       });
-      if (error) { toast.error(l("error")); return; }
+      if (error) {
+        const msg = error?.message || "";
+        if (msg.includes("402") || /credits depleted/i.test(msg)) {
+          toast.error("AI credits depleted. Please top up your Lovable AI usage.");
+        } else {
+          toast.error(l("error"));
+        }
+        return;
+      }
       if (data?.error) { toast.error(data.error); return; }
       const results = data?.preservations || [];
       setPreservationResults(results);
