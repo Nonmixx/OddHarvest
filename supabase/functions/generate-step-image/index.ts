@@ -20,8 +20,11 @@ serve(async (req) => {
       ? `food preservation step for "${dishName}"`
       : `cooking step for the dish "${dishName}"`;
 
-    const prompt = `Generate a realistic, appetizing food photography style image showing: Step ${stepNumber} of ${context}: "${stepDescription}". 
-The image should be a clean, well-lit overhead or 45-degree angle shot showing the action described. Use warm, natural lighting. Show ingredients, tools, and hands if relevant. Style: professional food blog photography, no text overlays.`;
+    const prompt = `Generate a realistic food photography image that EXACTLY matches this instruction: "${stepDescription}". This is step ${stepNumber} of ${context}. 
+
+CRITICAL: Show ONLY the specific ingredients and actions mentioned in the instruction above. Do NOT add any extra ingredients or items not described. If the instruction says "soy sauce", show soy sauce being added - not sugar or other seasonings. Match every detail precisely.
+
+Style: clean, well-lit 45-degree angle shot, warm natural lighting, professional food blog photography, no text overlays.`;
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
