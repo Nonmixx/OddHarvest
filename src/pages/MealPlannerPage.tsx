@@ -15,6 +15,7 @@ import {
   ArrowRight, Clock, Users, Loader2, Snowflake, AlertTriangle, Lightbulb,
   Timer, Wrench, GraduationCap,
 } from "lucide-react";
+import StepImage from "@/components/StepImage";
 import { toast } from "sonner";
 
 // ───────── Types ─────────
@@ -689,11 +690,21 @@ const MealPlannerPage = () => {
                         <h4 className="font-heading font-bold text-foreground mb-3 flex items-center gap-2">
                           <Wheat className="h-4 w-4 text-primary" /> {l("cooking_guide")}
                         </h4>
-                        <ol className="space-y-3">
+                        <ol className="space-y-4">
                           {meal.steps.map((step, sIdx) => (
-                            <li key={sIdx} className="flex gap-3">
-                              <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
-                              <p className="text-sm text-foreground pt-0.5">{step}</p>
+                            <li key={sIdx} className="space-y-2">
+                              <div className="flex gap-3">
+                                <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
+                                <p className="text-sm text-foreground pt-0.5">{step}</p>
+                              </div>
+                              <div className="ml-9">
+                                <StepImage
+                                  stepDescription={step}
+                                  dishName={meal.name}
+                                  stepNumber={sIdx + 1}
+                                  mode="meal"
+                                />
+                              </div>
                             </li>
                           ))}
                         </ol>
@@ -814,11 +825,21 @@ const MealPlannerPage = () => {
                                     <h5 className="font-heading font-bold text-foreground text-sm mb-3 flex items-center gap-2">
                                       <Wheat className="h-4 w-4 text-primary" /> {l("cooking_guide")}
                                     </h5>
-                                    <ol className="space-y-3">
+                                    <ol className="space-y-4">
                                       {method.steps.map((step, sIdx) => (
-                                        <li key={sIdx} className="flex gap-3">
-                                          <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
-                                          <p className="text-sm text-foreground pt-0.5">{step}</p>
+                                        <li key={sIdx} className="space-y-2">
+                                          <div className="flex gap-3">
+                                            <span className="shrink-0 h-6 w-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{sIdx + 1}</span>
+                                            <p className="text-sm text-foreground pt-0.5">{step}</p>
+                                          </div>
+                                          <div className="ml-9">
+                                            <StepImage
+                                              stepDescription={step}
+                                              dishName={`${item.foodItem} - ${method.name}`}
+                                              stepNumber={sIdx + 1}
+                                              mode="preservation"
+                                            />
+                                          </div>
                                         </li>
                                       ))}
                                     </ol>
