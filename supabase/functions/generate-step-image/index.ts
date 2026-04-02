@@ -51,6 +51,12 @@ Style: clean, well-lit 45-degree angle shot, warm natural lighting, professional
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "AI credits depleted", creditsDepleted: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       const text = await response.text();
       console.error("AI gateway error:", response.status, text);
       return new Response(
