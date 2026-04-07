@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import VoiceInput from "@/components/VoiceInput";
 
 const AddMysteryBoxPage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   const [name, setName] = useState("");
@@ -32,10 +34,10 @@ const AddMysteryBoxPage = () => {
       quantity: Number(qty),
       usualPrice: boxPrice,
       discountPrice: boxPrice,
-      farmLocation: "Your Farm",
-      state: "Selangor",
-      farmerName: "You",
-      sellerId: "seller-self",
+      farmLocation: user?.farmName || "Your Farm",
+      state: user?.state || "Selangor",
+      farmerName: user?.name || "You",
+      sellerId: user ? `seller-${user.id}` : "seller-self",
       sellerType: "farm",
       description: description || t("mystery.desc_placeholder"),
       harvestDate: new Date().toISOString(),

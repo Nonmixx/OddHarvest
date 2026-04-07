@@ -30,7 +30,7 @@ const Navbar = () => {
   const showMealPlanner = !user || user.role === "buyer";
 
   return (
-    <nav className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
+    <nav className="sticky top-0 z-[1100] bg-card/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <Leaf className="h-7 w-7 text-primary" />

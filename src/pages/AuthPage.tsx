@@ -29,21 +29,30 @@ const AuthPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      login(email, password, role);
-      const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
-      navigate(dest);
-    } else {
-      signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
+    try {
+      if (isLogin) {
+        await login(email, password, role);
+        const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
+        navigate(dest);
+      } else {
+        await signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
+        toast({
+          title: t("auth.signup_success_title"),
+          description: t("auth.signup_success_desc"),
+        });
+        // Reset to login mode so user can log in
+        setIsLogin(true);
+        setPassword("");
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       toast({
-        title: t("auth.signup_success_title"),
-        description: t("auth.signup_success_desc"),
+        title: "Authentication failed",
+        description: message,
+        variant: "destructive",
       });
-      // Reset to login mode so user can log in
-      setIsLogin(true);
-      setPassword("");
     }
   };
 

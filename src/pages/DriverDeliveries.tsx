@@ -1,14 +1,28 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, ChevronRight, Store } from "lucide-react";
-import { completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { DeliveryItem } from "@/data/mockDeliveries";
+import { listCompletedDeliveries } from "@/lib/repositories/deliveriesRepo";
 
 const DriverDeliveries = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [completedDeliveries, setCompletedDeliveries] = useState<DeliveryItem[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const rows = await listCompletedDeliveries();
+      if (mounted) setCompletedDeliveries(rows);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen">

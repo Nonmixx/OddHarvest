@@ -1,7 +1,14 @@
-project_id = "hkudzlarvontnstzjazg"
+# JWT verification: new keys (sb_publishable_...) are NOT JWTs — Edge Functions cannot verify them.
+# Deploy with JWT off: npm run deploy:functions
+# (Same as: npx supabase functions deploy <name> --no-verify-jwt)
+
+project_id = "hsdnzvbsmbdisqzwwqtp"
 
 [functions.meal-planner]
 verify_jwt = false
 
 [functions.food-preservation]
+verify_jwt = false
+
+[functions.generate-description]
 verify_jwt = false

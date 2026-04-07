@@ -9,6 +9,39 @@ interface VoiceInputProps {
   className?: string;
 }
 
+type SpeechRecognitionErrorCode =
+  | "aborted"
+  | "audio-capture"
+  | "bad-grammar"
+  | "language-not-supported"
+  | "network"
+  | "no-speech"
+  | "not-allowed"
+  | "service-not-allowed";
+
+type SpeechRecognitionErrorEventLike = {
+  error: SpeechRecognitionErrorCode | string;
+};
+
+type SpeechRecognitionResultEventLike = {
+  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+};
+
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  continuous: boolean;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onresult: ((event: SpeechRecognitionResultEventLike) => void) | null;
+  start: () => void;
+  stop: () => void;
+};
+
+type SpeechRecognitionConstructorLike = new () => SpeechRecognitionLike;
+
 const LANG_MAP: Record<string, string> = {
   en: "en-US",
   zh: "zh-CN",
@@ -76,7 +109,7 @@ const UI_TEXT = {
 const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
   const [isListening, setIsListening] = useState(false);
   const { language } = useLanguage();
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   const startListening = useCallback(() => {
     if (isListening && recognitionRef.current) {
@@ -85,7 +118,12 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
       return;
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (
+      window as unknown as { SpeechRecognition?: SpeechRecognitionConstructorLike; webkitSpeechRecognition?: SpeechRecognitionConstructorLike }
+    ).SpeechRecognition
+      ?? (
+        window as unknown as { SpeechRecognition?: SpeechRecognitionConstructorLike; webkitSpeechRecognition?: SpeechRecognitionConstructorLike }
+      ).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       toast.error(UI_TEXT.unsupported[language]);
@@ -110,7 +148,7 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
         recognitionRef.current = null;
       };
 
-      recognition.onerror = (event: any) => {
+      recognition.onerror = (event) => {
         setIsListening(false);
         recognitionRef.current = null;
         const errorMsg = event.error === "not-allowed"
@@ -123,7 +161,7 @@ const VoiceInput = ({ onResult, className = "" }: VoiceInputProps) => {
         toast.error(errorMsg);
       };
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         onResult(transcript);
         toast.success(`${UI_TEXT.heard[language]} "${transcript}"`);

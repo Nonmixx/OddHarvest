@@ -56,13 +56,13 @@ const ProductCard = ({ crop }: ProductCardProps) => {
 
   const hasDescription = crop.description && crop.description.trim().length > 0;
 
-  // Urgent rescue: listed 5+ days, high stock, not bundle/mystery
-  const daysSinceListed = Math.floor((Date.now() - new Date(crop.harvestDate).getTime()) / (1000 * 60 * 60 * 24));
-  const isUrgentRescue = !isMysteryBox && crop.quantity > 0 && (
-    (daysSinceListed >= 5) ||
-    (daysSinceListed >= 3 && crop.quantity > 5 && !isBundle) ||
-    (crop.expiryDate && Math.floor((new Date(crop.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) <= 2)
-  );
+  // Urgent rescue: only when expiring within 72 hours (3 days)
+  const isUrgentRescue = !isMysteryBox && crop.quantity > 0 && (() => {
+    if (!crop.expiryDate) return false;
+    const diffMs = new Date(crop.expiryDate).getTime() - Date.now();
+    const diffHours = diffMs / (1000 * 60 * 60);
+    return diffHours <= 72;
+  })();
 
   return (
     <div className={`farm-card overflow-hidden group animate-fade-in-up ${isUrgentRescue ? "ring-1 ring-destructive/30" : ""}`}>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
@@ -13,6 +13,7 @@ import { Search, MapPin, Filter, Sparkles } from "lucide-react";
 import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 const DISTANCE_OPTIONS_KEYS = [
@@ -22,6 +23,93 @@ const DISTANCE_OPTIONS_KEYS = [
   { label: "< 20 km", value: 20 },
   { label: "< 50 km", value: 50 },
 ];
+
+type LatLng = { lat: number; lng: number };
+
+const FALLBACK_USER_LOCATION_KL: LatLng = { lat: 3.139, lng: 101.6869 };
+const MAX_RECOMMENDATION_DISTANCE_KM = 60;
+
+// Coords for demo seller locations (used to compute "nearby" + recommendations)
+const FARM_LOCATION_COORDS: Record<string, LatLng> = {
+  "Ladang Pak Ali, Cameron Highlands": { lat: 4.4725, lng: 101.3891 },
+  "Kebun Mak Intan, Tanah Rata": { lat: 4.4693, lng: 101.3826 },
+  "Kebun Buah, Cameron Highlands": { lat: 4.4785, lng: 101.377 },
+  "Ladang Hijau, Ipoh": { lat: 4.5975, lng: 101.0901 },
+  "Ladang Jagung, Kota Bharu": { lat: 6.1254, lng: 102.2381 },
+  "Kebun Organik, Kundasang": { lat: 6.0268, lng: 116.5481 },
+  "Ladang Pisang, Johor Bahru": { lat: 1.4927, lng: 103.7414 },
+  "Home Garden, Petaling Jaya": { lat: 3.1073, lng: 101.6067 },
+  "Home Garden, Kajang": { lat: 2.993, lng: 101.787 },
+  "Kebun Sayur, Serdang": { lat: 2.9928, lng: 101.7124 },
+};
+
+const STATE_CENTER_COORDS: Record<string, LatLng> = {
+  "Kuala Lumpur": { lat: 3.139, lng: 101.6869 },
+  Selangor: { lat: 3.0738, lng: 101.5183 },
+  Pahang: { lat: 3.8077, lng: 103.326 },
+  Perak: { lat: 4.5975, lng: 101.0901 },
+  Johor: { lat: 1.4927, lng: 103.7414 },
+  Kelantan: { lat: 6.1254, lng: 102.2381 },
+  Sabah: { lat: 5.9804, lng: 116.0735 },
+  "Negeri Sembilan": { lat: 2.7297, lng: 101.9381 },
+  Penang: { lat: 5.4164, lng: 100.3327 },
+  Terengganu: { lat: 5.3302, lng: 103.1408 },
+  Melaka: { lat: 2.1896, lng: 102.2501 },
+  Kedah: { lat: 6.1248, lng: 100.3678 },
+  Sarawak: { lat: 1.5535, lng: 110.3593 },
+  Perlis: { lat: 6.4449, lng: 100.2048 },
+  Putrajaya: { lat: 2.9264, lng: 101.6964 },
+  Labuan: { lat: 5.2831, lng: 115.2308 },
+};
+
+function inferCoordsFromLocationText(text: string): LatLng | null {
+  const v = text.toLowerCase();
+  if (v.includes("kuala lumpur") || v.includes(" kl")) return { lat: 3.139, lng: 101.6869 };
+  if (v.includes("petaling jaya")) return { lat: 3.1073, lng: 101.6067 };
+  if (v.includes("subang jaya")) return { lat: 3.0565, lng: 101.5851 };
+  if (v.includes("kajang")) return { lat: 2.993, lng: 101.787 };
+  if (v.includes("serdang")) return { lat: 2.9928, lng: 101.7124 };
+  if (v.includes("cameron")) return { lat: 4.4725, lng: 101.3891 };
+  if (v.includes("ipoh")) return { lat: 4.5975, lng: 101.0901 };
+  if (v.includes("johor bahru")) return { lat: 1.4927, lng: 103.7414 };
+  if (v.includes("kota bharu")) return { lat: 6.1254, lng: 102.2381 };
+  if (v.includes("kundasang")) return { lat: 6.0268, lng: 116.5481 };
+  return null;
+}
+
+function resolveCropCoords(farmLocation: string, state: string): LatLng | null {
+  return (
+    FARM_LOCATION_COORDS[farmLocation] ||
+    inferCoordsFromLocationText(farmLocation) ||
+    STATE_CENTER_COORDS[state] ||
+    null
+  );
+}
+
+function haversineKm(a: LatLng, b: LatLng) {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const s =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+  return R * c;
+}
+
+function inferUserRegionState(userCoords: LatLng): "Kuala Lumpur" | "Selangor" | null {
+  // Rough bounding box around Kuala Lumpur Federal Territory
+  const inKL =
+    userCoords.lat >= 3.05 &&
+    userCoords.lat <= 3.25 &&
+    userCoords.lng >= 101.60 &&
+    userCoords.lng <= 101.80;
+  if (inKL) return "Kuala Lumpur";
+  return null;
+}
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
@@ -39,8 +127,103 @@ const MarketplacePage = () => {
   const [showMysteryOnly, setShowMysteryOnly] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
+  const [userCoords, setUserCoords] = useState<LatLng>(FALLBACK_USER_LOCATION_KL);
+  const [geoPermission, setGeoPermission] = useState<"unknown" | "granted" | "denied" | "prompt">("unknown");
 
-  let filtered = crops.filter((c) => {
+  useEffect(() => {
+    if (!user) return;
+    if (!("geolocation" in navigator)) return;
+    let watchId: number | null = null;
+
+    const startWatch = () => {
+      if (watchId != null) return;
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
+          // keep fallback (KL) for demo if denied/unavailable
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
+      );
+    };
+
+    // Ask permission early when marketplace loads (some browsers still require user gesture,
+    // but this will prompt on most).
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoPermission("granted");
+        setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        startWatch();
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
+        else setGeoPermission("prompt");
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
+    );
+
+    // If Permissions API is available, keep permission state in sync
+    (async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const perms: any = (navigator as any).permissions;
+        if (!perms?.query) return;
+        const status = await perms.query({ name: "geolocation" });
+        setGeoPermission(status.state);
+        status.onchange = () => setGeoPermission(status.state);
+        if (status.state === "granted") startWatch();
+      } catch {
+        // ignore
+      }
+    })();
+
+    return () => {
+      if (watchId != null) navigator.geolocation.clearWatch(watchId);
+    };
+  }, [user]);
+
+  const requestLocation = useCallback(() => {
+    if (!("geolocation" in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoPermission("granted");
+        setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
+        else setGeoPermission("prompt");
+      },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
+    );
+  }, []);
+
+  const cropsWithGeoDistance = useMemo(() => {
+    return crops.map((c) => {
+      const farm = resolveCropCoords(c.farmLocation, c.state);
+      if (!farm) {
+        // Still avoid false "nearby" when we have no reliable coordinates.
+        return { ...c, distanceKm: 999 };
+      }
+      const km = haversineKm(userCoords, farm);
+      const rounded = Math.max(1, Math.round(km * 10) / 10);
+      return { ...c, distanceKm: rounded };
+    });
+  }, [crops, userCoords]);
+
+  const userRegionState = useMemo(() => inferUserRegionState(userCoords), [userCoords]);
+
+  const cropsInReasonableRegion = useMemo(() => {
+    return cropsWithGeoDistance.filter((c) => {
+      if (c.distanceKm > MAX_RECOMMENDATION_DISTANCE_KM) return false;
+      if (!userRegionState) return true;
+      // Treat KL + Selangor as one metro region for recommendations
+      if (userRegionState === "Kuala Lumpur") return c.state === "Kuala Lumpur" || c.state === "Selangor";
+      return c.state === userRegionState;
+    });
+  }, [cropsWithGeoDistance, userRegionState]);
+
+
+  let filtered = cropsWithGeoDistance.filter((c) => {
     const translatedName = tc(c.name).toLowerCase();
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || translatedName.includes(search.toLowerCase());
     const matchState = stateFilter === "All" || c.state === stateFilter;
@@ -56,7 +239,7 @@ const MarketplacePage = () => {
   else if (sortBy === "freshness") filtered = [...filtered].sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
   else if (sortBy === "distance") filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
 
-  const nearbyFarms = crops
+  const nearbyFarms = cropsWithGeoDistance
     .filter((c) => c.distanceKm <= 10)
     .reduce((acc, c) => {
       if (!acc.find((f) => f.sellerId === c.sellerId)) {
@@ -72,7 +255,7 @@ const MarketplacePage = () => {
     const usedIds = new Set<string>();
 
     // Near you (distance <= 10km)
-    const nearby = [...crops]
+    const nearby = [...cropsInReasonableRegion]
       .filter((c) => c.distanceKm <= 10 && c.quantity > 0)
       .sort((a, b) => a.distanceKm - b.distanceKm);
     for (const c of nearby) {
@@ -82,7 +265,7 @@ const MarketplacePage = () => {
     }
 
     // Best deal (highest discount %)
-    const deals = [...crops]
+    const deals = [...cropsInReasonableRegion]
       .filter((c) => !c.isBundle && !c.isMysteryBox && c.quantity > 0)
       .map((c) => ({ crop: c, discount: Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100) }))
       .sort((a, b) => b.discount - a.discount);
@@ -93,7 +276,7 @@ const MarketplacePage = () => {
     }
 
     // Popular / recently added
-    const recent = [...crops]
+    const recent = [...cropsInReasonableRegion]
       .filter((c) => c.quantity > 0)
       .sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
     for (const c of recent) {
@@ -103,7 +286,7 @@ const MarketplacePage = () => {
     }
 
     return tagged;
-  }, [crops]);
+  }, [cropsInReasonableRegion]);
 
   return (
     <div className="min-h-screen">
@@ -113,6 +296,25 @@ const MarketplacePage = () => {
           <h1 className="text-3xl font-heading font-bold text-foreground mb-2">{t("market.title")}</h1>
           <p className="text-muted-foreground">{t("market.subtitle")}</p>
         </div>
+
+        {user && geoPermission !== "granted" && (
+          <div className="farm-card p-5 mb-8 border-primary/20 bg-farm-green-light">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="space-y-1">
+                <p className="font-heading font-bold text-foreground">{t("market.location_title")}</p>
+                <p className="text-sm text-muted-foreground">{t("market.location_desc")}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button className="rounded-full" onClick={requestLocation}>
+                  {t("market.enable_location")}
+                </Button>
+                {geoPermission === "denied" && (
+                  <span className="text-xs text-muted-foreground">{t("market.location_denied")}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {user && nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">

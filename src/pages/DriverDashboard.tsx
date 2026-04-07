@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
@@ -8,28 +8,30 @@ import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
-
-// Delivery requests are now per-seller within each order
-export const deliveryRequests = [
-  { id: "DEL-101", orderId: "ORD-007", crop: "Tomatoes (5kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Taman Melawati, KL", distance: 15, fee: 15, date: "5 Mar 2026", seller: "Pak Ali", buyer: "Lee Wei Ming" },
-  { id: "DEL-102", orderId: "ORD-007", crop: "Carrots (3kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Taman Melawati, KL", distance: 12, fee: 12, date: "5 Mar 2026", seller: "Mak Intan", buyer: "Lee Wei Ming" },
-  { id: "DEL-103", orderId: "ORD-008", crop: "Corn (10kg)", pickup: "Ladang Jagung, Kota Bharu", dropoff: "Kuantan, Pahang", distance: 25, fee: 25, date: "3 Mar 2026", seller: "Pak Murad", buyer: "Ravi Kumar" },
-];
-
-export const completedDeliveries = [
-  { id: "DEL-050", orderId: "ORD-004", crop: "Bananas (3kg)", pickup: "Ladang Pisang, Cameron Highlands", dropoff: "Subang Jaya, Selangor", distance: 7, fee: 7, date: "2 Mar 2026", seller: "Pak Ali", buyer: "Siti Aminah" },
-  { id: "DEL-051", orderId: "ORD-004", crop: "Spinach (2kg)", pickup: "Kebun Sayur, Serdang", dropoff: "Subang Jaya, Selangor", distance: 3, fee: 3, date: "2 Mar 2026", seller: "Encik Lim", buyer: "Siti Aminah" },
-  { id: "DEL-052", orderId: "ORD-001", crop: "Tomatoes (2kg)", pickup: "Ladang Pak Ali, Cameron Highlands", dropoff: "Petaling Jaya, Selangor", distance: 15, fee: 15, date: "28 Feb 2026", seller: "Pak Ali", buyer: "Ahmad Rizal" },
-  { id: "DEL-053", orderId: "ORD-001", crop: "Carrots (1kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Petaling Jaya, Selangor", distance: 12, fee: 12, date: "28 Feb 2026", seller: "Mak Intan", buyer: "Ahmad Rizal" },
-  { id: "DEL-054", orderId: "ORD-006", crop: "Carrots (2kg)", pickup: "Kebun Mak Intan, Tanah Rata", dropoff: "Kuala Terengganu", distance: 12, fee: 12, date: "25 Feb 2026", seller: "Mak Intan", buyer: "Noraini Bt Yusof" },
-];
+import { DeliveryItem } from "@/data/mockDeliveries";
+import { listCompletedDeliveries, listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
 
 const DriverDashboard = () => {
+  const [deliveryRequests, setDeliveryRequests] = useState<DeliveryItem[]>([]);
+  const [completedDeliveries, setCompletedDeliveries] = useState<DeliveryItem[]>([]);
   const [accepted, setAccepted] = useState<string[]>([]);
   const [rejected, setRejected] = useState<string[]>([]);
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const [req, done] = await Promise.all([listDeliveryRequests(), listCompletedDeliveries()]);
+      if (!mounted) return;
+      setDeliveryRequests(req);
+      setCompletedDeliveries(done);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);

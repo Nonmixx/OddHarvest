@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { translateContent } from "@/lib/contentTranslations";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeFoodPreservation, invokeMealPlanner } from "@/lib/geminiClient";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,10 @@ import {
   Timer, Wrench, GraduationCap,
 } from "lucide-react";
 import { toast } from "sonner";
+
+function formatEdgeFunctionInvokeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 // ───────── Types ─────────
 
@@ -150,7 +154,7 @@ const labels = {
   your_ingredients: { en: "Your Ingredients", zh: "您的食材", ms: "Bahan Anda" },
   ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
   error: { en: "Failed to generate results. Please try again.", zh: "生成结果失败。请再试一次。", ms: "Gagal menjana keputusan. Sila cuba lagi." },
-  no_ingredients: { en: "Add at least 2 ingredients to get started", zh: "添加至少2种食材以开始", ms: "Tambah sekurang-kurangnya 2 bahan untuk bermula" },
+  no_ingredients: { en: "Add at least 1 ingredient to get started", zh: "添加至少1种食材以开始", ms: "Tambah sekurang-kurangnya 1 bahan untuk bermula" },
 
   // mode toggle
   meal_mode: { en: "🍽️ Meal Mode", zh: "🍽️ 膳食模式", ms: "🍽️ Mod Hidangan" },
@@ -287,10 +291,14 @@ const MealPlannerPage = () => {
     setExpandedMeal(null);
     setSuggestedMeals([]);
     try {
-      const { data, error } = await supabase.functions.invoke("meal-planner", {
-        body: { ingredients: selectedIngredients, language },
+      const { data, error } = await invokeMealPlanner({
+        ingredients: selectedIngredients,
+        language,
       });
-      if (error) { toast.error(l("error")); return; }
+      if (error) {
+        toast.error(`${l("error")} (${formatEdgeFunctionInvokeError(error)})`);
+        return;
+      }
       if (data?.error) { toast.error(data.error); return; }
       const meals = data?.meals || [];
       setSuggestedMeals(meals);
@@ -306,16 +314,17 @@ const MealPlannerPage = () => {
     setExpandedMethod(null);
     setPreservationResults([]);
     try {
-      const { data, error } = await supabase.functions.invoke("food-preservation", {
-        body: {
-          ingredients: selectedIngredients,
-          language,
-          tools: selectedTools,
-          skillLevel,
-          timeAvailable,
-        },
+      const { data, error } = await invokeFoodPreservation({
+        ingredients: selectedIngredients,
+        language,
+        tools: selectedTools,
+        skillLevel,
+        timeAvailable,
       });
-      if (error) { toast.error(l("error")); return; }
+      if (error) {
+        toast.error(`${l("error")} (${formatEdgeFunctionInvokeError(error)})`);
+        return;
+      }
       if (data?.error) { toast.error(data.error); return; }
       const results = data?.preservations || [];
       setPreservationResults(results);
@@ -565,13 +574,13 @@ const MealPlannerPage = () => {
         <div className="mb-6">
           <Button
             onClick={handleGenerate}
-            disabled={selectedIngredients.length < 2 || isLoading}
+            disabled={selectedIngredients.length < 1 || isLoading}
             className="w-full rounded-full"
             size="lg"
           >
             {isLoading ? (
               <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {mode === "meal" ? l("generating") : l("pres_generating")}</>
-            ) : selectedIngredients.length < 2 ? (
+            ) : selectedIngredients.length < 1 ? (
               l("no_ingredients")
             ) : mode === "meal" ? (
               l("generate")

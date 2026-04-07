@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
@@ -9,22 +9,125 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, ChevronRight, Trash2, User, Timer, Gift, AlertTriangle, ArrowDown, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS } from "@/contexts/CartContext";
-import { formatDistance, getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
+import { getPriceUnitLabel, getUnitLabel } from "@/lib/freshness";
+import type { CropListing } from "@/contexts/CartContext";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka"];
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
-  const { crops, updateCrop, removeCrop } = useCropInventory();
+  const { crops, addCrop, updateCrop, removeCrop } = useCropInventory();
+  const { user } = useAuth();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [editCropId, setEditCropId] = useState<string | null>(null);
-  const [editData, setEditData] = useState<any>(null);
+  const [editData, setEditData] = useState<Partial<CropListing> | null>(null);
+  const mySellerId = user ? `seller-${user.id}` : "seller-self";
 
-  const openEdit = (crop: any) => {
+  const ownedCrops = useMemo(
+    () => crops.filter((c) => c.sellerId === mySellerId),
+    [crops, mySellerId]
+  );
+
+  useEffect(() => {
+    if (!user || user.role !== "farmer") return;
+    if (ownedCrops.length > 0) return;
+    const flag = `oddharvest.starter-seeded.${mySellerId}`;
+    if (localStorage.getItem(flag) === "1") return;
+
+    const now = Date.now();
+    const daysAgo = (d: number) => new Date(now - d * 24 * 60 * 60 * 1000).toISOString();
+    const daysLater = (d: number) => new Date(now + d * 24 * 60 * 60 * 1000).toISOString();
+    const baseLocation = user.farmName || user.location || "Setapak, Kuala Lumpur";
+    const baseState = user.state || "Kuala Lumpur";
+
+    const starters: CropListing[] = [
+      {
+        id: crypto.randomUUID(),
+        name: "Cherry Tomatoes",
+        image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&h=300&fit=crop",
+        quantity: 52,
+        usualPrice: 6.5,
+        discountPrice: 5.9,
+        farmLocation: baseLocation,
+        state: baseState,
+        farmerName: user.name,
+        sellerId: mySellerId,
+        sellerType: user.sellerType || "farm",
+        description: "Home-grown cherry tomatoes from your latest harvest.",
+        harvestDate: daysAgo(6), // old listing -> should trigger listed-long + low-discount alert
+        expiryDate: daysLater(5),
+        distanceKm: 3,
+        imperfectReason: "irregular_shape",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Cucumbers (Oversized)",
+        image: "https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=400&h=300&fit=crop",
+        quantity: 35,
+        usualPrice: 4,
+        discountPrice: 3.6,
+        farmLocation: baseLocation,
+        state: baseState,
+        farmerName: user.name,
+        sellerId: mySellerId,
+        sellerType: user.sellerType || "farm",
+        description: "Crunchy oversized cucumbers, great for salads and pickles.",
+        harvestDate: daysAgo(4), // slow-moving style
+        expiryDate: daysLater(3),
+        distanceKm: 3,
+        imperfectReason: "too_large",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Spinach (Leafy Overgrowth)",
+        image: "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop",
+        quantity: 10,
+        usualPrice: 4.5,
+        discountPrice: 2.8,
+        farmLocation: baseLocation,
+        state: baseState,
+        farmerName: user.name,
+        sellerId: mySellerId,
+        sellerType: user.sellerType || "farm",
+        description: "Fresh leafy spinach harvested this week.",
+        harvestDate: daysAgo(2), // healthier listing (should usually avoid rescue alerts)
+        expiryDate: daysLater(2),
+        distanceKm: 3,
+        imperfectReason: "too_large",
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Garden Fresh Mix",
+        image: "https://images.unsplash.com/photo-1518843875459-f738682238a6?w=400&h=300&fit=crop",
+        quantity: 8,
+        usualPrice: 11,
+        discountPrice: 11,
+        farmLocation: baseLocation,
+        state: baseState,
+        farmerName: user.name,
+        sellerId: mySellerId,
+        sellerType: user.sellerType || "farm",
+        description: "A seasonal mixed veggie bundle from your farm.",
+        harvestDate: daysAgo(1),
+        expiryDate: daysLater(4),
+        distanceKm: 3,
+        imperfectReason: "irregular_shape",
+        isBundle: true,
+        bundleContents: ["Cherry Tomatoes", "Cucumbers", "Spinach"],
+        bundleWeight: 3,
+      },
+    ];
+
+    starters.forEach((s) => addCrop(s));
+    localStorage.setItem(flag, "1");
+  }, [addCrop, crops, mySellerId, ownedCrops.length, user]);
+
+  const openEdit = (crop: CropListing) => {
     setEditCropId(crop.id);
     setEditData({
       name: crop.name, quantity: crop.quantity, usualPrice: crop.usualPrice,
@@ -67,7 +170,7 @@ const FarmerDashboard = () => {
     return `${diffDays}d`;
   };
 
-  const getRescueAlert = (crop: any) => {
+  const getRescueAlert = (crop: CropListing) => {
     const reasons: string[] = [];
     const daysSinceListed = Math.floor((Date.now() - new Date(crop.harvestDate).getTime()) / (1000 * 60 * 60 * 24));
     // Low stock movement (high quantity remaining after several days)
@@ -111,7 +214,7 @@ const FarmerDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={Sprout} label={t("farmer.listed")} value={crops.length} />
+          <StatCard icon={Sprout} label={t("farmer.listed")} value={ownedCrops.length} />
           <div className="cursor-pointer" onClick={() => navigate("/farmer-sold-crops")}>
             <StatCard icon={Package} label={t("farmer.sold")} value={8} color="bg-farm-orange-light" />
           </div>
@@ -151,7 +254,7 @@ const FarmerDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("farmer.listings")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {crops.map((c) => {
+          {ownedCrops.map((c) => {
             const expiryLabel = getExpiryLabel(c.expiryDate);
             const rescueReasons = getRescueAlert(c);
             return (

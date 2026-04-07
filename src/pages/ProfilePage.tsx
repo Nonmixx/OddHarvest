@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera, Home } from "lucide-react";
+import { User, MapPin, Phone, Sprout, ShoppingBag, Truck, Save, Camera, Home, Building2, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import VoiceInput from "@/components/VoiceInput";
 
@@ -29,6 +29,9 @@ const ProfilePage = () => {
   const [licenseNo, setLicenseNo] = useState(user?.licenseNo || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
   const [preferredPickupArea, setPreferredPickupArea] = useState(user?.preferredPickupArea || "");
+  const [bankName, setBankName] = useState(user?.bankName || "");
+  const [bankAccountHolder, setBankAccountHolder] = useState(user?.bankAccountHolder || "");
+  const [bankAccountNumber, setBankAccountNumber] = useState(user?.bankAccountNumber || "");
 
   useEffect(() => {
     if (user) {
@@ -45,11 +48,21 @@ const ProfilePage = () => {
       setLicenseNo(user.licenseNo || "");
       setProfilePicture(user.profilePicture || "");
       setPreferredPickupArea(user.preferredPickupArea || "");
+      setBankName(user.bankName || "");
+      setBankAccountHolder(user.bankAccountHolder || "");
+      setBankAccountNumber(user.bankAccountNumber || "");
     }
   }, [user]);
 
   const roleIcon = user?.role === "farmer" ? Sprout : user?.role === "driver" ? Truck : ShoppingBag;
   const roleLabel = user?.role === "farmer" ? t("profile.seller") : user?.role === "driver" ? t("profile.driver") : t("profile.buyer");
+
+  const maskedAccountNumber = useMemo(() => {
+    const digits = (bankAccountNumber || "").replace(/\s+/g, "");
+    if (!digits) return "";
+    if (digits.length <= 4) return digits;
+    return `•••• •••• •••• ${digits.slice(-4)}`;
+  }, [bankAccountNumber]);
 
   const handleProfilePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,10 +84,28 @@ const ProfilePage = () => {
   const redirectTo = searchParams.get("redirect");
 
   const handleSave = () => {
+    const accDigits = bankAccountNumber.replace(/\s+/g, "");
+    const isPayoutRole = user?.role === "buyer" || user?.role === "driver";
+    if (isPayoutRole) {
+      const anyFilled = Boolean(bankName.trim() || bankAccountHolder.trim() || accDigits.trim());
+      if (anyFilled) {
+        const digitsOnly = /^\d+$/.test(accDigits);
+        if (!bankName.trim() || !bankAccountHolder.trim() || !accDigits.trim()) {
+          toast.error(t("profile.bank_required"));
+          return;
+        }
+        if (!digitsOnly || accDigits.length < 6 || accDigits.length > 20) {
+          toast.error(t("profile.bank_invalid_account"));
+          return;
+        }
+      }
+    }
+
     updateProfile({
       name, email, phone, location, address, state,
       farmName, yearsExp, cropsGrown,
       vehicleType, licenseNo, profilePicture, preferredPickupArea,
+      bankName, bankAccountHolder, bankAccountNumber,
     });
     toast.success(t("profile.updated") + " ✅");
     if (redirectTo) {
@@ -244,6 +275,44 @@ const ProfilePage = () => {
                     <Input placeholder={t("profile.license_placeholder")} value={licenseNo} onChange={(e) => setLicenseNo(e.target.value)} />
                     <VoiceInput onResult={(text) => setLicenseNo(text)} />
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Payout / Bank Details (BUYER + DRIVER) */}
+          {(user?.role === "buyer" || user?.role === "driver") && (
+            <div className="farm-card p-6 space-y-4">
+              <h2 className="font-heading font-bold text-foreground flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-primary" />
+                {t("profile.payout_details")}
+              </h2>
+
+              {maskedAccountNumber && (
+                <div className="text-xs text-muted-foreground flex items-center gap-2">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  <span>{t("profile.saved_account")}: {maskedAccountNumber}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>{t("profile.bank_name")}</Label>
+                  <Input placeholder={t("profile.bank_name_placeholder")} value={bankName} onChange={(e) => setBankName(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t("profile.account_holder")}</Label>
+                  <Input placeholder={t("profile.account_holder_placeholder")} value={bankAccountHolder} onChange={(e) => setBankAccountHolder(e.target.value)} />
+                </div>
+                <div className="md:col-span-2 space-y-1.5">
+                  <Label>{t("profile.account_number")}</Label>
+                  <Input
+                    inputMode="numeric"
+                    placeholder={t("profile.account_number_placeholder")}
+                    value={bankAccountNumber}
+                    onChange={(e) => setBankAccountNumber(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">{t("profile.bank_hint")}</p>
                 </div>
               </div>
             </div>

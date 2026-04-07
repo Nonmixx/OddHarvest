@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { geminiGenerateText } from "../_shared/googleGemini.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,15 +7,38 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function json200(body: Record<string, unknown>) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { ingredients, language, tools, skillLevel, timeAvailable } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
+      return json200({ error: "Invalid JSON body.", preservations: [] });
+    }
+    const ingredients = Array.isArray(body.ingredients) ? body.ingredients : [];
+    const { language, tools, skillLevel, timeAvailable } = body;
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+    if (!GOOGLE_API_KEY) {
+      return json200({
+        error:
+          "GOOGLE_API_KEY is not set. In Supabase: Project Settings → Edge Functions → Secrets, add GOOGLE_API_KEY, then redeploy this function.",
+        preservations: [],
+      });
+    }
+    if (ingredients.length === 0) {
+      return json200({ error: "Add at least one ingredient.", preservations: [] });
+    }
 
     const langLabel =
       language === "zh" ? "Chinese" : language === "ms" ? "Malay" : "English";
@@ -64,50 +88,28 @@ Rules:
 - All text must be in ${langLabel}
 - Consider Malaysian/Asian preservation techniques when relevant (e.g., sambal, acar, jeruk)`;
 
-    const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: systemPrompt },
-            {
-              role: "user",
-              content: `I need to preserve these food items: ${ingredients.join(", ")}. Please suggest preservation methods and upcycling ideas.`,
-            },
-          ],
-        }),
-      }
-    );
+    const userContent =
+      `I need to preserve these food items: ${ingredients.join(", ")}. Please suggest preservation methods and upcycling ideas.`;
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits depleted. Please top up your Lovable AI usage." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
-      return new Response(
-        JSON.stringify({ error: "AI service error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const result = await geminiGenerateText({
+      apiKey: GOOGLE_API_KEY,
+      systemInstruction: systemPrompt,
+      userContent,
+      temperature: 0.4,
+      jsonMode: true,
+    });
+
+    if (!result.ok) {
+      // Use HTTP 200 + { error } so supabase.functions.invoke returns parsed JSON (non-2xx often hides body in client).
+      const msg =
+        result.status === 429
+          ? "Rate limit exceeded. Please try again in a moment."
+          : result.userMessage || "AI service error";
+      console.error("Google AI error:", result.status, result.body);
+      return json200({ error: msg, preservations: [] });
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "[]";
+    const content = result.text || "[]";
 
     let preservations;
     try {
@@ -123,9 +125,9 @@ Rules:
     });
   } catch (e) {
     console.error("food-preservation error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json200({
+      error: e instanceof Error ? e.message : "Unknown error",
+      preservations: [],
+    });
   }
 });

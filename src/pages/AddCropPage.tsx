@@ -8,18 +8,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ImagePlus, X, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeGenerateDescription } from "@/lib/geminiClient";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka", "Negeri Sembilan", "Perlis", "Sarawak", "Kuala Lumpur", "Putrajaya", "Labuan"];
 
 const AddCropPage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
+  const { user } = useAuth();
   const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
@@ -62,10 +64,18 @@ const AddCropPage = () => {
     }
     setGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-description", {
-        body: { name, imperfectReason: reason, harvestDate, isBundle: false, language },
+      const { data, error } = await invokeGenerateDescription({
+        name,
+        imperfectReason: reason,
+        harvestDate,
+        isBundle: false,
+        language,
       });
       if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
       if (data?.description) {
         setDesc(data.description);
         setIsAiDesc(true);
@@ -91,8 +101,8 @@ const AddCropPage = () => {
       discountPrice: Number(discPrice),
       farmLocation: location,
       state,
-      farmerName: "You",
-      sellerId: "seller-self",
+      farmerName: user?.name || "You",
+      sellerId: user ? `seller-${user.id}` : "seller-self",
       sellerType: "farm",
       description: desc,
       harvestDate: new Date(harvestDate).toISOString(),

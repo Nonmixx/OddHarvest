@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
@@ -5,11 +6,28 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
+import { OrderData } from "@/data/mockOrders";
+import { listOrders } from "@/lib/repositories/ordersRepo";
 
 const BuyerDashboard = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
+  const [orders, setOrders] = useState<OrderData[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const rows = await listOrders();
+      if (mounted) setOrders(rows);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const ordersCompleted = useMemo(() => orders.length, [orders]);
+  const cropsPurchased = useMemo(() => orders.reduce((sum, o) => sum + o.kg, 0), [orders]);
 
   return (
     <div className="min-h-screen">
@@ -21,9 +39,9 @@ const BuyerDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard icon={ShoppingBag} label={t("buyer.orders_completed")} value={6} />
-          <StatCard icon={Package} label={t("buyer.crops_purchased")} value={25} color="bg-farm-orange-light" />
-          <StatCard icon={Recycle} label={t("buyer.crops_rescued")} value={25} />
+          <StatCard icon={ShoppingBag} label={t("buyer.orders_completed")} value={ordersCompleted} />
+          <StatCard icon={Package} label={t("buyer.crops_purchased")} value={cropsPurchased} color="bg-farm-orange-light" />
+          <StatCard icon={Recycle} label={t("buyer.crops_rescued")} value={cropsPurchased} />
         </div>
 
         <div className="farm-card p-6 mb-8 bg-farm-green-light border-primary/20">
@@ -55,16 +73,11 @@ const BuyerDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("buyer.recent_orders")}</h2>
         <div className="space-y-3">
-          {[{ id: "ORD-001", items: "Tomatoes, Carrots", total: 15.5, date: "2026-03-05", status: "Delivered", kg: 5 },
-          { id: "ORD-002", items: "Corn, Cucumbers", total: 8.4, date: "2026-03-03", status: "Delivered", kg: 6 },
-          { id: "ORD-003", items: "Apples, Bell Peppers", total: 22, date: "2026-02-28", status: "Picked Up", kg: 4 },
-          { id: "ORD-004", items: "Bananas, Spinach", total: 10.5, date: "2026-02-25", status: "Delivered", kg: 5 },
-          { id: "ORD-005", items: "Tomatoes, Corn", total: 12, date: "2026-02-20", status: "Picked Up", kg: 3 },
-          { id: "ORD-006", items: "Carrots", total: 5, date: "2026-02-15", status: "Delivered", kg: 2 }].map((o) =>
+          {orders.map((o) =>
             <div key={o.id} className="farm-card p-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/order/${o.id}`)}>
               <div>
                 <p className="font-heading font-bold text-foreground text-sm">{o.id}</p>
-                <p className="text-xs text-muted-foreground">{tc(o.items)}</p>
+                <p className="text-xs text-muted-foreground">{tc(o.items.map((it) => it.name).join(", "))}</p>
                 <p className="text-xs text-muted-foreground">{o.date} · {o.kg} {t("buyer.kg_rescued")}</p>
               </div>
               <div className="text-right">

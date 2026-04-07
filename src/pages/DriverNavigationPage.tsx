@@ -1,27 +1,45 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MapPin, Navigation, Truck, Route, Clock, CircleDot, CheckCircle2 } from "lucide-react";
-import { deliveryRequests } from "@/pages/DriverDashboard";
+import { ArrowLeft, CheckCircle2, Clock, ExternalLink, Route } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
+import DriverRouteMap from "@/components/maps/DriverRouteMap";
+import { DeliveryItem } from "@/data/mockDeliveries";
+import { listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
 
-// Simulated coordinates for demo
+// Simulated coordinates for demo (aligned with KL/Klang Valley pickup/dropoff in DriverDashboard)
 const locationCoords: Record<string, { lat: number; lng: number }> = {
-  "Ladang Pak Ali, Cameron Highlands": { lat: 4.4725, lng: 101.3891 },
-  "Kebun Mak Intan, Tanah Rata": { lat: 4.4693, lng: 101.3826 },
-  "Ladang Jagung, Kota Bharu": { lat: 6.1254, lng: 102.2381 },
+  "Chow Kit Wet Market, Kuala Lumpur": { lat: 3.1674, lng: 101.6982 },
+  "Petaling Street, Kuala Lumpur": { lat: 3.1422, lng: 101.6970 },
+  "Pasar Seni, Kuala Lumpur": { lat: 3.1426, lng: 101.6959 },
+  "KL Sentral, Kuala Lumpur": { lat: 3.1349, lng: 101.6861 },
+  "KLCC, Kuala Lumpur": { lat: 3.1579, lng: 101.7123 },
+  "Bukit Bintang, Kuala Lumpur": { lat: 3.1466, lng: 101.7113 },
+  "Bangsar, Kuala Lumpur": { lat: 3.1319, lng: 101.6656 },
+  "Sri Petaling, Kuala Lumpur": { lat: 3.0656, lng: 101.6896 },
+  "Wangsa Maju, Kuala Lumpur": { lat: 3.2038, lng: 101.7318 },
+  "Kebun Sayur, Serdang": { lat: 2.9928, lng: 101.7124 },
+  "Seri Kembangan Town Centre, Selangor": { lat: 3.0218, lng: 101.7055 },
+  // Legacy keys kept for other demo pages / translations
   "Taman Melawati, KL": { lat: 3.2148, lng: 101.7501 },
-  "Kuantan, Pahang": { lat: 3.8077, lng: 103.326 },
   "Petaling Jaya, Selangor": { lat: 3.1073, lng: 101.6067 },
   "Subang Jaya, Selangor": { lat: 3.0565, lng: 101.5851 },
+  "Kuantan, Pahang": { lat: 3.8077, lng: 103.326 },
+  "Ladang Jagung, Kota Bharu": { lat: 6.1254, lng: 102.2381 },
 };
 
-// Simulated driver location (KL area)
-const driverLocation = { lat: 3.139, lng: 101.6869 };
+// Fallback: Kuala Lumpur city centre when GPS unavailable
+const fallbackDriverLocation = { lat: 3.139, lng: 101.6869 };
+
+function buildGoogleMapsDirectionsUrl(origin: { lat: number; lng: number }, destination: { lat: number; lng: number }) {
+  const originStr = `${origin.lat},${origin.lng}`;
+  const destStr = `${destination.lat},${destination.lng}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originStr)}&destination=${encodeURIComponent(destStr)}&travelmode=driving`;
+}
 
 const DriverNavigationPage = () => {
   const { id } = useParams();
@@ -29,16 +47,41 @@ const DriverNavigationPage = () => {
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [currentStep, setCurrentStep] = useState<"to_pickup" | "to_dropoff">("to_pickup");
+  const [driverLocation, setDriverLocation] = useState(fallbackDriverLocation);
+  const [routeInfo, setRouteInfo] = useState<{ distanceKm: number; etaMinutes: number } | null>(null);
+  const [deliveryRequests, setDeliveryRequests] = useState<DeliveryItem[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const req = await listDeliveryRequests();
+      if (mounted) setDeliveryRequests(req);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const delivery = deliveryRequests.find((d) => d.id === id);
 
   const pickupCoord = delivery ? locationCoords[delivery.pickup] || { lat: 3.2, lng: 101.7 } : null;
   const dropoffCoord = delivery ? locationCoords[delivery.dropoff] || { lat: 3.1, lng: 101.6 } : null;
 
-  // Estimate time: ~1.5 min per km
-  const estTimeToPickup = delivery ? Math.round(delivery.distance * 0.8 * 1.5) : 0;
-  const estTimeToDropoff = delivery ? Math.round(delivery.distance * 1.5) : 0;
-  const distToPickup = delivery ? Math.round(delivery.distance * 0.8) : 0;
+  useEffect(() => {
+    if (!("geolocation" in navigator)) return;
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setDriverLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => {
+        // keep fallback location
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  const target = currentStep === "to_pickup" ? "pickup" : "dropoff";
 
   if (!delivery) {
     return (
@@ -62,6 +105,9 @@ const DriverNavigationPage = () => {
     navigate("/driver-dashboard");
   };
 
+  const destination = currentStep === "to_pickup" ? pickupCoord : dropoffCoord;
+  const externalNavUrl = destination ? buildGoogleMapsDirectionsUrl(driverLocation, destination) : null;
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -75,69 +121,31 @@ const DriverNavigationPage = () => {
           <Badge className="bg-primary/20 text-primary border-primary/30">{delivery.id}</Badge>
         </div>
 
-        {/* Map Visual */}
-        <div className="relative w-full h-64 sm:h-80 rounded-2xl bg-muted/30 border border-border overflow-hidden mb-6">
-          {/* Simulated map grid */}
-          <div className="absolute inset-0 opacity-10">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={`h-${i}`} className="absolute w-full border-t border-foreground/20" style={{ top: `${(i + 1) * 10}%` }} />
-            ))}
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div key={`v-${i}`} className="absolute h-full border-l border-foreground/20" style={{ left: `${(i + 1) * 10}%` }} />
-            ))}
-          </div>
-
-          {/* Route line - SVG */}
-          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Driver to pickup */}
-            <line
-              x1="20" y1="70" x2="50" y2="25"
-              stroke="hsl(var(--primary))"
-              strokeWidth="0.8"
-              strokeDasharray={currentStep === "to_pickup" ? "2,1" : "none"}
-              opacity={currentStep === "to_pickup" ? 1 : 0.3}
+        {/* Live Map */}
+        {pickupCoord && dropoffCoord ? (
+          <div className="mb-4 space-y-3">
+            <DriverRouteMap
+              driver={driverLocation}
+              pickup={pickupCoord}
+              dropoff={dropoffCoord}
+              target={target}
+              onRouteInfo={setRouteInfo}
             />
-            {/* Pickup to dropoff */}
-            <line
-              x1="50" y1="25" x2="80" y2="65"
-              stroke="hsl(var(--accent))"
-              strokeWidth="0.8"
-              strokeDasharray={currentStep === "to_dropoff" ? "2,1" : "none"}
-              opacity={currentStep === "to_dropoff" ? 1 : 0.3}
-            />
-          </svg>
-
-          {/* Driver marker */}
-          <div className="absolute flex flex-col items-center" style={{ left: "18%", top: "65%" }}>
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-lg ring-4 ring-primary/20 animate-pulse">
-              <Truck className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-[10px] font-bold text-primary mt-1 bg-background/80 px-1.5 rounded">{t("driver.you")}</span>
+            {externalNavUrl ? (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="rounded-full"
+                  onClick={() => window.open(externalNavUrl, "_blank", "noopener,noreferrer")}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" /> {t("driver.navigate")}
+                </Button>
+              </div>
+            ) : null}
           </div>
-
-          {/* Pickup marker */}
-          <div className="absolute flex flex-col items-center" style={{ left: "47%", top: "18%" }}>
-            <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-lg ring-4 ${currentStep === "to_pickup" ? "bg-primary ring-primary/20" : "bg-muted ring-muted-foreground/10"}`}>
-              <MapPin className={`h-5 w-5 ${currentStep === "to_pickup" ? "text-primary-foreground" : "text-muted-foreground"}`} />
-            </div>
-            <span className="text-[10px] font-bold text-foreground mt-1 bg-background/80 px-1.5 rounded max-w-[80px] truncate">{t("driver.pickup")}</span>
-          </div>
-
-          {/* Dropoff marker */}
-          <div className="absolute flex flex-col items-center" style={{ left: "76%", top: "58%" }}>
-            <div className={`h-10 w-10 rounded-full flex items-center justify-center shadow-lg ring-4 ${currentStep === "to_dropoff" ? "bg-accent ring-accent/20" : "bg-muted ring-muted-foreground/10"}`}>
-              <Navigation className={`h-5 w-5 ${currentStep === "to_dropoff" ? "text-accent-foreground" : "text-muted-foreground"}`} />
-            </div>
-            <span className="text-[10px] font-bold text-foreground mt-1 bg-background/80 px-1.5 rounded max-w-[80px] truncate">{t("driver.dropoff")}</span>
-          </div>
-
-          {/* Legend */}
-          <div className="absolute bottom-3 left-3 bg-background/90 backdrop-blur rounded-lg px-3 py-2 flex gap-3 text-[10px] border border-border">
-            <span className="flex items-center gap-1"><CircleDot className="h-3 w-3 text-primary" /> {t("driver.you")}</span>
-            <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {t("driver.pickup")}</span>
-            <span className="flex items-center gap-1"><Navigation className="h-3 w-3 text-accent" /> {t("driver.dropoff")}</span>
-          </div>
-        </div>
+        ) : null}
 
         {/* Route Steps */}
         <div className="space-y-4 mb-6">
@@ -158,10 +166,12 @@ const DriverNavigationPage = () => {
               <p className="text-xs text-muted-foreground">{t("driver.seller")}: {delivery.seller}</p>
               <div className="flex gap-4 mt-2">
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Route className="h-3 w-3" /> {formatDistance(distToPickup, language)}
+                  <Route className="h-3 w-3" />{" "}
+                  {formatDistance(routeInfo && currentStep === "to_pickup" ? routeInfo.distanceKm : Math.round(delivery.distance * 0.8), language)}
                 </span>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> ~{estTimeToPickup} {t("driver.minutes")}
+                  <Clock className="h-3 w-3" /> ~{routeInfo && currentStep === "to_pickup" ? routeInfo.etaMinutes : Math.round(delivery.distance * 0.8 * 1.5)}{" "}
+                  {t("driver.minutes")}
                 </span>
               </div>
             </div>
@@ -185,10 +195,12 @@ const DriverNavigationPage = () => {
               <p className="text-xs text-muted-foreground">{t("driver.buyer")}: {delivery.buyer}</p>
               <div className="flex gap-4 mt-2">
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Route className="h-3 w-3" /> {formatDistance(delivery.distance, language)}
+                  <Route className="h-3 w-3" />{" "}
+                  {formatDistance(routeInfo && currentStep === "to_dropoff" ? routeInfo.distanceKm : delivery.distance, language)}
                 </span>
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> ~{estTimeToDropoff} {t("driver.minutes")}
+                  <Clock className="h-3 w-3" /> ~{routeInfo && currentStep === "to_dropoff" ? routeInfo.etaMinutes : Math.round(delivery.distance * 1.5)}{" "}
+                  {t("driver.minutes")}
                 </span>
               </div>
             </div>

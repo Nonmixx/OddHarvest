@@ -8,15 +8,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ImagePlus, X, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeGenerateDescription } from "@/lib/geminiClient";
 
 const AddBundlePage = () => {
   const navigate = useNavigate();
   const { addCrop } = useCropInventory();
+  const { user } = useAuth();
   const { t, language } = useLanguage();
 
   const [name, setName] = useState("");
@@ -56,10 +58,17 @@ const AddBundlePage = () => {
     }
     setGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-description", {
-        body: { name, bundleContents: contents, isBundle: true, language },
+      const { data, error } = await invokeGenerateDescription({
+        name,
+        bundleContents: contents,
+        isBundle: true,
+        language,
       });
       if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
       if (data?.description) {
         setDesc(data.description);
         setIsAiDesc(true);
@@ -85,10 +94,10 @@ const AddBundlePage = () => {
       quantity: Number(qty),
       usualPrice: bundlePrice,
       discountPrice: bundlePrice,
-      farmLocation: "Your Farm",
-      state: "Selangor",
-      farmerName: "You",
-      sellerId: "seller-self",
+      farmLocation: user?.farmName || "Your Farm",
+      state: user?.state || "Selangor",
+      farmerName: user?.name || "You",
+      sellerId: user ? `seller-${user.id}` : "seller-self",
       sellerType: "farm",
       description: desc,
       harvestDate: new Date().toISOString(),

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { geminiGenerateText } from "../_shared/googleGemini.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,21 +7,48 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function json200(body: Record<string, unknown>) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { name, imperfectReason, harvestDate, bundleContents, isBundle, language } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    let payload: Record<string, unknown>;
+    try {
+      payload = await req.json();
+    } catch {
+      return json200({ error: "Invalid JSON body.", description: "" });
+    }
+    const { name, imperfectReason, harvestDate, bundleContents, isBundle, language } = payload as {
+      name?: string;
+      imperfectReason?: string;
+      harvestDate?: string;
+      bundleContents?: string;
+      isBundle?: boolean;
+      language?: string;
+    };
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
+    if (!GOOGLE_API_KEY) {
+      return json200({
+        error:
+          "GOOGLE_API_KEY is not set. In Supabase: Project Settings → Edge Functions → Secrets, add GOOGLE_API_KEY, then redeploy this function.",
+        description: "",
+      });
+    }
 
     const langLabel = language === "zh" ? "Chinese" : language === "ms" ? "Malay" : "English";
 
-    let prompt: string;
+    let userContent: string;
     if (isBundle) {
-      prompt = `Write a short, friendly product description (1-2 sentences) in ${langLabel} for a rescue veggie bundle called "${name}" containing: ${bundleContents || "mixed vegetables"}. Emphasize freshness, value, and reducing food waste. Only return the description text, nothing else.`;
+      userContent =
+        `Write a short, friendly product description (1-2 sentences) in ${langLabel} for a rescue veggie bundle called "${name}" containing: ${bundleContents || "mixed vegetables"}. Emphasize freshness, value, and reducing food waste. Only return the description text, nothing else.`;
     } else {
       const reasonMap: Record<string, string> = {
         irregular_shape: "irregular shape",
@@ -31,53 +59,39 @@ serve(async (req) => {
       };
       const reasonText = reasonMap[imperfectReason] || "cosmetic imperfection";
       const harvestInfo = harvestDate ? ` Harvested on ${harvestDate}.` : "";
-      prompt = `Write a short, friendly product description (1-2 sentences) in ${langLabel} for imperfect "${name}" that has ${reasonText}.${harvestInfo} Emphasize that despite the imperfection, the produce is fresh, nutritious, and perfect for cooking. Only return the description text, nothing else.`;
+      userContent =
+        `Write a short, friendly product description (1-2 sentences) in ${langLabel} for imperfect "${name}" that has ${reasonText}.${harvestInfo} Emphasize that despite the imperfection, the produce is fresh, nutritious, and perfect for cooking. Only return the description text, nothing else.`;
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: "You are a produce marketing copywriter. Write concise, appealing product descriptions." },
-          { role: "user", content: prompt },
-        ],
-      }),
+    const systemInstruction =
+      "You are a produce marketing copywriter. Write concise, appealing product descriptions.";
+
+    const result = await geminiGenerateText({
+      apiKey: GOOGLE_API_KEY,
+      systemInstruction,
+      userContent,
+      temperature: 0.5,
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits depleted." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
-      return new Response(JSON.stringify({ error: "AI service error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!result.ok) {
+      const msg =
+        result.status === 429
+          ? "Rate limit exceeded. Please try again."
+          : result.userMessage || "AI service error";
+      console.error("Google AI error:", result.status, result.body);
+      return json200({ error: msg, description: "" });
     }
 
-    const data = await response.json();
-    const description = data.choices?.[0]?.message?.content?.trim() || "";
+    const description = result.text.trim();
 
     return new Response(JSON.stringify({ description }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("generate-description error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json200({
+      error: e instanceof Error ? e.message : "Unknown error",
+      description: "",
+    });
   }
 });

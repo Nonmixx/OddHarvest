@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, MapPin, Navigation, Truck, User, DollarSign, Calendar, Route, XCircle, Store } from "lucide-react";
-import { deliveryRequests, completedDeliveries } from "@/pages/DriverDashboard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
 import { toast } from "sonner";
-
-const allDeliveries = [...deliveryRequests, ...completedDeliveries];
+import { DeliveryItem } from "@/data/mockDeliveries";
+import { listCompletedDeliveries, listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
 
 const DriverDeliveryDetail = () => {
   const { id } = useParams();
@@ -18,7 +17,23 @@ const DriverDeliveryDetail = () => {
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [rejected, setRejected] = useState(false);
+  const [deliveryRequests, setDeliveryRequests] = useState<DeliveryItem[]>([]);
+  const [completedDeliveries, setCompletedDeliveries] = useState<DeliveryItem[]>([]);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const [req, done] = await Promise.all([listDeliveryRequests(), listCompletedDeliveries()]);
+      if (!mounted) return;
+      setDeliveryRequests(req);
+      setCompletedDeliveries(done);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const allDeliveries = useMemo(() => [...deliveryRequests, ...completedDeliveries], [deliveryRequests, completedDeliveries]);
   const delivery = allDeliveries.find((d) => d.id === id);
 
   if (!delivery) {

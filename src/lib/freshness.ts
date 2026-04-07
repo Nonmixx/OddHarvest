@@ -84,7 +84,8 @@ export const getExpiryInfo = (expiryDate: string | undefined, language: Language
   const now = new Date();
   const expiry = new Date(expiryDate);
   const diffMs = expiry.getTime() - now.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffHoursRaw = diffMs / (1000 * 60 * 60);
+  const diffHours = Math.floor(diffHoursRaw);
   const diffDays = Math.floor(diffHours / 24);
 
   if (diffMs <= 0) {
@@ -107,12 +108,13 @@ export const getExpiryInfo = (expiryDate: string | undefined, language: Language
     };
   }
 
-  if (diffDays <= 2) {
+  if (diffHoursRaw <= 72) {
+    const dd = Math.max(0, Math.floor(diffHours / 24));
     return {
       label: textByLanguage(language, {
-        en: `${diffDays}d ${diffHours % 24}h left`,
-        zh: `剩余 ${diffDays} 天 ${diffHours % 24} 小时`,
-        ms: `${diffDays}h ${diffHours % 24}j lagi`,
+        en: `${dd}d ${diffHours % 24}h left`,
+        zh: `剩余 ${dd} 天 ${diffHours % 24} 小时`,
+        ms: `${dd}h ${diffHours % 24}j lagi`,
       }),
       color: "text-destructive",
       urgent: true,
