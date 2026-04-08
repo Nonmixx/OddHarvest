@@ -15,6 +15,7 @@ dist-ssr
 # Secrets — never commit (API keys, Supabase, etc.)
 .env
 .env.*
+!.env.example
 supabase/.temp/
 supabase/seed.sql
 
