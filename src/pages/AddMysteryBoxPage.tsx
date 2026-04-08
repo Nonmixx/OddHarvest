@@ -10,6 +10,7 @@ import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import VoiceInput from "@/components/VoiceInput";
+import { resolveSellerIdForFarmer } from "@/lib/demoPersonas";
 
 const AddMysteryBoxPage = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const AddMysteryBoxPage = () => {
       farmLocation: user?.farmName || "Your Farm",
       state: user?.state || "Selangor",
       farmerName: user?.name || "You",
-      sellerId: user ? `seller-${user.id}` : "seller-self",
+      sellerId: user ? resolveSellerIdForFarmer(user.id, user.email) : "seller-self",
       sellerType: "farm",
       description: description || t("mystery.desc_placeholder"),
       harvestDate: new Date().toISOString(),

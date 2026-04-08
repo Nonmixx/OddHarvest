@@ -10,6 +10,8 @@ import { Sprout, Package, Recycle, Plus, TrendingDown, CalendarDays, Pencil, Che
 import { toast } from "sonner";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseBackend } from "@/lib/backendConfig";
+import { resolveSellerIdForFarmer } from "@/lib/demoPersonas";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent, translateContentArray } from "@/lib/contentTranslations";
 import { IMPERFECT_REASONS } from "@/contexts/CartContext";
@@ -22,18 +24,24 @@ const FarmerDashboard = () => {
   const navigate = useNavigate();
   const { crops, addCrop, updateCrop, removeCrop } = useCropInventory();
   const { user } = useAuth();
+  const useDb = useSupabaseBackend;
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [editCropId, setEditCropId] = useState<string | null>(null);
   const [editData, setEditData] = useState<Partial<CropListing> | null>(null);
-  const mySellerId = user ? `seller-${user.id}` : "seller-self";
+  const mySellerId = user ? resolveSellerIdForFarmer(user.id, user.email) : "seller-self";
 
   const ownedCrops = useMemo(
     () => crops.filter((c) => c.sellerId === mySellerId),
     [crops, mySellerId]
   );
+  const hasListings = ownedCrops.length > 0;
+  const soldCount = hasListings ? 8 : 0;
+  const rescuedKg = hasListings ? 120 : 0;
+  const wastePrevented = hasListings ? "96%" : "0%";
 
   useEffect(() => {
+    if (useDb) return;
     if (!user || user.role !== "farmer") return;
     if (ownedCrops.length > 0) return;
     const flag = `oddharvest.starter-seeded.${mySellerId}`;
@@ -125,7 +133,7 @@ const FarmerDashboard = () => {
 
     starters.forEach((s) => addCrop(s));
     localStorage.setItem(flag, "1");
-  }, [addCrop, crops, mySellerId, ownedCrops.length, user]);
+  }, [addCrop, crops, mySellerId, ownedCrops.length, useDb, user]);
 
   const openEdit = (crop: CropListing) => {
     setEditCropId(crop.id);
@@ -216,10 +224,10 @@ const FarmerDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard icon={Sprout} label={t("farmer.listed")} value={ownedCrops.length} />
           <div className="cursor-pointer" onClick={() => navigate("/farmer-sold-crops")}>
-            <StatCard icon={Package} label={t("farmer.sold")} value={8} color="bg-farm-orange-light" />
+            <StatCard icon={Package} label={t("farmer.sold")} value={soldCount} color="bg-farm-orange-light" />
           </div>
-          <StatCard icon={Recycle} label={t("farmer.rescued")} value={120} />
-          <StatCard icon={TrendingDown} label={t("farmer.waste")} value="96%" color="bg-farm-green-light" />
+          <StatCard icon={Recycle} label={t("farmer.rescued")} value={rescuedKg} />
+          <StatCard icon={TrendingDown} label={t("farmer.waste")} value={wastePrevented} color="bg-farm-green-light" />
         </div>
 
         <div
@@ -246,7 +254,7 @@ const FarmerDashboard = () => {
             <div>
               <h2 className="font-heading font-bold text-foreground text-lg">{t("farmer.impact")}</h2>
               <p className="text-muted-foreground">
-                {t("farmer.impact_desc1")} <span className="text-primary font-bold">120 kg</span> {t("farmer.impact_desc2")} <span className="text-primary font-bold">240 kg</span> {t("farmer.impact_desc3")}
+                {t("farmer.impact_desc1")} <span className="text-primary font-bold">{rescuedKg} kg</span> {t("farmer.impact_desc2")} <span className="text-primary font-bold">{rescuedKg * 2} kg</span> {t("farmer.impact_desc3")}
               </p>
             </div>
           </div>
@@ -254,6 +262,15 @@ const FarmerDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("farmer.listings")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {ownedCrops.length === 0 && (
+            <div className="farm-card p-8 text-center md:col-span-2">
+              <p className="font-heading font-bold text-foreground mb-2">{t("farmer.empty_listings_title")}</p>
+              <p className="text-sm text-muted-foreground mb-4">{t("farmer.empty_listings_desc")}</p>
+              <Button className="rounded-full" onClick={() => navigate("/add-crop")}>
+                <Plus className="h-4 w-4 mr-1" /> {t("farmer.add_crop")}
+              </Button>
+            </div>
+          )}
           {ownedCrops.map((c) => {
             const expiryLabel = getExpiryLabel(c.expiryDate);
             const rescueReasons = getRescueAlert(c);

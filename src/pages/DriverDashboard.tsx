@@ -10,6 +10,7 @@ import { translateContent } from "@/lib/contentTranslations";
 import { formatDistance } from "@/lib/freshness";
 import { DeliveryItem } from "@/data/mockDeliveries";
 import { listCompletedDeliveries, listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DriverDashboard = () => {
   const [deliveryRequests, setDeliveryRequests] = useState<DeliveryItem[]>([]);
@@ -19,11 +20,17 @@ const DriverDashboard = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
+  const { user } = useAuth();
+  const driverId = user?.role === "driver" ? user.id : null;
+  const visibleRequests = deliveryRequests.filter((d) => !rejected.includes(d.id));
+  const completedCount = completedDeliveries.length;
+  const totalDistance = completedDeliveries.reduce((sum, d) => sum + d.distance, 0);
+  const totalEarnings = completedDeliveries.reduce((sum, d) => sum + d.fee, 0);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const [req, done] = await Promise.all([listDeliveryRequests(), listCompletedDeliveries()]);
+      const [req, done] = await Promise.all([listDeliveryRequests(driverId), listCompletedDeliveries(driverId)]);
       if (!mounted) return;
       setDeliveryRequests(req);
       setCompletedDeliveries(done);
@@ -31,7 +38,7 @@ const DriverDashboard = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [driverId]);
 
   const handleAccept = (id: string) => {
     setAccepted((prev) => [...prev, id]);
@@ -58,14 +65,20 @@ const DriverDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard icon={CheckCircle} label={t("driver.deliveries_completed")} value={15} />
-          <StatCard icon={Navigation} label={t("driver.total_distance")} value={180} color="bg-farm-orange-light" />
-          <StatCard icon={DollarSign} label={t("driver.total_earnings")} value={180} />
+          <StatCard icon={CheckCircle} label={t("driver.deliveries_completed")} value={completedCount} />
+          <StatCard icon={Navigation} label={t("driver.total_distance")} value={Math.round(totalDistance)} color="bg-farm-orange-light" />
+          <StatCard icon={DollarSign} label={t("driver.total_earnings")} value={Math.round(totalEarnings)} />
         </div>
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("driver.available_requests")}</h2>
         <div className="space-y-4">
-          {deliveryRequests.filter((d) => !rejected.includes(d.id)).map((d) => {
+          {visibleRequests.length === 0 && (
+            <div className="farm-card p-8 text-center">
+              <p className="font-heading font-bold text-foreground mb-2">{t("driver.empty_requests_title")}</p>
+              <p className="text-sm text-muted-foreground">{t("driver.empty_requests_desc")}</p>
+            </div>
+          )}
+          {visibleRequests.map((d) => {
             const isAccepted = accepted.includes(d.id);
             return (
               <div key={d.id} className={`farm-card p-5 ${isAccepted ? "opacity-60" : ""}`}>
@@ -132,6 +145,12 @@ const DriverDashboard = () => {
             </Button>
           </div>
           <div className="space-y-3">
+            {completedDeliveries.length === 0 && (
+              <div className="farm-card p-8 text-center">
+                <p className="font-heading font-bold text-foreground mb-2">{t("driver.empty_completed_title")}</p>
+                <p className="text-sm text-muted-foreground">{t("driver.empty_completed_desc")}</p>
+              </div>
+            )}
             {completedDeliveries.slice(0, 3).map((d) => (
               <div
                 key={d.id}

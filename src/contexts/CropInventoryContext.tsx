@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, ReactNode, useCallback, use
 import { mockCrops } from "@/data/mockCrops";
 import { CropListing } from "@/contexts/CartContext";
 import { deleteCrop, insertCrop, listCrops, patchCrop } from "@/lib/repositories/cropsRepo";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseBackend } from "@/lib/backendConfig";
 
 interface CropInventoryContextType {
   crops: CropListing[];
@@ -14,6 +16,8 @@ interface CropInventoryContextType {
 const CropInventoryContext = createContext<CropInventoryContextType | undefined>(undefined);
 
 export const CropInventoryProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+  const useDb = useSupabaseBackend;
   const [crops, setCrops] = useState<CropListing[]>(mockCrops);
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export const CropInventoryProvider = ({ children }: { children: ReactNode }) => 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [useDb, user?.id, user?.email]);
 
   const updateStock = useCallback((cropId: string, quantityBought: number) => {
     setCrops((prev) => {

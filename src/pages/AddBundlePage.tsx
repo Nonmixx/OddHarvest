@@ -14,6 +14,7 @@ import { translateContent } from "@/lib/contentTranslations";
 import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
 import { invokeGenerateDescription } from "@/lib/geminiClient";
+import { resolveSellerIdForFarmer } from "@/lib/demoPersonas";
 
 const AddBundlePage = () => {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const AddBundlePage = () => {
       farmLocation: user?.farmName || "Your Farm",
       state: user?.state || "Selangor",
       farmerName: user?.name || "You",
-      sellerId: user ? `seller-${user.id}` : "seller-self",
+      sellerId: user ? resolveSellerIdForFarmer(user.id, user.email) : "seller-self",
       sellerType: "farm",
       description: desc,
       harvestDate: new Date().toISOString(),

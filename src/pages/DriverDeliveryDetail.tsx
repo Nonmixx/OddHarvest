@@ -10,12 +10,15 @@ import { formatDistance } from "@/lib/freshness";
 import { toast } from "sonner";
 import { DeliveryItem } from "@/data/mockDeliveries";
 import { listCompletedDeliveries, listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DriverDeliveryDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
+  const { user } = useAuth();
+  const driverId = user?.role === "driver" ? user.id : null;
   const [rejected, setRejected] = useState(false);
   const [deliveryRequests, setDeliveryRequests] = useState<DeliveryItem[]>([]);
   const [completedDeliveries, setCompletedDeliveries] = useState<DeliveryItem[]>([]);
@@ -23,7 +26,7 @@ const DriverDeliveryDetail = () => {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const [req, done] = await Promise.all([listDeliveryRequests(), listCompletedDeliveries()]);
+      const [req, done] = await Promise.all([listDeliveryRequests(driverId), listCompletedDeliveries(driverId)]);
       if (!mounted) return;
       setDeliveryRequests(req);
       setCompletedDeliveries(done);
@@ -31,7 +34,7 @@ const DriverDeliveryDetail = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [driverId]);
 
   const allDeliveries = useMemo(() => [...deliveryRequests, ...completedDeliveries], [deliveryRequests, completedDeliveries]);
   const delivery = allDeliveries.find((d) => d.id === id);

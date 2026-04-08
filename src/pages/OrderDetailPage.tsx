@@ -38,13 +38,14 @@ const OrderDetailPage = () => {
     let mounted = true;
     if (!id) return;
     (async () => {
-      const row = await getOrderById(id);
+      const buyerId = user?.role === "buyer" ? user.id : null;
+      const row = await getOrderById(id, buyerId);
       if (mounted) setOrder(row);
     })();
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, user?.id, user?.role]);
 
   // Ratings state: keyed by `sellerId-cropName`
   const [ratings, setRatings] = useState<Record<string, number>>({});

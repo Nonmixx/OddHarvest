@@ -10,6 +10,7 @@ import { formatDistance } from "@/lib/freshness";
 import DriverRouteMap from "@/components/maps/DriverRouteMap";
 import { DeliveryItem } from "@/data/mockDeliveries";
 import { listDeliveryRequests } from "@/lib/repositories/deliveriesRepo";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Simulated coordinates for demo (aligned with KL/Klang Valley pickup/dropoff in DriverDashboard)
 const locationCoords: Record<string, { lat: number; lng: number }> = {
@@ -46,6 +47,8 @@ const DriverNavigationPage = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
+  const { user } = useAuth();
+  const driverId = user?.role === "driver" ? user.id : null;
   const [currentStep, setCurrentStep] = useState<"to_pickup" | "to_dropoff">("to_pickup");
   const [driverLocation, setDriverLocation] = useState(fallbackDriverLocation);
   const [routeInfo, setRouteInfo] = useState<{ distanceKm: number; etaMinutes: number } | null>(null);
@@ -54,13 +57,13 @@ const DriverNavigationPage = () => {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const req = await listDeliveryRequests();
+      const req = await listDeliveryRequests(driverId);
       if (mounted) setDeliveryRequests(req);
     })();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [driverId]);
 
   const delivery = deliveryRequests.find((d) => d.id === id);
 

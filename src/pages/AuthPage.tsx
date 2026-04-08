@@ -37,10 +37,10 @@ const AuthPage = () => {
         const dest = role === "farmer" ? "/farmer-dashboard" : role === "driver" ? "/driver-dashboard" : "/marketplace";
         navigate(dest);
       } else {
-        await signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
+        const result = await signup(name, email, password, role, role === "farmer" ? sellerType : undefined, farmName || undefined);
         toast({
-          title: t("auth.signup_success_title"),
-          description: t("auth.signup_success_desc"),
+          title: result.needsEmailConfirmation ? t("auth.signup_verify_title") : t("auth.signup_success_title"),
+          description: result.needsEmailConfirmation ? t("auth.signup_verify_desc") : t("auth.signup_success_desc"),
         });
         // Reset to login mode so user can log in
         setIsLogin(true);

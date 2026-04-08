@@ -15,6 +15,7 @@ import { IMPERFECT_REASONS, ImperfectReason } from "@/contexts/CartContext";
 import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
 import { invokeGenerateDescription } from "@/lib/geminiClient";
+import { resolveSellerIdForFarmer } from "@/lib/demoPersonas";
 
 const STATES = ["Pahang", "Perak", "Kelantan", "Sabah", "Johor", "Selangor", "Penang", "Kedah", "Terengganu", "Melaka", "Negeri Sembilan", "Perlis", "Sarawak", "Kuala Lumpur", "Putrajaya", "Labuan"];
 
@@ -102,7 +103,7 @@ const AddCropPage = () => {
       farmLocation: location,
       state,
       farmerName: user?.name || "You",
-      sellerId: user ? `seller-${user.id}` : "seller-self",
+      sellerId: user ? resolveSellerIdForFarmer(user.id, user.email) : "seller-self",
       sellerType: "farm",
       description: desc,
       harvestDate: new Date(harvestDate).toISOString(),

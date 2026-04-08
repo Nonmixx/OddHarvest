@@ -40,6 +40,8 @@ const translations: Record<string, Record<Language, string>> = {
   "auth.has_account": { en: "Already have an account?", zh: "已有账户？", ms: "Sudah ada akaun?" },
   "auth.signup_success_title": { en: "Sign Up Successful!", zh: "注册成功！", ms: "Pendaftaran Berjaya!" },
   "auth.signup_success_desc": { en: "Your account has been created. Please log in to continue.", zh: "您的账户已创建。请登录以继续。", ms: "Akaun anda telah dicipta. Sila log masuk untuk meneruskan." },
+  "auth.signup_verify_title": { en: "Check your email", zh: "请检查邮箱", ms: "Semak e-mel anda" },
+  "auth.signup_verify_desc": { en: "We sent a verification link. Please confirm your email before logging in.", zh: "我们已发送验证链接。请先验证邮箱再登录。", ms: "Kami telah menghantar pautan pengesahan. Sahkan e-mel anda sebelum log masuk." },
   "auth.forgot_password": { en: "Forgot Password?", zh: "忘记密码？", ms: "Lupa Kata Laluan?" },
 
   // Forgot password
@@ -255,6 +257,8 @@ const translations: Record<string, Record<Language, string>> = {
   "farmer.day_ago": { en: "day ago", zh: "天前", ms: "hari lepas" },
   "farmer.crop_name_placeholder": { en: "e.g. Tomatoes (Imperfect Shape)", zh: "例如 番茄（形状不规则）", ms: "cth. Tomato (Bentuk Tidak Sempurna)" },
   "farmer.location_placeholder": { en: "e.g. Ladang Pak Ali", zh: "例如 Ladang Pak Ali", ms: "cth. Ladang Pak Ali" },
+  "farmer.empty_listings_title": { en: "No listings yet", zh: "暂无上架", ms: "Belum ada senarai" },
+  "farmer.empty_listings_desc": { en: "Create your first crop listing and start rescuing produce.", zh: "创建第一条农产品上架并开始拯救农产品。", ms: "Cipta senarai tanaman pertama anda dan mula menyelamatkan hasil." },
 
   // Farmer sold crops
   "sold.title": { en: "Crops Sold 📦", zh: "已售农产品 📦", ms: "Tanaman Terjual 📦" },
@@ -361,6 +365,9 @@ const translations: Record<string, Record<Language, string>> = {
   "buyer.meals_saved": { en: "Meals Saved", zh: "节省餐食", ms: "Hidangan Dijimatkan" },
   "buyer.recent_orders": { en: "Recent Orders", zh: "最近订单", ms: "Pesanan Terbaru" },
   "buyer.kg_rescued": { en: "kg rescued", zh: "公斤已拯救", ms: "kg diselamatkan" },
+  "buyer.empty_orders_title": { en: "No orders yet", zh: "暂无订单", ms: "Belum ada pesanan" },
+  "buyer.empty_orders_desc": { en: "Start exploring rescued produce and place your first order.", zh: "开始探索拯救农产品并下第一单。", ms: "Mula terokai hasil diselamatkan dan buat pesanan pertama anda." },
+  "buyer.empty_orders_cta": { en: "Browse Marketplace", zh: "浏览市场", ms: "Layari Pasaran" },
 
   // Driver dashboard
   "driver.title": { en: "Driver Dashboard 🚗", zh: "司机仪表板 🚗", ms: "Papan Pemuka Pemandu 🚗" },
@@ -379,6 +386,10 @@ const translations: Record<string, Record<Language, string>> = {
   "driver.rejected_msg": { en: "rejected!", zh: "已拒绝！", ms: "ditolak!" },
   "driver.delivery_rejected": { en: "Delivery Rejected", zh: "配送已拒绝", ms: "Penghantaran Ditolak" },
   "driver.rejected_desc": { en: "This delivery has been rejected. Returning to dashboard.", zh: "此配送已被拒绝。返回仪表板。", ms: "Penghantaran ini telah ditolak. Kembali ke papan pemuka." },
+  "driver.empty_requests_title": { en: "No delivery requests yet", zh: "暂无配送请求", ms: "Belum ada permintaan penghantaran" },
+  "driver.empty_requests_desc": { en: "New jobs assigned to your account will appear here.", zh: "分配给您账户的新任务会显示在这里。", ms: "Kerja baharu yang ditugaskan ke akaun anda akan muncul di sini." },
+  "driver.empty_completed_title": { en: "No completed deliveries yet", zh: "暂无已完成配送", ms: "Belum ada penghantaran selesai" },
+  "driver.empty_completed_desc": { en: "Complete your first delivery to start building your history.", zh: "完成第一单配送后即可开始建立履历。", ms: "Selesaikan penghantaran pertama anda untuk mula membina rekod." },
 
   // Driver deliveries
   "driver.completed_title": { en: "Completed Deliveries ✅", zh: "已完成配送 ✅", ms: "Penghantaran Selesai ✅" },

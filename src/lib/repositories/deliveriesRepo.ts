@@ -1,6 +1,7 @@
 import { completedDeliveries, deliveryRequests, DeliveryItem } from "@/data/mockDeliveries";
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseBackend } from "@/lib/backendConfig";
+import { DEMO_DRIVER_PROFILE_ID } from "@/lib/demoPersonas";
 
 type DeliveryRow = {
   id: string;
@@ -14,6 +15,7 @@ type DeliveryRow = {
   seller: string;
   buyer: string;
   status: "request" | "completed";
+  driver_profile_id?: string | null;
   created_at?: string;
 };
 
@@ -32,17 +34,34 @@ function fromRow(r: DeliveryRow): DeliveryItem {
   };
 }
 
-export async function listDeliveryRequests(): Promise<DeliveryItem[]> {
+/** Scoped to the signed-in driver; new drivers see empty lists until rows are assigned. */
+export async function listDeliveryRequests(driverProfileId?: string | null): Promise<DeliveryItem[]> {
   if (!useSupabaseBackend || !supabase) return deliveryRequests;
-  const { data, error } = await supabase.from("deliveries").select("*").eq("status", "request").order("created_at");
-  if (error || !data) return deliveryRequests;
-  return (data as DeliveryRow[]).map(fromRow);
+  if (!driverProfileId) return [];
+  const { data, error } = await supabase
+    .from("deliveries")
+    .select("*")
+    .eq("status", "request")
+    .eq("driver_profile_id", driverProfileId)
+    .order("created_at");
+  if (!error && data) return (data as DeliveryRow[]).map(fromRow);
+  // Backward-compatible fallback for DBs without driver_profile_id migration.
+  if (driverProfileId !== DEMO_DRIVER_PROFILE_ID) return [];
+  const { data: legacy } = await supabase.from("deliveries").select("*").eq("status", "request").order("created_at");
+  return ((legacy as DeliveryRow[] | null) ?? []).map(fromRow);
 }
 
-export async function listCompletedDeliveries(): Promise<DeliveryItem[]> {
+export async function listCompletedDeliveries(driverProfileId?: string | null): Promise<DeliveryItem[]> {
   if (!useSupabaseBackend || !supabase) return completedDeliveries;
-  const { data, error } = await supabase.from("deliveries").select("*").eq("status", "completed").order("created_at");
-  if (error || !data) return completedDeliveries;
-  return (data as DeliveryRow[]).map(fromRow);
+  if (!driverProfileId) return [];
+  const { data, error } = await supabase
+    .from("deliveries")
+    .select("*")
+    .eq("status", "completed")
+    .eq("driver_profile_id", driverProfileId)
+    .order("created_at");
+  if (!error && data) return (data as DeliveryRow[]).map(fromRow);
+  if (driverProfileId !== DEMO_DRIVER_PROFILE_ID) return [];
+  const { data: legacy } = await supabase.from("deliveries").select("*").eq("status", "completed").order("created_at");
+  return ((legacy as DeliveryRow[] | null) ?? []).map(fromRow);
 }
-

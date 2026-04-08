@@ -1,9 +1,11 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseBackend } from "@/lib/backendConfig";
+import { isReservedDemoEmail } from "@/lib/demoPersonas";
 
 export type AppProfile = {
   id: string;
   authUserId?: string;
+  isDemoPersona?: boolean;
   email: string;
   name: string;
   role: "farmer" | "buyer" | "driver";
@@ -45,11 +47,13 @@ type ProfileRow = {
   bank_name: string | null;
   bank_account_holder: string | null;
   bank_account_number: string | null;
+  is_demo_persona?: boolean | null;
 };
 
 const fromRow = (r: ProfileRow): AppProfile => ({
   id: r.id,
   authUserId: r.auth_user_id ?? undefined,
+  isDemoPersona: r.is_demo_persona ?? undefined,
   email: r.email,
   name: r.name,
   role: r.role,
@@ -104,7 +108,37 @@ export async function getProfileByAuthUserId(authUserId: string): Promise<AppPro
 
 export async function getProfileByEmail(email: string): Promise<AppProfile | null> {
   if (!useSupabaseBackend || !supabase) return null;
-  const { data } = await supabase.from("profiles").select("*").eq("email", email).maybeSingle();
+  const normalized = email.trim();
+  const { data } = await supabase.from("profiles").select("*").ilike("email", normalized).maybeSingle();
   return data ? fromRow(data as ProfileRow) : null;
+}
+
+/**
+ * After login/session restore: link demo row, then prefer profile by auth id, else reserved demo row by email.
+ * Avoids stale localStorage (wrong id/email) when the RPC link is delayed or the row was matched by email only.
+ */
+export async function getSessionAppProfile(authUserId: string, email: string): Promise<AppProfile | null> {
+  if (!useSupabaseBackend || !supabase) return null;
+  const trimmed = email.trim();
+  if (trimmed) await linkReservedDemoProfile(trimmed);
+
+  const byAuth = await getProfileByAuthUserId(authUserId);
+  if (byAuth) return byAuth;
+
+  const byEmail = await getProfileByEmail(trimmed);
+  if (!byEmail) return null;
+  if (!byEmail.isDemoPersona && !isReservedDemoEmail(trimmed)) return null;
+  if (byEmail.authUserId && byEmail.authUserId !== authUserId) return null;
+  return byEmail;
+}
+
+/** Links JWT user to a pre-seeded demo row (same email, is_demo_persona, auth_user_id null). */
+export async function linkReservedDemoProfile(email: string): Promise<boolean> {
+  if (!useSupabaseBackend || !supabase) return false;
+  const { data, error } = await supabase.rpc("link_demo_profile_if_reserved", {
+    p_email: email,
+  });
+  if (error) return false;
+  return data === true;
 }
 

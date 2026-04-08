@@ -2,6 +2,7 @@ import { CropListing } from "@/contexts/CartContext";
 import { mockCrops } from "@/data/mockCrops";
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseBackend } from "@/lib/backendConfig";
+import { DEMO_FARMER_PROFILE_ID, DEMO_SELLER_ID } from "@/lib/demoPersonas";
 
 type CropRow = {
   id: string;
@@ -96,7 +97,7 @@ export async function listCrops(): Promise<CropListing[]> {
 export async function insertCrop(crop: CropListing): Promise<void> {
   if (!useSupabaseBackend || !supabase) return;
   // Ensure referenced seller exists (add-crop pages currently use seller-self in demo mode).
-  const { error: sellerError } = await supabase.from("sellers").upsert({
+  const sellerRow: Record<string, unknown> = {
     id: crop.sellerId,
     name: crop.farmerName || "You",
     seller_type: crop.sellerType,
@@ -109,7 +110,11 @@ export async function insertCrop(crop: CropListing): Promise<void> {
     crops_rescued_kg: 0,
     orders_completed: 0,
     average_rating: 4.5,
-  });
+  };
+  if (crop.sellerId === DEMO_SELLER_ID) {
+    sellerRow.profile_id = DEMO_FARMER_PROFILE_ID;
+  }
+  const { error: sellerError } = await supabase.from("sellers").upsert(sellerRow);
   if (sellerError) {
     throw new Error(`Failed to ensure seller exists: ${sellerError.message}`);
   }

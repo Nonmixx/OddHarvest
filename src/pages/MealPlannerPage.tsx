@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { invokeFoodPreservation, invokeMealPlanner } from "@/lib/geminiClient";
+import { listOrders } from "@/lib/repositories/ordersRepo";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,6 +151,7 @@ const labels = {
   input_placeholder: { en: "Type an ingredient (e.g., tomato, chicken, rice)...", zh: "输入食材（例如：番茄、鸡肉、米饭）...", ms: "Taip bahan (cth: tomato, ayam, nasi)..." },
   add: { en: "Add", zh: "添加", ms: "Tambah" },
   quick_add: { en: "Quick add from your rescued crops:", zh: "从您拯救的农产品中快速添加：", ms: "Tambah pantas dari tanaman yang diselamatkan:" },
+  quick_add_empty: { en: "No rescued crops yet. Buy from marketplace to unlock quick add.", zh: "暂时没有拯救农产品。先去市场购买后即可快速添加。", ms: "Belum ada tanaman diselamatkan. Beli di pasaran untuk buka tambah pantas." },
   your_ingredients: { en: "Your Ingredients", zh: "您的食材", ms: "Bahan Anda" },
   ai_badge: { en: "Powered by AI", zh: "AI 驱动", ms: "Dikuasakan AI" },
   error: { en: "Failed to generate results. Please try again.", zh: "生成结果失败。请再试一次。", ms: "Gagal menjana keputusan. Sila cuba lagi." },
@@ -219,8 +220,7 @@ const labels = {
 
 const MealPlannerPage = () => {
   const { language } = useLanguage();
-  const { isAuthenticated } = useAuth();
-  const { crops } = useCropInventory();
+  const { isAuthenticated, user } = useAuth();
 
   const [mode, setMode] = useState<Mode>("meal");
   const [inputText, setInputText] = useState("");
@@ -241,6 +241,7 @@ const MealPlannerPage = () => {
   const [selectedTools, setSelectedTools] = useState<string[]>(["refrigerator", "freezer"]);
   const [skillLevel, setSkillLevel] = useState<string>("beginner");
   const [timeAvailable, setTimeAvailable] = useState<string>("30 minutes");
+  const [quickCropNames, setQuickCropNames] = useState<string[]>([]);
 
   const l = (key: keyof typeof labels) => labels[key][language];
 
@@ -257,6 +258,27 @@ const MealPlannerPage = () => {
       setExpandedMethod(null);
     }
   }, [language]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!isAuthenticated || user?.role !== "buyer" || !user?.id) {
+        if (mounted) setQuickCropNames([]);
+        return;
+      }
+      const orders = await listOrders(user.id);
+      const unique = new Set<string>();
+      for (const o of orders) {
+        for (const it of o.items) {
+          unique.add(it.name);
+        }
+      }
+      if (mounted) setQuickCropNames(Array.from(unique).slice(0, 8));
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [isAuthenticated, user?.id, user?.role]);
 
   const addIngredient = () => {
     const trimmed = inputText.trim();
@@ -385,7 +407,7 @@ const MealPlannerPage = () => {
     switch (d) { case "easy": return "🟢"; case "medium": return "🟡"; case "hard": return "🔴"; default: return "⚪"; }
   };
 
-  const quickCrops = crops.slice(0, 8).filter((c) => !c.isBundle);
+  const quickCrops = quickCropNames;
 
   const toolOptions = [
     { id: "refrigerator", label: l("tool_refrigerator") },
@@ -480,22 +502,24 @@ const MealPlannerPage = () => {
             </div>
           )}
 
-          {quickCrops.length > 0 && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-2">{l("quick_add")}</p>
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">{l("quick_add")}</p>
+            {quickCrops.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {quickCrops.map((crop) => (
+                {quickCrops.map((cropName) => (
                   <button
-                    key={crop.id}
-                    onClick={() => quickAddFromMarket(crop.name)}
+                    key={cropName}
+                    onClick={() => quickAddFromMarket(cropName)}
                     className="px-3 py-1.5 rounded-full bg-farm-green-light text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
                   >
-                    + {translateContent(crop.name, language)}
+                    + {translateContent(cropName, language)}
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-xs text-muted-foreground">{l("quick_add_empty")}</p>
+            )}
+          </div>
         </div>
 
         {/* Preservation Preferences */}
@@ -667,7 +691,10 @@ const MealPlannerPage = () => {
                             ))}
                           </div>
                           {meal.missingIngredients.some((m) =>
-                            crops.some((c) => { const norm = normalizeIngredient(c.name); return norm && m.toLowerCase().includes(norm); })
+                            quickCropNames.some((name) => {
+                              const norm = normalizeIngredient(name);
+                              return norm ? m.toLowerCase().includes(norm) : m.toLowerCase().includes(name.toLowerCase());
+                            })
                           ) && (
                             <p className="text-xs text-primary mt-2 flex items-center gap-1">
                               <ShoppingCart className="h-3 w-3" /> {l("nearby_surplus")}

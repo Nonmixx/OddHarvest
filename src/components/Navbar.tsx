@@ -28,6 +28,11 @@ const Navbar = () => {
   const showMarketplace = !user || user.role === "buyer";
   const showCart = !user || user.role === "buyer";
   const showMealPlanner = !user || user.role === "buyer";
+  const handleLogout = async (closeMobile = false) => {
+    await logout();
+    navigate("/", { replace: true });
+    if (closeMobile) setMobileOpen(false);
+  };
 
   return (
     <nav className="sticky top-0 z-[1100] bg-card/90 backdrop-blur-md border-b border-border">
@@ -75,7 +80,7 @@ const Navbar = () => {
                 )}
                 <span className="text-sm text-muted-foreground">{user?.name}</span>
               </Link>
-              <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); }}>
+              <Button variant="ghost" size="sm" onClick={() => void handleLogout()}>
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
@@ -122,7 +127,7 @@ const Navbar = () => {
                 )}
                 {t("common.profile")}
               </Link>
-              <Button variant="ghost" size="sm" onClick={() => { logout(); navigate("/"); setMobileOpen(false); }}>
+              <Button variant="ghost" size="sm" onClick={() => void handleLogout(true)}>
                 {t("nav.logout")}
               </Button>
             </>

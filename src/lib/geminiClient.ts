@@ -1,6 +1,6 @@
 /**
- * Calls Gemini via Vite dev/preview proxy (/api/gemini) so the API key stays on the server.
- * Production static hosts have no proxy — use a real backend or Netlify/Vercel function then.
+ * Calls Gemini via POST /api/gemini (Vite dev uses vite-plugin-gemini-proxy; Vercel uses api/gemini.ts).
+ * The API key stays server-side (GOOGLE_API_KEY in .env locally, Vercel env in production).
  */
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
@@ -177,28 +177,28 @@ export async function invokeFoodPreservation(body: {
   const skill = skillLevel || "beginner";
   const time = timeAvailable || "30 minutes";
 
-  const systemPrompt = `You are an expert food preservation and upcycling AI assistant. The user will give you food items they want to preserve. You MUST respond with a JSON array of preservation suggestions. Each item in the array must have these exact fields:
+  const systemPrompt = `You are an expert home food preservation coach (food safety aware). The user lists ingredients they need to use or store. You MUST respond with a JSON array with ONE object per ingredient they listed. Each object must have these exact fields:
 {
-  "foodItem": "name of the food item in ${langLabel}",
+  "foodItem": "name of the food item in ${langLabel} (match the user's item)",
   "spoilageRisk": "low" | "medium" | "high",
-  "spoilageTimeframe": "estimated days before spoilage as a string in ${langLabel}",
+  "spoilageTimeframe": "realistic fridge/counter spoilage window in ${langLabel} (e.g. leafy greens: a few days; root veg: 1–2 weeks refrigerated; ripe stone fruit: days)",
   "methods": [
     {
-      "name": "Preservation method name in ${langLabel}",
+      "name": "Specific method name in ${langLabel} (e.g. quick refrigerator pickle, blanch-and-freeze, dry in oven, jeruk asam, sambal base)",
       "type": "pickling" | "freezing" | "drying" | "fermenting" | "cooking" | "canning" | "other",
       "difficulty": "easy" | "medium" | "hard",
-      "timeNeeded": "time as string in ${langLabel}",
-      "shelfLife": "expected shelf life as string in ${langLabel}",
-      "ingredientsNeeded": ["list", "of", "additional", "ingredients", "in ${langLabel}"],
-      "toolsNeeded": ["list", "of", "tools", "needed", "in ${langLabel}"],
-      "steps": ["Step 1 in ${langLabel}", "Step 2 in ${langLabel}"],
-      "tips": "A helpful tip in ${langLabel}"
+      "timeNeeded": "honest active + wait time in ${langLabel}, must respect user's time budget (${time}) for the active part where possible",
+      "shelfLife": "realistic stored shelf life for that method in ${langLabel}",
+      "ingredientsNeeded": ["extras in ${langLabel} — vinegar/salt/sugar/oil only when the method truly needs them"],
+      "toolsNeeded": ["only tools the user likely has from their list OR basic items like pot, knife, chopping board"],
+      "steps": ["4–8 short steps in ${langLabel} with concrete details: wash/trim, ratios if pickling, blanch times, freezer packaging, oven temp & duration if drying, cool-down"],
+      "tips": "One food-safety or quality tip in ${langLabel} (e.g. cool before freezing, leave headspace in jars, high-acid only for simple water-bath-style pickles at home)"
     }
   ],
   "upcycleIdeas": [
     {
-      "name": "Transformation idea name in ${langLabel}",
-      "description": "Brief description in ${langLabel}",
+      "name": "Specific dish or product in ${langLabel}",
+      "description": "One sentence: what to make and why it fits this ingredient in ${langLabel}",
       "emoji": "relevant emoji"
     }
   ]
@@ -206,24 +206,25 @@ export async function invokeFoodPreservation(body: {
 
 Rules:
 - Return ONLY valid JSON array, no markdown, no explanation, no code fences
-- The user has these kitchen tools available: ${toolsList}
-- The user's skill level is: ${skill}
-- The user has this much time: ${time}
-- Only suggest methods that match the user's available tools
-- Adjust complexity based on skill level (${skill})
-- Prioritize methods that fit within the time constraint (${time})
-- For each food item, suggest 2-4 preservation methods sorted by easiest first
-- Include 1-3 upcycling/transformation ideas per food item
-- Focus on practical, realistic suggestions
-- All text must be in ${langLabel}
-- Consider Malaysian/Asian preservation techniques when relevant (e.g., sambal, acar, jeruk)`;
+- Tools the user selected (use these literally; do NOT require tools they did not list): ${toolsList}
+- Skill level: ${skill} — beginners get fewer steps and no advanced pressure-canning; "hard" methods only if skill is not beginner
+- Time budget label: ${time} — prefer methods whose main hands-on work fits that window; long passive fermenting may note "then wait X days" separately
+- Every method must be appropriate for THAT food (e.g. do not sun-dry raw meat; leafy greens: salad prep, pesto, blanch-freeze, or quick pickle — not nonsense like "canning whole lettuce")
+- Do not suggest water-bath or shelf-stable canning of low-acid foods without proper acidification; when unsure, prefer refrigerator/freezer methods
+- ingredientsNeeded must not list the main food twice; assume salt, sugar, water, basic oil are pantry unless the recipe needs unusual amounts
+- Upcycle ideas must vary (not three smoothies for every fruit); tie each idea to the actual ingredient
+- Sort methods easiest first; 2–4 methods per item; 1–3 upcycle ideas per item
+- All user-facing text in ${langLabel}
+- Where it fits, include Malaysian/Asian options (acar, jeruk, sambal, ikan bilis-style uses, rempah bases) when realistic for the ingredient`;
 
-  const userContent = `I need to preserve these food items: ${ingredients.join(", ")}. Please suggest preservation methods and upcycling ideas.`;
+  const userContent = `Preserve or use soon these items: ${ingredients.join(", ")}.
+Constraints: tools = [${toolsList}]; skill = ${skill}; time I can spend now ≈ ${time}.
+Return one array element per item above, in the same order.`;
 
   const result = await geminiGenerateRaw({
     systemInstruction: systemPrompt,
     userContent,
-    temperature: 0.4,
+    temperature: 0.35,
     jsonMode: true,
   });
 

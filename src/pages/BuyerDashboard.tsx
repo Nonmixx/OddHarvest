@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets, User } from "lucide-react";
+import { ShoppingBag, Package, Recycle, Leaf, TreePine, Droplets } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translateContent } from "@/lib/contentTranslations";
 import { OrderData } from "@/data/mockOrders";
 import { listOrders } from "@/lib/repositories/ordersRepo";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BuyerDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -18,16 +20,21 @@ const BuyerDashboard = () => {
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const rows = await listOrders();
+      const buyerId = user?.role === "buyer" ? user.id : null;
+      const rows = await listOrders(buyerId);
       if (mounted) setOrders(rows);
     })();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [user?.id, user?.role]);
 
   const ordersCompleted = useMemo(() => orders.length, [orders]);
   const cropsPurchased = useMemo(() => orders.reduce((sum, o) => sum + o.kg, 0), [orders]);
+  const hasOrders = orders.length > 0;
+  const waterSaved = Math.round(cropsPurchased * 500);
+  const co2Prevented = Math.round(cropsPurchased * 2);
+  const mealsSaved = Math.round(cropsPurchased);
 
   return (
     <div className="min-h-screen">
@@ -49,22 +56,22 @@ const BuyerDashboard = () => {
             <Leaf className="h-12 w-12 text-primary mx-auto" />
             <h2 className="font-heading font-bold text-foreground text-xl">{t("buyer.impact_title")}</h2>
             <p className="text-muted-foreground">
-              {t("buyer.impact_desc1")} <span className="text-primary font-bold text-2xl">25 kg</span> {t("buyer.impact_desc2")}
+              {t("buyer.impact_desc1")} <span className="text-primary font-bold text-2xl">{cropsPurchased} kg</span> {t("buyer.impact_desc2")}
             </p>
             <div className="grid grid-cols-3 gap-4 pt-2">
               <div className="text-center">
                 <Droplets className="h-6 w-6 text-primary mx-auto mb-1" />
-                <p className="text-lg font-heading font-bold text-foreground">12,500L</p>
+                <p className="text-lg font-heading font-bold text-foreground">{waterSaved.toLocaleString()}L</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.water_saved")}</p>
               </div>
               <div className="text-center">
                 <TreePine className="h-6 w-6 text-primary mx-auto mb-1" />
-                <p className="text-lg font-heading font-bold text-foreground">50 kg</p>
+                <p className="text-lg font-heading font-bold text-foreground">{co2Prevented} kg</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.co2_prevented")}</p>
               </div>
               <div className="text-center">
                 <ShoppingBag className="h-6 w-6 text-primary mx-auto mb-1" />
-                <p className="text-lg font-heading font-bold text-foreground">50</p>
+                <p className="text-lg font-heading font-bold text-foreground">{mealsSaved}</p>
                 <p className="text-xs text-muted-foreground">{t("buyer.meals_saved")}</p>
               </div>
             </div>
@@ -73,6 +80,15 @@ const BuyerDashboard = () => {
 
         <h2 className="font-heading font-bold text-foreground text-lg mb-4">{t("buyer.recent_orders")}</h2>
         <div className="space-y-3">
+          {!hasOrders && (
+            <div className="farm-card p-8 text-center">
+              <p className="font-heading font-bold text-foreground mb-2">{t("buyer.empty_orders_title")}</p>
+              <p className="text-sm text-muted-foreground mb-4">{t("buyer.empty_orders_desc")}</p>
+              <Button className="rounded-full" onClick={() => navigate("/marketplace")}>
+                {t("buyer.empty_orders_cta")}
+              </Button>
+            </div>
+          )}
           {orders.map((o) =>
             <div key={o.id} className="farm-card p-4 flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/order/${o.id}`)}>
               <div>
