@@ -22,12 +22,29 @@ OddHarvest is a rescue-food marketplace web app that helps reduce food waste by 
 For Vercel deployment, set environment variables in Vercel Project Settings (do not commit real secrets to git).
 
 ## Technologies Used
-- **Frontend:** React, TypeScript, Vite
-- **UI / Styling:** Tailwind CSS, shadcn/ui, Lucide icons
-- **State / Data:** React Context, TanStack Query
-- **Backend / Database / Auth:** Supabase (Postgres, Auth, RLS, Edge Functions)
-- **AI Integration:** Google Gemini via server-side API route (`/api/gemini`)
-- **Deployment:** Vercel
+### Frontend
+- **React 18** - Builds the user interface for landing page, marketplace, dashboards, and Smart Kitchen.
+- **TypeScript** - Improves reliability by keeping app data and component logic strongly typed.
+- **Vite** - Runs local development and creates optimized production builds.
+- **React Router** - Manages navigation between all pages in the app.
+
+### UI and User Experience
+- **Tailwind CSS** - Handles responsive styling and layout design.
+- **shadcn/ui (Radix-based)** - Provides reusable UI components like buttons, inputs, dialogs, and badges.
+- **Lucide React** - Supplies consistent iconography across the interface.
+
+### Data, State, and Maps
+- **React Context API** - Manages shared states such as auth, language, cart, and inventory.
+- **TanStack Query** - Handles asynchronous data fetching and keeps UI data synchronized.
+- **Leaflet + React Leaflet** - Powers map functionality in the driver navigation experience.
+
+### Backend and AI
+- **Supabase (Postgres, Auth, RLS, Migrations)** - Provides database, authentication, access control, and schema evolution.
+- **Google Gemini API** - Generates Smart Kitchen meal and food-preservation suggestions.
+- **Server-side API route (`api/gemini.ts`)** - Proxies AI requests securely from backend to Gemini.
+
+### Deployment
+- **Vercel** - Hosts the frontend application and serverless API route in production.
 
 ## Environment Variables
 | Variable | Required | Example | Where to Set | Notes |
