@@ -11,7 +11,8 @@ OddHarvest is a rescue-food marketplace web app that helps reduce food waste by 
    - `npm install`
 3. Create a local env file:
    - Copy `.env.example` to `.env`
-   - Fill in required values (Supabase and Google API key).
+   - Fill in required values.
+   - See the **Environment Variables** section below for required keys and examples.
 4. Run the app locally:
    - `npm run dev`
 5. Build for production:
