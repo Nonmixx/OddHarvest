@@ -1,7 +1,3 @@
-/**
- * Vercel serverless handler: same contract as vite-plugin-gemini-proxy (POST /api/gemini).
- * Set GOOGLE_API_KEY in Vercel → Project → Settings → Environment Variables (server-only).
- */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
