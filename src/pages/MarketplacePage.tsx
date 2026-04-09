@@ -13,6 +13,7 @@ import VoiceInput from "@/components/VoiceInput";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const STATES = ["All", "Johor", "Kedah", "Kelantan", "Melaka", "Negeri Sembilan", "Pahang", "Penang", "Perak", "Perlis", "Sabah", "Sarawak", "Selangor", "Terengganu", "Kuala Lumpur", "Putrajaya", "Labuan"];
 const DISTANCE_OPTIONS_KEYS = [
@@ -25,8 +26,9 @@ const DISTANCE_OPTIONS_KEYS = [
 
 type LatLng = { lat: number; lng: number };
 
-const FALLBACK_USER_LOCATION_KL: LatLng = { lat: 3.139, lng: 101.6869 };
 const MAX_RECOMMENDATION_DISTANCE_KM = 60;
+const NEARBY_DISTANCE_KM = 10;
+const NEAREST_FARMS_FALLBACK_COUNT = 3;
 
 // Coords for demo seller locations (used to compute "nearby" + recommendations)
 const FARM_LOCATION_COORDS: Record<string, LatLng> = {
@@ -99,7 +101,8 @@ function haversineKm(a: LatLng, b: LatLng) {
   return R * c;
 }
 
-function inferUserRegionState(userCoords: LatLng): "Kuala Lumpur" | "Selangor" | null {
+function inferUserRegionState(userCoords: LatLng | null): "Kuala Lumpur" | "Selangor" | null {
+  if (!userCoords) return null;
   // Rough bounding box around Kuala Lumpur Federal Territory
   const inKL =
     userCoords.lat >= 3.05 &&
@@ -125,11 +128,12 @@ const MarketplacePage = () => {
   const [showMysteryOnly, setShowMysteryOnly] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
-  const [userCoords, setUserCoords] = useState<LatLng>(FALLBACK_USER_LOCATION_KL);
+  const [userCoords, setUserCoords] = useState<LatLng | null>(null);
   const [geoPermission, setGeoPermission] = useState<"unknown" | "granted" | "denied" | "prompt">("unknown");
   const [locationHint, setLocationHint] = useState<"none" | "gps_fail">("none");
   const [isLocating, setIsLocating] = useState(false);
   const watchIdRef = useRef<number | null>(null);
+  const permissionStatusRef = useRef<PermissionStatus | null>(null);
 
   const clearLocationWatch = useCallback(() => {
     if (watchIdRef.current != null && "geolocation" in navigator) {
@@ -149,47 +153,94 @@ const MarketplacePage = () => {
         setLocationHint("none");
       },
       (err) => {
-        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoPermission("denied");
+          setUserCoords(null);
+          clearLocationWatch();
+        }
       },
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 }
     );
   }, [clearLocationWatch]);
 
+  const refreshGeolocationPermission = useCallback(async () => {
+    if (!("geolocation" in navigator)) return;
+    try {
+      const perms = (navigator as Navigator & { permissions?: { query: (q: { name: PermissionName }) => Promise<PermissionStatus> } }).permissions;
+      if (!perms?.query) return;
+      const status = await perms.query({ name: "geolocation" });
+      permissionStatusRef.current = status;
+      const mapState = (s: PermissionState) => (s === "granted" ? "granted" : s === "denied" ? "denied" : "prompt");
+      const next = mapState(status.state);
+      setGeoPermission(next);
+      if (status.state === "granted") {
+        setLocationHint("none");
+        startLocationWatch();
+      } else {
+        if (status.state === "denied") {
+          setUserCoords(null);
+        }
+        clearLocationWatch();
+      }
+    } catch {
+      // Permissions API unsupported — user will use the button
+    }
+  }, [clearLocationWatch, startLocationWatch]);
+
   useEffect(() => {
     if (!("geolocation" in navigator)) return;
     let cancelled = false;
+    const mapState = (s: PermissionState) => (s === "granted" ? "granted" : s === "denied" ? "denied" : "prompt");
+    const init = async () => {
+      await refreshGeolocationPermission();
+      if (cancelled || !permissionStatusRef.current) return;
+      permissionStatusRef.current.onchange = () => {
+        if (cancelled || !permissionStatusRef.current) return;
+        const next = mapState(permissionStatusRef.current.state);
+        setGeoPermission(next);
+        if (permissionStatusRef.current.state === "granted") {
+          setLocationHint("none");
+          startLocationWatch();
+        } else {
+          if (permissionStatusRef.current.state === "denied") {
+            setUserCoords(null);
+          }
+          clearLocationWatch();
+        }
+      };
+    };
 
-    const syncPermissionAndMaybeWatch = async () => {
-      try {
-        const perms = (navigator as Navigator & { permissions?: { query: (q: { name: PermissionName }) => Promise<PermissionStatus> } }).permissions;
-        if (!perms?.query) return;
-        const status = await perms.query({ name: "geolocation" });
-        if (cancelled) return;
-        const mapState = (s: PermissionState) => (s === "granted" ? "granted" : s === "denied" ? "denied" : "prompt");
-        setGeoPermission(mapState(status.state));
-        if (status.state === "granted") startLocationWatch();
-        status.onchange = () => {
-          if (cancelled) return;
-          setGeoPermission(mapState(status.state));
-          if (status.state === "granted") startLocationWatch();
-          else clearLocationWatch();
-        };
-      } catch {
-        // Permissions API unsupported — user will use the button
+    const handleWindowFocus = () => {
+      void refreshGeolocationPermission();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void refreshGeolocationPermission();
       }
     };
 
-    void syncPermissionAndMaybeWatch();
+    void init();
+    window.addEventListener("focus", handleWindowFocus);
+    document.addEventListener("visibilitychange", handleVisibility);
     return () => {
       cancelled = true;
+      if (permissionStatusRef.current) permissionStatusRef.current.onchange = null;
+      window.removeEventListener("focus", handleWindowFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
       clearLocationWatch();
     };
-  }, [startLocationWatch, clearLocationWatch]);
+  }, [refreshGeolocationPermission, startLocationWatch, clearLocationWatch]);
 
   /** User gesture: required on many mobile browsers for a reliable prompt + fresh GPS fix. */
-  const requestLocation = useCallback(() => {
+  const requestLocation = useCallback(async () => {
     if (!("geolocation" in navigator)) return;
     setLocationHint("none");
+    await refreshGeolocationPermission();
+    if (permissionStatusRef.current?.state === "denied") {
+      setGeoPermission("denied");
+      setUserCoords(null);
+      toast.error("Location is blocked in browser settings. Allow location for this site, then tap Allow Location again.");
+    }
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -202,6 +253,8 @@ const MarketplacePage = () => {
         setIsLocating(false);
         if (err.code === err.PERMISSION_DENIED) {
           setGeoPermission("denied");
+          setUserCoords(null);
+          clearLocationWatch();
         } else {
           setGeoPermission("prompt");
           setLocationHint("gps_fail");
@@ -209,9 +262,31 @@ const MarketplacePage = () => {
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
     );
-  }, [startLocationWatch]);
+    void refreshGeolocationPermission();
+  }, [clearLocationWatch, refreshGeolocationPermission, startLocationWatch]);
+
+  const openLocationSettings = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const ua = navigator.userAgent.toLowerCase();
+    const siteOrigin = encodeURIComponent(window.location.origin);
+
+    // Browser security usually blocks re-prompt after hard deny.
+    // Best effort: open the browser location settings directly.
+    if (ua.includes("edg/")) {
+      window.open("edge://settings/content/location", "_blank");
+    } else if (ua.includes("chrome/")) {
+      window.open(`chrome://settings/content/siteDetails?site=${siteOrigin}`, "_blank");
+    } else {
+      toast.info("Open browser site settings and set Location to Allow for this site.");
+      return;
+    }
+    toast.info("Allow location for this site in browser settings, then return and tap the button again.");
+  }, []);
 
   const cropsWithGeoDistance = useMemo(() => {
+    if (!userCoords) {
+      return crops.map((c) => ({ ...c, distanceKm: 999 }));
+    }
     return crops.map((c) => {
       const farm = resolveCropCoords(c.farmLocation, c.state);
       if (!farm) {
@@ -241,7 +316,7 @@ const MarketplacePage = () => {
     const translatedName = tc(c.name).toLowerCase();
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || translatedName.includes(search.toLowerCase());
     const matchState = stateFilter === "All" || c.state === stateFilter;
-    const matchDistance = c.distanceKm <= maxDistance;
+    const matchDistance = !userCoords || c.distanceKm <= maxDistance;
     const matchSellerType = sellerTypeFilter === "all" || c.sellerType === sellerTypeFilter;
     const matchImperfect = imperfectFilter === "all" || c.imperfectReason === imperfectFilter;
     const matchBundle = !showBundlesOnly || (c.isBundle && !c.isMysteryBox);
@@ -253,23 +328,28 @@ const MarketplacePage = () => {
   else if (sortBy === "freshness") filtered = [...filtered].sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
   else if (sortBy === "distance") filtered = [...filtered].sort((a, b) => a.distanceKm - b.distanceKm);
 
-  const nearbyFarms = cropsWithGeoDistance
-    .filter((c) => c.distanceKm <= 10)
+  const nearestFarms = cropsWithGeoDistance
     .reduce((acc, c) => {
       if (!acc.find((f) => f.sellerId === c.sellerId)) {
         acc.push({ location: c.farmLocation, distance: c.distanceKm, farmerName: c.farmerName, sellerId: c.sellerId });
       }
       return acc;
     }, [] as { location: string; distance: number; farmerName: string; sellerId: string }[])
+    .filter((f) => Number.isFinite(f.distance))
     .sort((a, b) => a.distance - b.distance);
+
+  const nearbyFarms = nearestFarms.filter((f) => f.distance <= NEARBY_DISTANCE_KM);
+  const farmsToShow = !userCoords ? [] : nearbyFarms.length > 0 ? nearbyFarms : nearestFarms.slice(0, NEAREST_FARMS_FALLBACK_COUNT);
 
   // Smart recommendations
   const recommendations = useMemo(() => {
+    if (!userCoords) return [];
+    const recommendationPool = cropsInReasonableRegion.length > 0 ? cropsInReasonableRegion : cropsWithGeoDistance;
     const tagged: { crop: CropListing; tag: string }[] = [];
     const usedIds = new Set<string>();
 
     // Near you (distance <= 10km)
-    const nearby = [...cropsInReasonableRegion]
+    const nearby = [...recommendationPool]
       .filter((c) => c.distanceKm <= 10 && c.quantity > 0)
       .sort((a, b) => a.distanceKm - b.distanceKm);
     for (const c of nearby) {
@@ -279,7 +359,7 @@ const MarketplacePage = () => {
     }
 
     // Best deal (highest discount %)
-    const deals = [...cropsInReasonableRegion]
+    const deals = [...recommendationPool]
       .filter((c) => !c.isBundle && !c.isMysteryBox && c.quantity > 0)
       .map((c) => ({ crop: c, discount: Math.round(((c.usualPrice - c.discountPrice) / c.usualPrice) * 100) }))
       .sort((a, b) => b.discount - a.discount);
@@ -290,7 +370,7 @@ const MarketplacePage = () => {
     }
 
     // Popular / recently added
-    const recent = [...cropsInReasonableRegion]
+    const recent = [...recommendationPool]
       .filter((c) => c.quantity > 0)
       .sort((a, b) => new Date(b.harvestDate).getTime() - new Date(a.harvestDate).getTime());
     for (const c of recent) {
@@ -300,7 +380,7 @@ const MarketplacePage = () => {
     }
 
     return tagged;
-  }, [cropsInReasonableRegion]);
+  }, [cropsInReasonableRegion, cropsWithGeoDistance, userCoords]);
 
   return (
     <div className="min-h-screen">
@@ -325,8 +405,16 @@ const MarketplacePage = () => {
                 )}
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                <Button className="rounded-full" onClick={requestLocation} disabled={isLocating || !("geolocation" in navigator)}>
-                  {isLocating ? t("market.location_locating") : t("market.enable_location")}
+                <Button
+                  className="rounded-full"
+                  onClick={geoPermission === "denied" ? openLocationSettings : requestLocation}
+                  disabled={isLocating || !("geolocation" in navigator)}
+                >
+                  {isLocating
+                    ? t("market.location_locating")
+                    : geoPermission === "denied"
+                    ? "Open Location Settings"
+                    : t("market.enable_location")}
                 </Button>
                 {geoPermission === "denied" && (
                   <span className="text-xs text-muted-foreground">{t("market.location_denied")}</span>
@@ -336,14 +424,16 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {geoPermission === "granted" && nearbyFarms.length > 0 && (
-          <div className="farm-card p-5 mb-8">
-            <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
+        <div className="farm-card p-5 mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="font-heading font-bold text-foreground flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
               {t("market.nearby")}
             </h2>
+          </div>
+          {farmsToShow.length > 0 ? (
             <div className="flex flex-wrap gap-3">
-              {nearbyFarms.map((f, i) => (
+              {farmsToShow.map((f, i) => (
                 <div
                   key={i}
                   className="bg-farm-green-light rounded-xl px-4 py-2.5 flex items-center gap-2 cursor-pointer hover:shadow-md hover:bg-farm-green-light/80 transition-all"
@@ -354,17 +444,24 @@ const MarketplacePage = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">No nearby farms yet. Allow location to see farms near you.</p>
+          )}
+        </div>
 
-        {geoPermission === "granted" && recommendations.length > 0 && (
+        <div className="mb-8">
+          {recommendations.length > 0 ? (
           <div className="mb-8">
             <button
               onClick={() => setShowRecommendations(!showRecommendations)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-input bg-background text-sm font-medium text-foreground hover:bg-secondary transition-colors"
             >
               <Sparkles className="h-4 w-4 text-primary" />
-              {showRecommendations ? t("market.hide_recommendations") : t("market.show_recommendations")}
+              {showRecommendations
+                ? t("market.hide_recommendations")
+                : geoPermission === "granted"
+                ? t("market.show_recommendations")
+                : t("market.show_recommendations")}
             </button>
             {showRecommendations && (
               <div className="mt-4">
@@ -390,7 +487,16 @@ const MarketplacePage = () => {
               </div>
             )}
           </div>
-        )}
+          ) : (
+            <div className="farm-card p-5">
+              <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                {t("market.show_recommendations")}
+              </h2>
+              <p className="text-sm text-muted-foreground">No recommendations yet. Allow location to get nearby suggestions.</p>
+            </div>
+          )}
+        </div>
 
         <div className="space-y-4 mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
