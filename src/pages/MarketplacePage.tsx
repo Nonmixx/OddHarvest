@@ -1,5 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCropInventory } from "@/contexts/CropInventoryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -113,7 +112,6 @@ function inferUserRegionState(userCoords: LatLng): "Kuala Lumpur" | "Selangor" |
 
 const MarketplacePage = () => {
   const { crops } = useCropInventory();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const tc = (text: string) => translateContent(text, language);
@@ -129,73 +127,89 @@ const MarketplacePage = () => {
 
   const [userCoords, setUserCoords] = useState<LatLng>(FALLBACK_USER_LOCATION_KL);
   const [geoPermission, setGeoPermission] = useState<"unknown" | "granted" | "denied" | "prompt">("unknown");
+  const [locationHint, setLocationHint] = useState<"none" | "gps_fail">("none");
+  const [isLocating, setIsLocating] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
+
+  const clearLocationWatch = useCallback(() => {
+    if (watchIdRef.current != null && "geolocation" in navigator) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+  }, []);
+
+  /** Keeps coordinates updated on mobile after the user allows location (GPS / Wi‑Fi). */
+  const startLocationWatch = useCallback(() => {
+    if (!("geolocation" in navigator)) return;
+    clearLocationWatch();
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGeoPermission("granted");
+        setLocationHint("none");
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 }
+    );
+  }, [clearLocationWatch]);
 
   useEffect(() => {
-    if (!user) return;
     if (!("geolocation" in navigator)) return;
-    let watchId: number | null = null;
+    let cancelled = false;
 
-    const startWatch = () => {
-      if (watchId != null) return;
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        (err) => {
-          if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
-          // keep fallback (KL) for demo if denied/unavailable
-        },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
-      );
-    };
-
-    // Ask permission early when marketplace loads (some browsers still require user gesture,
-    // but this will prompt on most).
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setGeoPermission("granted");
-        setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        startWatch();
-      },
-      (err) => {
-        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
-        else setGeoPermission("prompt");
-      },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
-    );
-
-    // If Permissions API is available, keep permission state in sync
-    (async () => {
+    const syncPermissionAndMaybeWatch = async () => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const perms: any = (navigator as any).permissions;
+        const perms = (navigator as Navigator & { permissions?: { query: (q: { name: PermissionName }) => Promise<PermissionStatus> } }).permissions;
         if (!perms?.query) return;
         const status = await perms.query({ name: "geolocation" });
-        setGeoPermission(status.state);
-        status.onchange = () => setGeoPermission(status.state);
-        if (status.state === "granted") startWatch();
+        if (cancelled) return;
+        const mapState = (s: PermissionState) => (s === "granted" ? "granted" : s === "denied" ? "denied" : "prompt");
+        setGeoPermission(mapState(status.state));
+        if (status.state === "granted") startLocationWatch();
+        status.onchange = () => {
+          if (cancelled) return;
+          setGeoPermission(mapState(status.state));
+          if (status.state === "granted") startLocationWatch();
+          else clearLocationWatch();
+        };
       } catch {
-        // ignore
+        // Permissions API unsupported — user will use the button
       }
-    })();
-
-    return () => {
-      if (watchId != null) navigator.geolocation.clearWatch(watchId);
     };
-  }, [user]);
 
+    void syncPermissionAndMaybeWatch();
+    return () => {
+      cancelled = true;
+      clearLocationWatch();
+    };
+  }, [startLocationWatch, clearLocationWatch]);
+
+  /** User gesture: required on many mobile browsers for a reliable prompt + fresh GPS fix. */
   const requestLocation = useCallback(() => {
     if (!("geolocation" in navigator)) return;
+    setLocationHint("none");
+    setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        setIsLocating(false);
         setGeoPermission("granted");
         setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        startLocationWatch();
       },
       (err) => {
-        if (err.code === err.PERMISSION_DENIED) setGeoPermission("denied");
-        else setGeoPermission("prompt");
+        setIsLocating(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoPermission("denied");
+        } else {
+          setGeoPermission("prompt");
+          setLocationHint("gps_fail");
+        }
       },
-      { enableHighAccuracy: true, maximumAge: 10000, timeout: 8000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
     );
-  }, []);
+  }, [startLocationWatch]);
 
   const cropsWithGeoDistance = useMemo(() => {
     return crops.map((c) => {
@@ -297,16 +311,22 @@ const MarketplacePage = () => {
           <p className="text-muted-foreground">{t("market.subtitle")}</p>
         </div>
 
-        {user && geoPermission !== "granted" && (
+        {geoPermission !== "granted" && (
           <div className="farm-card p-5 mb-8 border-primary/20 bg-farm-green-light">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="space-y-1">
                 <p className="font-heading font-bold text-foreground">{t("market.location_title")}</p>
                 <p className="text-sm text-muted-foreground">{t("market.location_desc")}</p>
+                {typeof window !== "undefined" && !window.isSecureContext && (
+                  <p className="text-xs text-destructive">{t("market.location_https")}</p>
+                )}
+                {locationHint === "gps_fail" && (
+                  <p className="text-xs text-muted-foreground">{t("market.location_gps_unavailable")}</p>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <Button className="rounded-full" onClick={requestLocation}>
-                  {t("market.enable_location")}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <Button className="rounded-full" onClick={requestLocation} disabled={isLocating || !("geolocation" in navigator)}>
+                  {isLocating ? t("market.location_locating") : t("market.enable_location")}
                 </Button>
                 {geoPermission === "denied" && (
                   <span className="text-xs text-muted-foreground">{t("market.location_denied")}</span>
@@ -316,7 +336,7 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {user && nearbyFarms.length > 0 && (
+        {geoPermission === "granted" && nearbyFarms.length > 0 && (
           <div className="farm-card p-5 mb-8">
             <h2 className="font-heading font-bold text-foreground flex items-center gap-2 mb-3">
               <MapPin className="h-5 w-5 text-primary" />
@@ -337,7 +357,7 @@ const MarketplacePage = () => {
           </div>
         )}
 
-        {user && recommendations.length > 0 && (
+        {geoPermission === "granted" && recommendations.length > 0 && (
           <div className="mb-8">
             <button
               onClick={() => setShowRecommendations(!showRecommendations)}

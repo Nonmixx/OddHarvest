@@ -37,6 +37,7 @@ For Vercel deployment, set environment variables in Vercel Project Settings (do 
 ### Data, State, and Maps
 - **React Context API** - Manages shared states such as auth, language, cart, and inventory.
 - **TanStack Query** - Handles asynchronous data fetching and keeps UI data synchronized.
+- **Web Geolocation API** - Browser API used on the marketplace for user location (nearby farms, distance filters) on desktop and mobile; no extra npm package.
 - **Leaflet + React Leaflet** - Powers map functionality in the driver navigation experience.
 
 ### Backend and AI
